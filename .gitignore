@@ -27,3 +27,7 @@ proguard/
 */workspace.xml
 */misc.xml
 */dictionaries/Martin.xml
+.idea/workspace.xml
+workspace.xml
+misc.xml
+Martin.xml
