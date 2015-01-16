@@ -12,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="false"
-        android:layout_alignParentBottom="true"
-        android:layout_above="@id/bottom_frame">
+        android:layout_alignParentBottom="true">
         <ListView
             android:id="@+id/listview_checklists"
             android:layout_width="match_parent"
