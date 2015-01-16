@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/listview_item_chat_left"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/listview_view_left_from"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="From: sfsd@gmail.com"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        android:layout_gravity="left"
+        android:clickable="false"
+        />
+    <TextView
+        android:id="@+id/listview_view_left_message"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:text="dasdasdsdfndkl fkj sdkfj sdlkgj dkjf ksdjf skdjf kjsdhf h"
+        android:textSize="20dp"
+        android:layout_gravity="left"
+        />
+
+</LinearLayout>

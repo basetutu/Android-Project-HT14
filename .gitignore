@@ -29,6 +29,12 @@ proguard/
 .DS_Store
 /build
 
+#################################################
+# everyone must use this setting
+#                git config --global merge.ff no
+# type it in the shell git command
+#################################################
+
 # Log Files
 *.log
 */workspace.xml
