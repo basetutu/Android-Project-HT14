@@ -16,22 +16,15 @@ import java.util.HashMap;
 
 /**
  * Created by Saeed on 26-12-14.
- * <p/>
+ *
  * This class is responsible for all operations with the Firebase API. It holds all functions
  * necessary for operation of the chat messages and the groups.
- * <p/>
- * One object of this class can only be responsible for the operation of a single fragment.
- * <p/>
+ *
  * Listeners are not implemented here but must be implemented externally and since passed into this
  * the controller for either children or values of a given address.
  */
 public class FirebaseController {
     private static final String TAG = "FirebaseController";
-
-    // Authentication ///////////////////////////////////////////////////////////////////////
-
-
-    // Button logic (buttons from various fragments under the control of this activity)
 
     /**
      * This function will handle user login.
@@ -198,8 +191,8 @@ public class FirebaseController {
      * @return Firebase instance for the newly created child
      */
     protected static String createNewChild(Firebase parentChild) {
-        String groupId = parentChild.push().getKey();
-        return groupId;
+        String childId = parentChild.push().getKey();
+        return childId;
     }
 
     /**
