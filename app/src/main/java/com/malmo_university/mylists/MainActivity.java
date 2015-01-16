@@ -48,9 +48,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-
         mViewPager = (ViewPager) findViewById(R.id.pager);
-
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // When swiping between different sections, select the corresponding
