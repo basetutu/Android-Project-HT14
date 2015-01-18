@@ -7,24 +7,6 @@
     <string name="title_section3">Section 3</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="tv_login">Enter user credentials</string>
-    <string name="et_user_hint">Username</string>
-    <string name="et_pass_hint">Password</string>
-    <string name="btn_login">Login</string>
-    <string name="tv_register">New user?</string>
-    <string name="btn_reg">Register</string>
-    <string name="btn_about">About us</string>
-    <string name="btn_exit">Exit</string>
-    <string name="registration_field">Enter user credentials</string>
-    <string name="register_user_hint">Username</string>
-    <string name="register_pass_hint">Password</string>
-    <string name="register_pass_hint2">Reenter password</string>
-    <string name="register">Register</string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
-    <string name=""></string>
 
     <string name="app_subtitle">Structured collaboration</string>
     <string name="title_chat_list">My conversations</string>
