@@ -1,5 +1,6 @@
 package com.malmo_university.mylists;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.Log;
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 public class ChatAdapter extends BaseAdapter{
     private static final String TAG = "ChatAdapter";
     /*********** Declare Used Variables *********/
-    private ActivityLoggedIn mParentActivity;
+    private Activity mParentActivity;
     private ArrayList listItems;
     private static LayoutInflater inflater = null;
     public Resources resources;
@@ -33,7 +34,7 @@ public class ChatAdapter extends BaseAdapter{
 
 
     /*************  CustomAdapter Constructor *****************/
-    public ChatAdapter(ActivityLoggedIn context, ArrayList listItems, Resources resLocal, FragmentChat ref) {
+    public ChatAdapter(Activity context, ArrayList listItems, Resources resLocal, FragmentChat ref) {
         /********** Take passed values **********/
         mParentActivity = context;
         this.listItems = listItems;

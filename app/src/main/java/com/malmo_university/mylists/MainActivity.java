@@ -8,11 +8,14 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.firebase.client.Firebase;
 
 import java.util.Locale;
 
@@ -29,6 +32,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
 
+    private Firebase mFirebase;
+
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -39,6 +44,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Firebase.setAndroidContext(this);
+
+        FirebaseController.init();
+        //todo login
+        // get the username and use it on the next line
+        //FirebaseController.setCurrentUser( here );
+
+
+
+
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -48,7 +63,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.container_pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // When swiping between different sections, select the corresponding
@@ -132,7 +147,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 8;
         }
 
         @Override
@@ -145,8 +160,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3).toUpperCase(l);
+                default:
+                    return getString(R.string.title_section3).toUpperCase(l);
             }
-            return null;
+            //return null;
         }
     }
 
@@ -172,14 +189,43 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             return fragment;
         }
 
-        public PlaceholderFragment() {
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            Log.w("fsdf","onCreateView");
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
             return rootView;
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Log.w("fsdf","onCreate");
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            Log.w("fsdf","onPause");
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            Log.w("fsdf","onResume");
+        }
+
+        @Override
+        public void onStop() {
+            super.onStop();
+            Log.w("fsdf","onStop");
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            Log.w("fsdf","onDestroy");
         }
     }
 
