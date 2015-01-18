@@ -11,13 +11,13 @@ public class Globals {
     protected static final boolean DEBUG_results = true; // Used mostly for results
 
     // Change the firebase database
-    //protected static final String FIREBASE_GROUPS_URL = "https://glaring-fire-7274.firebaseio.com";
-    protected static final String FIREBASE_GROUPS_URL = "https://da401a.firebaseio.com/";
+    public static final String FIREBASE_DB_ROOT_URL = "https://glaring-fire-7274.firebaseio.com";
+    //protected static final String FIREBASE_GROUPS_URL = "https://da401a.firebaseio.com/";
 
     // String identifier for the group-fragment
     protected static final String GROUPS_FRAGMENT = "the_fragment_name_that_lists_all_the_groups";
     // The filename for the SharedPreference
-    protected static final String SHARED_PREFERENCE_GROUPWORK = "groupwork";
+    protected static final String SHARED_PREFERENCE_MY_LISTS = "mylists";
 
     // Used in switches to choose a particular fragment
     protected static final int FRAGMENT_LOGIN = 0;
