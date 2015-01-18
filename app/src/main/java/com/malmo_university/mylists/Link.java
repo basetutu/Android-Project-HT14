@@ -14,6 +14,7 @@ public class Link {
     // what is this referring to
     String type;
     // A Firebase reference URL
+    // (This must be a complete URL from the firebase root till the point of reference)
     String reference;
 
     public Link(String ref_id, String owner, String date_added, String type, String reference) {

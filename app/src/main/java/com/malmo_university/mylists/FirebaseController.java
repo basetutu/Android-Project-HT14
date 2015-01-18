@@ -22,7 +22,7 @@ public class FirebaseController {
     private static Firebase mFirebase;
 
     // This controller works within two databases
-    private static final String DB_CHECKLISTS = "CHECKLISTS";
+    protected static final String DB_CHECKLISTS = "CHECKLISTS";
     private static final String DB_USERS = "USERS";
 
     // A child with in every child is reserved for containing the root values of every child.
@@ -30,7 +30,7 @@ public class FirebaseController {
     // within a given child is nor retuned for each value-change.
     // For this reason, the use of ValueEventListener is limited and generally discouraged.
     // This special child is called VALUES as below.
-    private static String VALUES = "VALUES";
+    private static final String VALUES = "VALUES";
 
     // Standard child names of a user
     private static final String CHECKLIST_REF = "CHECKLIST_REF";
@@ -53,36 +53,71 @@ public class FirebaseController {
 
     // The values of the type attribute in the Link-class
     // It's simply indicating what the Link is linking to
-    private static final String TYPE_CHECKLIST = "CHECKLIST";
-    private static final String TYPE_CONTACT = "CONTACT";
+    private static final String LINK_TYPE_CHECKLIST = "CHECKLIST";
+    private static final String LINK_TYPE_CONTACT = "CONTACT";
+    private static Firebase mFirebaseUSERS;
+    private static Firebase mFirebaseCHECKLISTS;
 
     // init /////////////////////////////////////////////////////////////////////////////////
 
     protected static void init(){
         mFirebase = new Firebase(Globals.FIREBASE_DB_ROOT_URL);
+        mFirebaseUSERS = mFirebase.child(DB_USERS);
+        mFirebaseCHECKLISTS = mFirebase.child(DB_CHECKLISTS);
+    }
+
+    // Help functions
+
+    protected static String makeChecklistPath(String checklistName){
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklistName;
+    }
+    protected static String makeUserPath(String userEmail){
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + userEmail;
     }
 
     // Project functions ///////////////////////////////////////////////////////////////////
 
     protected static void createChecklist(String checklistName){
-        mFirebase.child(DB_CHECKLISTS).child(checklistName).child(VALUES).setValue(NAME,checklistName);
-        mFirebase.child(DB_CHECKLISTS).child(checklistName).child(VALUES).setValue(CREATION_DATE,getTimestamp());
-        Link link = new Link(null, getCurrentUser(), getTimestamp(), TYPE_CHECKLIST, checklistName);
-        addChecklistToUserList(link);
+        // Create and initialize checklist
+        HashMap<String, String> values = new HashMap<String, String>();
+        values.put(NAME, checklistName);
+        values.put(CREATION_DATE, getTimestamp());
+
+        mFirebaseCHECKLISTS.child(checklistName.toUpperCase()).child(VALUES).setValue(values);
+
+        // add the checklist to the current logged in users references of checklists
+        addChecklistRefToUserList(checklistName);
     }
 
-    protected static void addChecklistToUserList(Link link){
-        String ref_id = mFirebase.child(DB_USERS).child(getCurrentUser()).child(CHECKLIST_REF).push().getKey();
-        link.setRef_id(ref_id);
-        mFirebase.child(DB_USERS).child(getCurrentUser()).child(CHECKLIST_REF).child(ref_id).setValue(link);
+    /**
+     * This function puts the reference of a checklists into the current users references of
+     * checklists.
+     *
+     * @param checklistName
+     */
+    protected static void addChecklistRefToUserList(String checklistName){
+        String ref_id = mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).push().getKey();
+        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
+                makeChecklistPath(checklistName.toUpperCase()));
+        mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).child(ref_id).setValue(link);
     }
+
 
     protected static void createUser(String userEmail){
-        mFirebase.child(DB_USERS).child(userEmail).child(VALUES).setValue(USERNAME,userEmail);
-        mFirebase.child(DB_USERS).child(userEmail).child(VALUES).setValue(CREATION_DATE,getTimestamp());
-        mFirebase.child(DB_USERS).child(userEmail).child(PROFILE).setValue(EMAIL,userEmail);
-        mFirebase.child(DB_USERS).child(userEmail).child(PROFILE).setValue(NAME,"");
-        mFirebase.child(DB_USERS).child(userEmail).child(PROFILE).setValue(TLF,"");
+        HashMap<String,String> values = new HashMap<String, String>();
+
+        userEmail = userEmail.toLowerCase();
+
+        values.put(USERNAME, userEmail);
+        values.put(CREATION_DATE, getTimestamp());
+        mFirebaseUSERS.child(userEmail).child(VALUES).setValue(values);
+
+        values.clear();
+
+        values.put(EMAIL, userEmail);
+        values.put(NAME, "");
+        values.put(TLF, "");
+        mFirebaseUSERS.child(userEmail).child(PROFILE).setValue(values);
     }
 
     protected static void updateProfile(Profile profile){
@@ -91,26 +126,34 @@ public class FirebaseController {
         // check for null in the profile object
         // replace the nulls in the new profile with the current data retrieved
         // set the new values in database using the next line
-        mFirebase.child(DB_USERS).child(getCurrentUser()).child(PROFILE).setValue(profile);
+        mFirebaseUSERS.child(getCurrentUser()).child(PROFILE).setValue(profile);
     }
 
-    protected void retrieveData(){
+    protected static void retrieveData(){
         // todo
         // retrieve data a single time
     }
 
-    protected void shareChecklist(String receiverUserEmail, String checklistURL){
-        String ref_id = mFirebase.child(DB_USERS).child(receiverUserEmail).child(AWAITING_ACCEPTANCE_REF).push().getKey();
-        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), TYPE_CHECKLIST, checklistURL);
-        mFirebase.child(DB_USERS).child(receiverUserEmail).child(AWAITING_ACCEPTANCE_REF).setValue(link);
+    protected static void shareChecklist(String toUserEmail, String checklistName){
+        toUserEmail = toUserEmail.toLowerCase();
+        String ref_id = mFirebaseUSERS.child(toUserEmail).child(AWAITING_ACCEPTANCE_REF).push().getKey();
+        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
+                makeChecklistPath(checklistName.toUpperCase()));
+        mFirebaseUSERS.child(toUserEmail).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
     }
 
-    protected void setContact(String userEmail){
-        Firebase mFirebaseUsers = mFirebase.child(DB_USERS).child(getCurrentUser());
-        String ref_id = mFirebaseUsers.child(CONTACTS_REF).push().getKey();
-        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), TYPE_CONTACT, userEmail);
-        mFirebaseUsers.child(CONTACTS_REF).child(ref_id).setValue(link);
+    /**
+     * This function links to a user to create contacts for the current user.
+     *
+     * @param userEmail
+     */
+    protected static void addContactToUserList(String userEmail){
+        userEmail = userEmail.toLowerCase();
+        Firebase mFirebaseUser = mFirebaseUSERS.child(getCurrentUser());
+        Link link = new Link(userEmail, getCurrentUser(), getTimestamp(), LINK_TYPE_CONTACT, makeUserPath(userEmail));
+        mFirebaseUser.child(CONTACTS_REF).child(userEmail).setValue(link);
     }
+
 
 
     // Atomic functions ////////////////////////////////////////////////////////////////////

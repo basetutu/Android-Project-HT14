@@ -22,6 +22,7 @@ import java.util.Locale;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
 
+    private static final String TAG = "MainActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -49,7 +50,20 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         FirebaseController.init();
         //todo login
         // get the username and use it on the next line
-        //FirebaseController.setCurrentUser( here );
+        FirebaseController.setCurrentUser("smg@gmail.com");
+
+        FirebaseController.createChecklist("shopping list");
+        FirebaseController.createChecklist("remember these");
+
+        FirebaseController.createUser("smg@gmail.com");
+        FirebaseController.createUser("smg2006@gmail.com");
+
+        FirebaseController.addChecklistRefToUserList("shopping list");
+        FirebaseController.addChecklistRefToUserList("remember these");
+
+        FirebaseController.addContactToUserList("smg2006@gmail.com");
+
+        FirebaseController.shareChecklist("smg2006@gmail.com","shopping list");
 
 
 
