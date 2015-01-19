@@ -51,7 +51,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
 
 
-        /*
+
         FirebaseController.init();
         //todo login
         Log.w(TAG,"0");
@@ -80,7 +80,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         FirebaseController.shareChecklist("smg2006@gmail.com","shopping list");
 
-        */
+
 
 
         // Set up the action bar.
