@@ -43,25 +43,40 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.w(TAG,"onCreate");
+
         setContentView(R.layout.activity_main);
 
         Firebase.setAndroidContext(this);
 
         FirebaseController.init();
         //todo login
+        Log.w(TAG,"0");
+
         // get the username and use it on the next line
-        FirebaseController.setCurrentUser("smg@gmail.com");
+        FirebaseController.setCurrentUser(Algorithms.transformEmailToKey("smg@gmail.com"));
+
+        Log.w(TAG,"1");
 
         FirebaseController.createChecklist("shopping list");
         FirebaseController.createChecklist("remember these");
 
+        Log.w(TAG,Algorithms.transformEmailToKey("smg@gmail.com"));
+
+        Log.w(TAG,"2");
+
         FirebaseController.createUser("smg@gmail.com");
         FirebaseController.createUser("smg2006@gmail.com");
+        Log.w(TAG,"3");
 
         FirebaseController.addChecklistRefToUserList("shopping list");
         FirebaseController.addChecklistRefToUserList("remember these");
 
+        Log.w(TAG,"4");
+
         FirebaseController.addContactToUserList("smg2006@gmail.com");
+
+        Log.w(TAG,"5");
 
         FirebaseController.shareChecklist("smg2006@gmail.com","shopping list");
 

@@ -3,6 +3,7 @@ package com.malmo_university.mylists;
 import com.firebase.client.Firebase;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -41,6 +42,7 @@ public class FirebaseController {
     // Standard child names of a checklist
     private static final String ITEMS = "ITEMS";
     private static final String USERS_REF = "USERS_REF";
+    private static final String CHECKLIST_ID = "CHECKLIST_ID";
 
     // Standard value names
     private static final String CREATION_DATE = "CREATION_DATE";
@@ -57,6 +59,11 @@ public class FirebaseController {
     private static final String LINK_TYPE_CONTACT = "CONTACT";
     private static Firebase mFirebaseUSERS;
     private static Firebase mFirebaseCHECKLISTS;
+
+    // DATA COLLECTIONS /////////////////////////////////////////////////////////////////////
+
+    HashMap<String, Checklist> mChecklists = new HashMap<String, Checklist>();
+    HashMap<String, Contact> mContacts = new HashMap<String, Contact>();
 
     // init /////////////////////////////////////////////////////////////////////////////////
 
@@ -75,33 +82,14 @@ public class FirebaseController {
         return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + userEmail;
     }
 
+    private static String makeUniqueChecklistId(String checklistName){
+        return checklistName.toUpperCase() + " " + getCurrentUser();
+    }
+
     // Project functions ///////////////////////////////////////////////////////////////////
 
-    protected static void createChecklist(String checklistName){
-        // Create and initialize checklist
-        HashMap<String, String> values = new HashMap<String, String>();
-        values.put(NAME, checklistName);
-        values.put(CREATION_DATE, getTimestamp());
 
-        mFirebaseCHECKLISTS.child(checklistName.toUpperCase()).child(VALUES).setValue(values);
-
-        // add the checklist to the current logged in users references of checklists
-        addChecklistRefToUserList(checklistName);
-    }
-
-    /**
-     * This function puts the reference of a checklists into the current users references of
-     * checklists.
-     *
-     * @param checklistName
-     */
-    protected static void addChecklistRefToUserList(String checklistName){
-        String ref_id = mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).push().getKey();
-        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
-                makeChecklistPath(checklistName.toUpperCase()));
-        mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).child(ref_id).setValue(link);
-    }
-
+    ///////////////////////////////////////////////////////////////////////////////
 
     protected static void createUser(String userEmail){
         HashMap<String,String> values = new HashMap<String, String>();
@@ -110,14 +98,14 @@ public class FirebaseController {
 
         values.put(USERNAME, userEmail);
         values.put(CREATION_DATE, getTimestamp());
-        mFirebaseUSERS.child(userEmail).child(VALUES).setValue(values);
+        mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(VALUES).setValue(values);
 
         values.clear();
 
         values.put(EMAIL, userEmail);
         values.put(NAME, "");
         values.put(TLF, "");
-        mFirebaseUSERS.child(userEmail).child(PROFILE).setValue(values);
+        mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(PROFILE).setValue(values);
     }
 
     protected static void updateProfile(Profile profile){
@@ -129,19 +117,6 @@ public class FirebaseController {
         mFirebaseUSERS.child(getCurrentUser()).child(PROFILE).setValue(profile);
     }
 
-    protected static void retrieveData(){
-        // todo
-        // retrieve data a single time
-    }
-
-    protected static void shareChecklist(String toUserEmail, String checklistName){
-        toUserEmail = toUserEmail.toLowerCase();
-        String ref_id = mFirebaseUSERS.child(toUserEmail).child(AWAITING_ACCEPTANCE_REF).push().getKey();
-        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
-                makeChecklistPath(checklistName.toUpperCase()));
-        mFirebaseUSERS.child(toUserEmail).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
-    }
-
     /**
      * This function links to a user to create contacts for the current user.
      *
@@ -150,15 +125,79 @@ public class FirebaseController {
     protected static void addContactToUserList(String userEmail){
         userEmail = userEmail.toLowerCase();
         Firebase mFirebaseUser = mFirebaseUSERS.child(getCurrentUser());
-        Link link = new Link(userEmail, getCurrentUser(), getTimestamp(), LINK_TYPE_CONTACT, makeUserPath(userEmail));
-        mFirebaseUser.child(CONTACTS_REF).child(userEmail).setValue(link);
+        Link link = new Link(Algorithms.transformEmailToKey(userEmail), getCurrentUser(),
+                getTimestamp(), LINK_TYPE_CONTACT,
+                makeUserPath(Algorithms.transformEmailToKey(userEmail)));
+        mFirebaseUser.child(CONTACTS_REF).child(Algorithms.transformEmailToKey(userEmail)).setValue(link);
     }
+
+    protected static void removeContactFromUserList(){
+        //todo
+    }
+
+    ///////////////////////////////////////////////////////////////////////////////
+
+    protected static void createChecklist(String checklistName){
+        String checklist_id = makeUniqueChecklistId(checklistName);
+        // Create and initialize checklist
+        HashMap<String, String> values = new HashMap<String, String>();
+        values.put(NAME, checklistName);
+        values.put(CREATION_DATE, getTimestamp());
+        values.put(CHECKLIST_ID, checklist_id);
+
+        mFirebaseCHECKLISTS.child(checklist_id).child(VALUES).setValue(values);
+
+        // add the checklist to the current logged in users references of checklists
+        String ref_id = mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).push().getKey();
+        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
+                makeChecklistPath(checklistName.toUpperCase()));
+        mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).child(ref_id).setValue(link);
+    }
+
+    protected static void shareChecklist(String toUserEmail, String checklistName){
+        toUserEmail = toUserEmail.toLowerCase();
+        String ref_id = mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).push().getKey();
+        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
+                makeChecklistPath(checklistName.toUpperCase()));
+        mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
+    }
+
+    protected static void removeChecklist(){
+        //todo
+    }
+
+    ////////////////////////////////////////////////////////////////////7
+
+    protected static void addItemToChecklist(String checklistName, String title, String note){
+        String ref_id = mFirebaseCHECKLISTS.child(checklistName).push().getKey();
+        Item item = new Item(ref_id, checklistName, getCurrentUser(), getTimestamp(), 0, title, note, false);
+        mFirebaseCHECKLISTS.child(checklistName).child(ref_id).setValue(item);
+    }
+
+    protected static void editItemOnChecklist(String title, String note, Item item){
+        item.setTitle(title);
+        item.setNote(note);
+        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).setValue(item);
+    }
+
+    protected static void checkItemOnChecklist(boolean state, Item item){
+        item.state = state;
+        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).setValue(item);
+    }
+
+    protected static void removeItemFromChecklist(Item item){
+        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).removeValue();
+    }
+
+    ////////////////////////////////////////////////////////////////////7
+
+
 
 
 
     // Atomic functions ////////////////////////////////////////////////////////////////////
 
-    private static String getTimestamp() {
+    protected static String getTimestamp() {
         long time = System.currentTimeMillis();
         Timestamp tsTemp = new Timestamp(time);
         return tsTemp.toString();
@@ -177,8 +216,9 @@ public class FirebaseController {
     }
 
     /**
-     * This function writes data to a given location indicated by location. The values must be stored
-     * in a Map object with key-value-pairs.
+     * This function writes data to a given location indicated by location. The values must be
+     * stored in a Map object with key-value-pairs. This will overwrite any existing value at the
+     * given location.
      *
      * @param location  The location at which the values must be added
      * @param dataSet A Map-object containing the key-value-paired data to be stored at the location
