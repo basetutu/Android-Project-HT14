@@ -3,7 +3,6 @@ package com.malmo_university.mylists;
 import com.firebase.client.Firebase;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -152,6 +151,9 @@ public class FirebaseController {
         Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
                 makeChecklistPath(checklistName.toUpperCase()));
         mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).child(ref_id).setValue(link);
+
+        // Add this user to the checklist's list of users who has a reference to it
+        mFirebaseCHECKLISTS.child(checklist_id).child(USERS_REF).child(getCurrentUser()).setValue(getCurrentUser());
     }
 
     protected static void shareChecklist(String toUserEmail, String checklistName){
@@ -162,8 +164,8 @@ public class FirebaseController {
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
     }
 
-    protected static void removeChecklist(){
-        //todo
+    protected static void removeChecklist(String checklist_id){
+        mFirebaseCHECKLISTS.child(checklist_id).removeValue();
     }
 
     ////////////////////////////////////////////////////////////////////7
