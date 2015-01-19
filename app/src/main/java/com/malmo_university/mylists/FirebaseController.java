@@ -196,7 +196,7 @@ public class FirebaseController {
         String ref_id = mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).push().getKey();
         Item item = new Item(ref_id, checklist_id, getCurrentUser(), getTimestamp(), 0, title, note, false);
         mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).child(ref_id).setValue(item);
-
+        ThreadController.delay(5000);
         mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).removeValue();
     }
 
@@ -211,6 +211,7 @@ public class FirebaseController {
         mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).setValue(item);
     }
 
+    // todo not tested
     protected static void removeItemFromChecklist(Item item){
         mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).removeValue();
     }
