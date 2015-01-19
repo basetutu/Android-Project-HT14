@@ -58,25 +58,22 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         Log.w(TAG,"1");
 
+        FirebaseController.createUser("smg@gmail.com");
+        FirebaseController.createUser("smg2006@gmail.com");
+
+        Log.w(TAG,"2");
+        ThreadController.delay(5000);
+
         FirebaseController.createChecklist("shopping list");
         FirebaseController.createChecklist("remember these");
 
-        Log.w(TAG,Algorithms.transformEmailToKey("smg@gmail.com"));
-
-        Log.w(TAG,"2");
-
-        FirebaseController.createUser("smg@gmail.com");
-        FirebaseController.createUser("smg2006@gmail.com");
         Log.w(TAG,"3");
-
-        FirebaseController.addChecklistRefToUserList("shopping list");
-        FirebaseController.addChecklistRefToUserList("remember these");
-
-        Log.w(TAG,"4");
+        ThreadController.delay(5000);
 
         FirebaseController.addContactToUserList("smg2006@gmail.com");
 
-        Log.w(TAG,"5");
+        Log.w(TAG,"4");
+        ThreadController.delay(5000);
 
         FirebaseController.shareChecklist("smg2006@gmail.com","shopping list");
 
