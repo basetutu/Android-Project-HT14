@@ -21,7 +21,6 @@ import java.util.Locale;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
-
     private static final String TAG = "MainActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -32,8 +31,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      * {@link android.support.v13.app.FragmentStatePagerAdapter}.
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
-
-    private Firebase mFirebase;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -49,12 +46,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         Firebase.setAndroidContext(this);
 
-        FirebaseController.init();
-        //todo login
+        // TEST SECTION
+
         Log.w(TAG,"0");
 
         // get the username and use it on the next line
-        FirebaseController.setCurrentUser(Algorithms.transformEmailToKey("smg@gmail.com"));
+        FirebaseController.init(Algorithms.transformEmailToKey("smg@gmail.com"));
+        //todo login
 
         Log.w(TAG,"1");
 
@@ -62,23 +60,23 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         FirebaseController.createUser("smg2006@gmail.com");
 
         Log.w(TAG,"2");
-        ThreadController.delay(5000);
 
         FirebaseController.createChecklist("shopping list");
         FirebaseController.createChecklist("remember these");
 
         Log.w(TAG,"3");
-        ThreadController.delay(5000);
 
         FirebaseController.addContactToUserList("smg2006@gmail.com");
 
         Log.w(TAG,"4");
-        ThreadController.delay(5000);
 
         FirebaseController.shareChecklist("smg2006@gmail.com","shopping list");
 
+        Log.w(TAG,"5");
 
+        FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
 
+        ////////////////////////////////////////////////////////////////////////////
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -167,7 +165,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return FragmentChecklists.newInstance(position + 1);
         }
 
         @Override
@@ -196,7 +194,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class FragmentChecklists extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -207,8 +205,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static FragmentChecklists newInstance(int sectionNumber) {
+            FragmentChecklists fragment = new FragmentChecklists();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);

@@ -5,7 +5,7 @@ package com.malmo_university.mylists;
  */
 public class Item {
     String ref_id;
-    String checklistName;
+    String checklist_id;
     String creator;
     String date_added;
     int order;
@@ -13,7 +13,7 @@ public class Item {
     String note;
     boolean state;
 
-    public Item(String ref_id, String checklistName, String creator, String date_added, int order, String title, String note, boolean state) {
+    public Item(String ref_id, String checklist_id, String creator, String date_added, int order, String title, String note, boolean state) {
         this.ref_id = ref_id;
         this.creator = creator;
         this.date_added = date_added;
@@ -21,15 +21,15 @@ public class Item {
         this.title = title;
         this.note = note;
         this.state = state;
-        this.checklistName = checklistName;
+        this.checklist_id = checklist_id;
     }
 
-    public String getChecklistName() {
-        return checklistName;
+    public String getChecklist_id() {
+        return checklist_id;
     }
 
-    public void setChecklistName(String checklistName) {
-        this.checklistName = checklistName;
+    public void setChecklist_id(String checklist_id) {
+        this.checklist_id = checklist_id;
     }
 
     public String getRef_id() {
