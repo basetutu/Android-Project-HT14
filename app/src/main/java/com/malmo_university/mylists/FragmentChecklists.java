@@ -19,6 +19,12 @@ public class FragmentChecklists extends Fragment {
     View[] checklists_v;
     TextView txtView;
 
+    TestData myDataArray[]= new TestData[]{
+            new TestData("item1",10),
+            new TestData("item2",20),
+            new TestData("item3",30)
+    };
+
     /**
      * The fragment argument representing the section number for this
      * fragment.
@@ -40,6 +46,7 @@ public class FragmentChecklists extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         checklists = new String[] {"potatis","mjölk"};
+
         super.onCreate(savedInstanceState);
         Log.w("fsdf","onCreate");
     }
@@ -55,10 +62,17 @@ public class FragmentChecklists extends Fragment {
 
         /////
 
-        ArrayAdapter<View> adapter = new ArrayAdapter<View>(getActivity(),
-                android.R.layout.simple_list_item_1, checklists_v);
+        //replaces R.layout... "android.R.layout.simple_list_item_1"
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+                R.layout.testlayout, R.id.test_tv, checklists);
+
+
+        //ListAdaptor adapter = new ListAdaptor(getActivity(), R.layout.testlayout, myDataArray);
+
         ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
         list.setAdapter(adapter);
+
         /*
         txtView = (TextView) rootView.findViewById(R.id.textView_GroupList1);
 
