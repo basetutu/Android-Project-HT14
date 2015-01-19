@@ -8,17 +8,20 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.firebase.client.Firebase;
+
 import java.util.Locale;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
-
+    private static final String TAG = "MainActivity";
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -37,7 +40,46 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.w(TAG,"onCreate");
+
         setContentView(R.layout.activity_main);
+
+        Firebase.setAndroidContext(this);
+
+        //todo login
+
+
+        // TEST SECTION
+
+        Log.w(TAG,"0");
+
+        // get the username and use it on the next line
+        FirebaseController.init(Algorithms.transformEmailToKey("smg@gmail.com"));
+        //todo login
+
+        Log.w(TAG,"1");
+
+        FirebaseController.createUser("smg@gmail.com");
+        FirebaseController.createUser("smg2006@gmail.com");
+
+        Log.w(TAG,"2");
+
+        FirebaseController.createChecklist("shopping list");
+        FirebaseController.createChecklist("remember these");
+
+        Log.w(TAG,"3");
+
+        FirebaseController.addContactToUserList("smg2006@gmail.com");
+
+        Log.w(TAG,"4");
+
+        FirebaseController.shareChecklist("smg2006@gmail.com","shopping list");
+
+        Log.w(TAG,"5");
+
+        FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
+
+        ////////////////////////////////////////////////////////////////////////////
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -48,7 +90,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (ViewPager) findViewById(R.id.container_pager);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         // When swiping between different sections, select the corresponding
@@ -126,13 +168,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return FragmentChecklists.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 8;
         }
 
         @Override
@@ -145,15 +187,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     return getString(R.string.title_section2).toUpperCase(l);
                 case 2:
                     return getString(R.string.title_section3).toUpperCase(l);
+                default:
+                    return getString(R.string.title_section3).toUpperCase(l);
             }
-            return null;
+            //return null;
         }
     }
 
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class FragmentChecklists extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -164,22 +208,51 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static FragmentChecklists newInstance(int sectionNumber) {
+            FragmentChecklists fragment = new FragmentChecklists();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
             return fragment;
         }
 
-        public PlaceholderFragment() {
-        }
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            Log.w("fsdf","onCreateView");
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+
             return rootView;
+        }
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            Log.w("fsdf","onCreate");
+        }
+
+        @Override
+        public void onPause() {
+            super.onPause();
+            Log.w("fsdf","onPause");
+        }
+
+        @Override
+        public void onResume() {
+            super.onResume();
+            Log.w("fsdf","onResume");
+        }
+
+        @Override
+        public void onStop() {
+            super.onStop();
+            Log.w("fsdf","onStop");
+        }
+
+        @Override
+        public void onDestroy() {
+            super.onDestroy();
+            Log.w("fsdf","onDestroy");
         }
     }
 
