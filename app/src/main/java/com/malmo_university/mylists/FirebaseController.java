@@ -1,17 +1,9 @@
 package com.malmo_university.mylists;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.util.Log;
-import android.widget.Toast;
-
-import com.firebase.client.AuthData;
-import com.firebase.client.ChildEventListener;
 import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -26,158 +18,186 @@ import java.util.HashMap;
 public class FirebaseController {
     private static final String TAG = "FirebaseController";
 
+    // The point of operation of this class
+    // (might be removed from here since this is a static class)
+    private static Firebase mFirebase;
+
+    // This controller works within two databases
+    protected static final String DB_CHECKLISTS = "CHECKLISTS";
+    private static final String DB_USERS = "USERS";
+
+    // A child with in every child is reserved for containing the root values of every child.
+    // This will help listening only on the values possible so that the content of every child
+    // within a given child is nor retuned for each value-change.
+    // For this reason, the use of ValueEventListener is limited and generally discouraged.
+    // This special child is called VALUES as below.
+    private static final String VALUES = "VALUES";
+
+    // Standard child names of a user
+    private static final String CHECKLIST_REF = "CHECKLIST_REF";
+    private static final String CONTACTS_REF = "CONTACTS_REF";
+    private static final String PROFILE = "PROFILE";
+    private static final String AWAITING_ACCEPTANCE_REF = "AWAITING_ACCEPTANCE_REF";
+
+    // Standard child names of a checklist
+    private static final String ITEMS = "ITEMS";
+    private static final String USERS_REF = "USERS_REF";
+    private static final String CHECKLIST_ID = "CHECKLIST_ID";
+
+    // Standard value names
+    private static final String CREATION_DATE = "CREATION_DATE";
+    private static final String NAME = "NAME";
+    private static final String USERNAME = "USERNAME";
+    private static final String EMAIL = "EMAIL";
+    private static final String TLF = "TLF";
+
+    private static String currentUser;
+
+    // The values of the type attribute in the Link-class
+    // It's simply indicating what the Link is linking to
+    private static final String LINK_TYPE_CHECKLIST = "CHECKLIST";
+    private static final String LINK_TYPE_CONTACT = "CONTACT";
+    private static Firebase mFirebaseUSERS;
+    private static Firebase mFirebaseCHECKLISTS;
+
+    // DATA COLLECTIONS /////////////////////////////////////////////////////////////////////
+
+    HashMap<String, Checklist> mChecklists = new HashMap<String, Checklist>();
+    HashMap<String, Contact> mContacts = new HashMap<String, Contact>();
+
+    // init /////////////////////////////////////////////////////////////////////////////////
+
+    protected static void init(){
+        mFirebase = new Firebase(Globals.FIREBASE_DB_ROOT_URL);
+        mFirebaseUSERS = mFirebase.child(DB_USERS);
+        mFirebaseCHECKLISTS = mFirebase.child(DB_CHECKLISTS);
+    }
+
+    // Help functions
+
+    protected static String makeChecklistPath(String checklistName){
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklistName;
+    }
+    protected static String makeUserPath(String userEmail){
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + userEmail;
+    }
+
+    private static String makeUniqueChecklistId(String checklistName){
+        return checklistName.toUpperCase() + " " + getCurrentUser();
+    }
+
+    // Project functions ///////////////////////////////////////////////////////////////////
+
+
+    ///////////////////////////////////////////////////////////////////////////////
+
+    protected static void createUser(String userEmail){
+        HashMap<String,String> values = new HashMap<String, String>();
+
+        userEmail = userEmail.toLowerCase();
+
+        values.put(USERNAME, userEmail);
+        values.put(CREATION_DATE, getTimestamp());
+        mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(VALUES).setValue(values);
+
+        values.clear();
+
+        values.put(EMAIL, userEmail);
+        values.put(NAME, "");
+        values.put(TLF, "");
+        mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(PROFILE).setValue(values);
+    }
+
+    protected static void updateProfile(Profile profile){
+        // todo
+        // get current data
+        // check for null in the profile object
+        // replace the nulls in the new profile with the current data retrieved
+        // set the new values in database using the next line
+        mFirebaseUSERS.child(getCurrentUser()).child(PROFILE).setValue(profile);
+    }
+
     /**
-     * This function will handle user login.
+     * This function links to a user to create contacts for the current user.
      *
-     * @param rootLocation The root location for the database
-     * @param user The username (must be an email)
-     * @param pass The password
+     * @param userEmail
      */
-    public static void login(final Activity context, Firebase rootLocation, String user, String pass, final String receiverAction, final int responseOK, final int responseFail) {
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG,"login");
-        // Removes all accidental spaces from the user-string.
-        user = Algorithms.removeAllSpacesBeforeAndAfterString(user);
-        // Authenticate user
-        final String finalUser = user;
-        rootLocation.authWithPassword(user, pass, new Firebase.AuthResultHandler() {
-            @Override
-            public void onAuthenticated(AuthData authData) {
-                Toast.makeText(context, context.getResources().getString(R.string.login_success) + " " + finalUser, Toast.LENGTH_SHORT).show();
-                MyBroadcastController.sendBroadcast(receiverAction, responseOK);
-            }
-
-            @Override
-            public void onAuthenticationError(FirebaseError firebaseError) {
-                int code = firebaseError.getCode();
-                String message = firebaseError.getMessage();
-
-                Log.e(TAG, "Authentication errorcode: " + code);
-
-                handleAuthError(context, code, message);
-
-                if (code == FirebaseError.USER_DOES_NOT_EXIST) {
-                    Log.e(TAG, "USER_DOES_NOT_EXIST !!!");
-                    Toast.makeText(context, "Authentication failed: User does not exist!",
-                            Toast.LENGTH_LONG).show();
-                } else if (code == FirebaseError.INVALID_PASSWORD) {
-                    Log.e(TAG, "INVALID_PASSWORD !!!");
-                    Toast.makeText(context, "Authentication failed: Wrong password!",
-                            Toast.LENGTH_LONG).show();
-                }else if (code == FirebaseError.AUTHENTICATION_PROVIDER_DISABLED){
-                    Log.e(TAG, "AUTHENTICATION_PROVIDER_DISABLED !!!");
-                    Toast.makeText(context, "Authentication failed: Authentication provider is disabled",
-                            Toast.LENGTH_LONG).show();
-                }else if (code == FirebaseError.EMAIL_TAKEN){
-                    Log.d(TAG, "EMAIL_TAKEN !!!");
-                    Toast.makeText(context, "Authentication failed: This email is already taken",
-                            Toast.LENGTH_LONG).show();
-                }else if (code == FirebaseError.INVALID_EMAIL){
-                    Log.d(TAG, "INVALID_EMAIL !!!");
-                    Toast.makeText(context, "Authentication failed: This email is invalid. Please check your typing for spaces !",
-                            Toast.LENGTH_LONG).show();
-                }else{
-                    Log.d(TAG, "Unknown Authentication Error !!!");
-                    Toast.makeText(context, "Unknown Authentication Error",
-                            Toast.LENGTH_LONG).show();
-                }
-                MyBroadcastController.sendBroadcast(receiverAction, responseFail);
-            }
-        });
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG," - login");
+    protected static void addContactToUserList(String userEmail){
+        userEmail = userEmail.toLowerCase();
+        Firebase mFirebaseUser = mFirebaseUSERS.child(getCurrentUser());
+        Link link = new Link(Algorithms.transformEmailToKey(userEmail), getCurrentUser(),
+                getTimestamp(), LINK_TYPE_CONTACT,
+                makeUserPath(Algorithms.transformEmailToKey(userEmail)));
+        mFirebaseUser.child(CONTACTS_REF).child(Algorithms.transformEmailToKey(userEmail)).setValue(link);
     }
 
-    protected static void createNewUser(final Activity currentActivity, Firebase location, String user, final String pass){
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG,"createNewUser");
-        // Removes all accidental spaces from the user-string.
-        user = Algorithms.removeAllSpaces(user);
-        final String finalUser = user;
-        location.createUser(user, pass, new Firebase.ResultHandler() {
-            @Override
-            public void onSuccess() {
-                Toast.makeText(currentActivity, R.string.registration_success, Toast.LENGTH_SHORT).show();
-                // todo Save credentials in shared library
-                SharedPreferencesController.simpleWritePersistentString(Globals.USERNAME, finalUser);
-                SharedPreferencesController.simpleWritePersistentString(Globals.PASSWORD, pass);
-
-                Intent startIntent = new Intent(currentActivity, ActivityLoggedIn.class);
-                currentActivity.startActivity(startIntent);
-                currentActivity.finish();
-            }
-
-            @Override
-            public void onError(FirebaseError firebaseError) {
-                int code = firebaseError.getCode();
-                String message = firebaseError.getMessage();
-
-                handleAuthError(currentActivity, code, message);
-            }
-        });
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG," - createNewUser");
+    protected static void removeContactFromUserList(){
+        //todo
     }
 
-    public static boolean isAuthenticated(Firebase rootLocation) {
-        return (rootLocation.getAuth() != null);
+    ///////////////////////////////////////////////////////////////////////////////
+
+    protected static void createChecklist(String checklistName){
+        String checklist_id = makeUniqueChecklistId(checklistName);
+        // Create and initialize checklist
+        HashMap<String, String> values = new HashMap<String, String>();
+        values.put(NAME, checklistName);
+        values.put(CREATION_DATE, getTimestamp());
+        values.put(CHECKLIST_ID, checklist_id);
+
+        mFirebaseCHECKLISTS.child(checklist_id).child(VALUES).setValue(values);
+
+        // add the checklist to the current logged in users references of checklists
+        String ref_id = mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).push().getKey();
+        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
+                makeChecklistPath(checklistName.toUpperCase()));
+        mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).child(ref_id).setValue(link);
     }
 
-    private static void handleAuthError(Activity context, int code, String message){
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG,"handleAuthError");
-
-        if (code == FirebaseError.USER_DOES_NOT_EXIST) {
-            Log.w(TAG, "USER_DOES_NOT_EXIST !!!");
-            Toast.makeText(context, "Authentication failed: User does not exist!",
-                    Toast.LENGTH_LONG).show();
-        } else if (code == FirebaseError.INVALID_PASSWORD) {
-            Log.w(TAG, "INVALID_PASSWORD !!!");
-            Toast.makeText(context, "Authentication failed: Wrong password!",
-                    Toast.LENGTH_LONG).show();
-        }else if (code == FirebaseError.AUTHENTICATION_PROVIDER_DISABLED){
-            Log.w(TAG, "AUTHENTICATION_PROVIDER_DISABLED !!!");
-            Toast.makeText(context, "Authentication failed: Authentication provider is disabled",
-                    Toast.LENGTH_LONG).show();
-        }else if (code == FirebaseError.EMAIL_TAKEN){
-            Log.w(TAG, "EMAIL_TAKEN !!!");
-            Toast.makeText(context, "Authentication failed: This email is already taken",
-                    Toast.LENGTH_LONG).show();
-        }else if (code == FirebaseError.INVALID_EMAIL){
-            Log.w(TAG, "INVALID_EMAIL !!!");
-            Toast.makeText(context, "Authentication failed: This email is invalid. Please check your typing for spaces !",
-                    Toast.LENGTH_LONG).show();
-        }else if (code == FirebaseError.NETWORK_ERROR){
-            Log.w(TAG, "NETWORK_ERROR !!!");
-            Toast.makeText(context, "Authentication failed: Internet connection is lost !",
-                    Toast.LENGTH_LONG).show();
-        }else{
-            Log.e(TAG, "Unknown Authentication Error !!!");
-            Toast.makeText(context, "Unknown Authentication Error",
-                    Toast.LENGTH_LONG).show();
-            Log.e(TAG, "Error message: " + message);
-        }
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG," - handleAuthError");
+    protected static void shareChecklist(String toUserEmail, String checklistName){
+        toUserEmail = toUserEmail.toLowerCase();
+        String ref_id = mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).push().getKey();
+        Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
+                makeChecklistPath(checklistName.toUpperCase()));
+        mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
     }
 
-    protected static boolean logout(Firebase location, Activity activity) {
-        if (location != null) {
-            location.unauth();
-            if (Globals.DEBUG_results) {
-                Log.i(TAG, "Logout");
-            }
-            if (location.getAuth() == null) {
-                Toast.makeText(activity, "You have been logged out", Toast.LENGTH_SHORT).show();
-            }
-            return true;
-        }
-        return false;
+    protected static void removeChecklist(){
+        //todo
     }
+
+    ////////////////////////////////////////////////////////////////////7
+
+    protected static void addItemToChecklist(String checklistName, String title, String note){
+        String ref_id = mFirebaseCHECKLISTS.child(checklistName).push().getKey();
+        Item item = new Item(ref_id, checklistName, getCurrentUser(), getTimestamp(), 0, title, note, false);
+        mFirebaseCHECKLISTS.child(checklistName).child(ref_id).setValue(item);
+    }
+
+    protected static void editItemOnChecklist(String title, String note, Item item){
+        item.setTitle(title);
+        item.setNote(note);
+        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).setValue(item);
+    }
+
+    protected static void checkItemOnChecklist(boolean state, Item item){
+        item.state = state;
+        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).setValue(item);
+    }
+
+    protected static void removeItemFromChecklist(Item item){
+        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).removeValue();
+    }
+
+    ////////////////////////////////////////////////////////////////////7
+
+
+
+
 
     // Atomic functions ////////////////////////////////////////////////////////////////////
 
-    private static String getTimestamp() {
+    protected static String getTimestamp() {
         long time = System.currentTimeMillis();
         Timestamp tsTemp = new Timestamp(time);
         return tsTemp.toString();
@@ -196,8 +216,9 @@ public class FirebaseController {
     }
 
     /**
-     * This function writes data to a given location indicated by location. The values must be stored
-     * in a Map object with key-value-pairs.
+     * This function writes data to a given location indicated by location. The values must be
+     * stored in a Map object with key-value-pairs. This will overwrite any existing value at the
+     * given location.
      *
      * @param location  The location at which the values must be added
      * @param dataSet A Map-object containing the key-value-paired data to be stored at the location
@@ -231,94 +252,16 @@ public class FirebaseController {
         childRef.removeValue();
     }
 
-    // Child/Subfolder or Value/data functions (write) ////////////////////////////////////
-    // HIGH-LEVEL OPERATIONS FOR THE GROUP MANIPULATION ///////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Creates a group at the specified location.
-     *
-     * @param mRootScopeFirebase The location the group must be created
-     * @param groupName The groupName of the group
-     * @return Firebase group reference for the newly created group
-     */
-    protected static Firebase createNewGroup(Firebase mRootScopeFirebase, String groupName) {
-        //Create new group and returns the childID of the new group
-        String groupId = createNewChild(mRootScopeFirebase);
-
-        //mRootScopeFirebase.child(groupId).child("messages");// Creates a child/subfolder for messages to be used later
-
-        // Initializes the new group with its id and name
-        mRootScopeFirebase.child(groupId).setValue(new Group(groupId, groupName));
-        return mRootScopeFirebase.child(groupId);
+    protected static void setCurrentUser(String userEmail){
+        currentUser = userEmail;
     }
 
-    /**
-     * Deletes a group at the specified location.
-     *
-     * @param mRootScopeFirebase The location the group must be created
-     * @param groupName The name of the group to be deleted
-     */
-    protected static void deleteGroup(Firebase mRootScopeFirebase, String groupName) {
-        // todo test
-        deleteChild(mRootScopeFirebase.child(groupName));
+    protected static String getCurrentUser(){
+        return currentUser;
     }
 
-    /**
-     * Renames a group at the specified location.
-     *
-     * @param mRootScopeFirebase The location the group must be created
-     * @param newGroupName The new group name of the group
-     * @return returns true if successful
-     */
-    protected static boolean renameGroup(Firebase mRootScopeFirebase, String newGroupName) {
-        //todo test
-        HashMap<String, String> data = new HashMap<String, String>();
-        data.put("name", newGroupName);
-        return writeValues(mRootScopeFirebase, data);
-    }
 
-    // HIGH-LEVEL OPERATIONS FOR THE "FragmentChat" //////////////////////////////////////
-
-    /**
-     * Creates a new message fom the input variables and reserves a space in firebase for it to
-     * be stored with a unique id.
-     *
-     * @param from    Alias of the username who is sending the message
-     * @param message The message to be send
-     * @return The ChatMessage object created from the input and a unique ID from firebase. Returns null if no group is set.
-     */
-    protected static ChatMessage sendNewMessage(Firebase messageLocation, String from, String message) {
-        // Create new message
-        if (messageLocation != null) {
-            String msgId = messageLocation.push().getKey();
-            ChatMessage msg = new ChatMessage(msgId, from, message, getTimestamp());
-            messageLocation.child(msgId).setValue(msg);
-            return msg;
-        }
-        return null;
-    }
-
-    // Listener registrations (for reading data) ////////////////////////////////////////////
-
-    protected static void registerChildListener(Firebase location, ChildEventListener listener) {
-        location.addChildEventListener(listener);
-    }
-
-    protected static void unregisterChildListener(Firebase location, ChildEventListener listener) {
-        location.removeEventListener(listener);
-    }
-
-    protected static void registerValueListener(Firebase location, ValueEventListener listener) {
-        location.addValueEventListener(listener);
-    }
-
-    protected static void unregisterValueListener(Firebase location, ValueEventListener listener) {
-        location.removeEventListener(listener);
-    }
-
-    // OTHER FUNCTIONS //////////////////////////////////////////////////////////////////////
-
-
-    // OTHER FUNCTIONS //////////////////////////////////////////////////////////////////////
 
 }
