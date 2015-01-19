@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp"
+    android:orientation="vertical">
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="24sp"
+        android:text="@string/registration_field"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/et_registration_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/register_user_hint"
+        android:textSize="24sp" />
+
+    <EditText
+        android:id="@+id/et_registration_pass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:textSize="24sp"
+        android:hint="@string/register_pass_hint"
+        android:password="true"/>
+
+    <EditText
+        android:id="@+id/et_registration_pass2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/register_pass_hint2"
+        android:textSize="24sp"
+        android:password="true"/>
+
+    <Button
+        android:id="@+id/btn_registration_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/register" />
+
+    <TextView
+        android:layout_width="300sp"
+        android:layout_height="300sp"
+        android:layout_gravity="center"
+        android:background="@drawable/ic_launcher_2" />
+
+</LinearLayout>
+</ScrollView>
