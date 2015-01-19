@@ -58,6 +58,7 @@ public class FirebaseController {
     private static final String LINK_TYPE_CONTACT = "CONTACT";
     private static Firebase mFirebaseUSERS;
     private static Firebase mFirebaseCHECKLISTS;
+    private static Firebase mFirebaseCURRENTUSER;
 
     // DATA COLLECTIONS /////////////////////////////////////////////////////////////////////
 
@@ -66,10 +67,12 @@ public class FirebaseController {
 
     // init /////////////////////////////////////////////////////////////////////////////////
 
-    protected static void init(){
+    protected static void init(String currentUserEmail){
         mFirebase = new Firebase(Globals.FIREBASE_DB_ROOT_URL);
         mFirebaseUSERS = mFirebase.child(DB_USERS);
         mFirebaseCHECKLISTS = mFirebase.child(DB_CHECKLISTS);
+        setCurrentUser(currentUserEmail);
+        mFirebaseCURRENTUSER = mFirebaseUSERS.child(getCurrentUser());
     }
 
     // Help functions
@@ -81,7 +84,7 @@ public class FirebaseController {
         return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + userEmail;
     }
 
-    private static String makeUniqueChecklistId(String checklistName){
+    protected static String makeUniqueChecklistId(String checklistName){
         return checklistName.toUpperCase() + " " + getCurrentUser();
     }
 
@@ -108,12 +111,12 @@ public class FirebaseController {
     }
 
     protected static void updateProfile(Profile profile){
-        // todo
+        // todo (need current data)
         // get current data
         // check for null in the profile object
         // replace the nulls in the new profile with the current data retrieved
         // set the new values in database using the next line
-        mFirebaseUSERS.child(getCurrentUser()).child(PROFILE).setValue(profile);
+        mFirebaseCURRENTUSER.child(PROFILE).setValue(profile);
     }
 
     /**
@@ -123,21 +126,25 @@ public class FirebaseController {
      */
     protected static void addContactToUserList(String userEmail){
         userEmail = userEmail.toLowerCase();
-        Firebase mFirebaseUser = mFirebaseUSERS.child(getCurrentUser());
         Link link = new Link(Algorithms.transformEmailToKey(userEmail), getCurrentUser(),
                 getTimestamp(), LINK_TYPE_CONTACT,
                 makeUserPath(Algorithms.transformEmailToKey(userEmail)));
-        mFirebaseUser.child(CONTACTS_REF).child(Algorithms.transformEmailToKey(userEmail)).setValue(link);
+        mFirebaseCURRENTUSER.child(CONTACTS_REF).child(Algorithms.transformEmailToKey(userEmail)).setValue(link);
     }
 
-    protected static void removeContactFromUserList(){
-        //todo
+    /**
+     * This function removes a contact from a user
+     * @param userEmail
+     */
+    protected static void removeContactFromUserList(String userEmail){
+        mFirebaseCURRENTUSER.child(CONTACTS_REF).child(Algorithms.transformEmailToKey(userEmail)).removeValue();
     }
 
     ///////////////////////////////////////////////////////////////////////////////
 
     protected static void createChecklist(String checklistName){
         String checklist_id = makeUniqueChecklistId(checklistName);
+//        String checklist_id = checklistName.toUpperCase();
         // Create and initialize checklist
         HashMap<String, String> values = new HashMap<String, String>();
         values.put(NAME, checklistName);
@@ -147,10 +154,10 @@ public class FirebaseController {
         mFirebaseCHECKLISTS.child(checklist_id).child(VALUES).setValue(values);
 
         // add the checklist to the current logged in users references of checklists
-        String ref_id = mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).push().getKey();
+        String ref_id = mFirebaseCURRENTUSER.child(CHECKLIST_REF).push().getKey();
         Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
                 makeChecklistPath(checklistName.toUpperCase()));
-        mFirebaseUSERS.child(getCurrentUser()).child(CHECKLIST_REF).child(ref_id).setValue(link);
+        mFirebaseCURRENTUSER.child(CHECKLIST_REF).child(ref_id).setValue(link);
 
         // Add this user to the checklist's list of users who has a reference to it
         mFirebaseCHECKLISTS.child(checklist_id).child(USERS_REF).child(getCurrentUser()).setValue(getCurrentUser());
@@ -164,31 +171,48 @@ public class FirebaseController {
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
     }
 
-    protected static void removeChecklist(String checklist_id){
-        mFirebaseCHECKLISTS.child(checklist_id).removeValue();
+    protected static void acceptSharedChecklist(){
+        // check to see if the checklist still exists
+        // then crete a link
+        // place the link in this users references of checklists
+        // add this user to the checklist's list of users
+        //mFirebaseCURRENTUSER.child(AWAITING_ACCEPTANCE_REF).child()
     }
 
-    ////////////////////////////////////////////////////////////////////7
+    protected static void removeChecklist(String checklist_id){
+        //todo (needs a variable to check how many are listening of that checklist)
+        // if the current user count of list of users with reference is equal to 1
+        // then delete the checklist, otherwise remove this user from list
 
-    protected static void addItemToChecklist(String checklistName, String title, String note){
-        String ref_id = mFirebaseCHECKLISTS.child(checklistName).push().getKey();
-        Item item = new Item(ref_id, checklistName, getCurrentUser(), getTimestamp(), 0, title, note, false);
-        mFirebaseCHECKLISTS.child(checklistName).child(ref_id).setValue(item);
+        // Remove the checklist entirely
+//        mFirebaseCHECKLISTS.child(checklist_id).removeValue();
+        // delete this user from the checklist's list of users with reference to it
+//        mFirebaseCHECKLISTS.child(checklist_id).child(USERS_REF).child(getCurrentUser()).removeValue();
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    protected static void addItemToChecklist(String checklist_id, String title, String note){
+        String ref_id = mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).push().getKey();
+        Item item = new Item(ref_id, checklist_id, getCurrentUser(), getTimestamp(), 0, title, note, false);
+        mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).child(ref_id).setValue(item);
+
+        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).removeValue();
     }
 
     protected static void editItemOnChecklist(String title, String note, Item item){
         item.setTitle(title);
         item.setNote(note);
-        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).setValue(item);
+        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).setValue(item);
     }
 
     protected static void checkItemOnChecklist(boolean state, Item item){
         item.state = state;
-        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).setValue(item);
+        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).setValue(item);
     }
 
     protected static void removeItemFromChecklist(Item item){
-        mFirebaseCHECKLISTS.child(item.checklistName).child(item.ref_id).removeValue();
+        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).removeValue();
     }
 
     ////////////////////////////////////////////////////////////////////7
