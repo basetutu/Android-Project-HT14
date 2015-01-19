@@ -116,6 +116,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,6 +140,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         return super.onOptionsItemSelected(item);
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////
+
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
@@ -154,11 +157,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        //todo bookmark
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -193,67 +199,4 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             //return null;
         }
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class FragmentChecklists extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static FragmentChecklists newInstance(int sectionNumber) {
-            FragmentChecklists fragment = new FragmentChecklists();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            Log.w("fsdf","onCreateView");
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            return rootView;
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            Log.w("fsdf","onCreate");
-        }
-
-        @Override
-        public void onPause() {
-            super.onPause();
-            Log.w("fsdf","onPause");
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            Log.w("fsdf","onResume");
-        }
-
-        @Override
-        public void onStop() {
-            super.onStop();
-            Log.w("fsdf","onStop");
-        }
-
-        @Override
-        public void onDestroy() {
-            super.onDestroy();
-            Log.w("fsdf","onDestroy");
-        }
-    }
-
 }
