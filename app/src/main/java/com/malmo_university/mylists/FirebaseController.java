@@ -1,5 +1,6 @@
 package com.malmo_university.mylists;
 
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.Firebase;
 
 import java.sql.Timestamp;
@@ -287,7 +288,5 @@ public class FirebaseController {
     protected static String getCurrentUser(){
         return currentUser;
     }
-
-
 
 }
