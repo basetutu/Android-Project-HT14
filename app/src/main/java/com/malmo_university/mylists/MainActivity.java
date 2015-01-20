@@ -11,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.firebase.client.Firebase;
 
@@ -121,12 +120,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
-    public void allo(View v){
-        mSectionsPagerAdapter.addPage();
-        mSectionsPagerAdapter.notifyDataSetChanged();
-        recreateTabs();
-        //mViewPager.setAdapter(mSectionsPagerAdapter);
-    }
 
     @Override
     protected void onResume() {
@@ -191,6 +184,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        public void notifyPageAdded(){
+            mSectionsPagerAdapter.addPage();
+            mSectionsPagerAdapter.notifyDataSetChanged();
+            recreateTabs();
+            //mViewPager.setAdapter(mSectionsPagerAdapter);
         }
 
         @Override
