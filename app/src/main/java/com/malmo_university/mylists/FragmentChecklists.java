@@ -116,6 +116,7 @@ public class FragmentChecklists extends Fragment {
 
     @Override
     public void onPause() {
+        myTestData.clear();
         super.onPause();
         Log.w("fsdf","onPause");
     }
@@ -128,12 +129,14 @@ public class FragmentChecklists extends Fragment {
 
     @Override
     public void onStop() {
+        myTestData.clear();
         super.onStop();
         Log.w("fsdf","onStop");
     }
 
     @Override
     public void onDestroy() {
+        myTestData.clear();
         super.onDestroy();
         Log.w("fsdf","onDestroy");
     }

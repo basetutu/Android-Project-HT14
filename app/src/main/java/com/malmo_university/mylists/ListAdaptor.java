@@ -19,7 +19,7 @@ public class ListAdaptor extends ArrayAdapter<TestData> {
     public ListAdaptor(Context context, int textViewResourceId, TestData[] objects) {
         super(context, textViewResourceId, objects);
         this.context=context;
-        this.resource=resource;
+        this.resource=textViewResourceId;
         this.objects=objects;
     }
 
