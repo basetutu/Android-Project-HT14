@@ -198,7 +198,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
 
-            return FragmentChecklists_2.newInstance(position + 1);
+            return FragmentChecklists_2.newInstance();
         }
 
         @Override

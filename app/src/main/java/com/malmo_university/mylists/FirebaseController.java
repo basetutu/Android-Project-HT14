@@ -1,6 +1,15 @@
 package com.malmo_university.mylists;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -289,6 +298,167 @@ public class FirebaseController {
         return currentUser;
     }
 
+    // LISTENERS ///////////////////////////////////////////////////////////////////////////
 
+    protected class ChildEventListenerChecklists implements ChildEventListener {
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    }
+
+    // AUTHENTICATION ///////////////////////////////////////////////////////////////////////
+
+    /**
+     * This function will handle user login.
+     *
+     * @param rootLocation The root location for the database
+     * @param user The username (must be an email)
+     * @param pass The password
+     */
+    public static void login(final Activity context, Firebase rootLocation, String user, String pass, final String receiverAction, final int responseOK, final int responseFail) {
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG,"login");
+        // Removes all accidental spaces from the user-string.
+        user = Algorithms.removeAllSpacesBeforeAndAfterString(user);
+        // Authenticate user
+        final String finalUser = user;
+        rootLocation.authWithPassword(user, pass, new Firebase.AuthResultHandler() {
+            @Override
+            public void onAuthenticated(AuthData authData) {
+                Toast.makeText(context, context.getResources().getString(R.string.login_success) + " " + finalUser, Toast.LENGTH_SHORT).show();
+                MyBroadcastController.sendBroadcast(receiverAction, responseOK);
+            }
+
+            @Override
+            public void onAuthenticationError(FirebaseError firebaseError) {
+                int code = firebaseError.getCode();
+                String message = firebaseError.getMessage();
+
+                Log.e(TAG, "Authentication errorcode: " + code);
+
+                handleAuthError(context, code, message);
+
+                if (code == FirebaseError.USER_DOES_NOT_EXIST) {
+                    Log.e(TAG, "USER_DOES_NOT_EXIST !!!");
+                    Toast.makeText(context, "Authentication failed: User does not exist!",
+                            Toast.LENGTH_LONG).show();
+                } else if (code == FirebaseError.INVALID_PASSWORD) {
+                    Log.e(TAG, "INVALID_PASSWORD !!!");
+                    Toast.makeText(context, "Authentication failed: Wrong password!",
+                            Toast.LENGTH_LONG).show();
+                }else if (code == FirebaseError.AUTHENTICATION_PROVIDER_DISABLED){
+                    Log.e(TAG, "AUTHENTICATION_PROVIDER_DISABLED !!!");
+                    Toast.makeText(context, "Authentication failed: Authentication provider is disabled",
+                            Toast.LENGTH_LONG).show();
+                }else if (code == FirebaseError.EMAIL_TAKEN){
+                    Log.d(TAG, "EMAIL_TAKEN !!!");
+                    Toast.makeText(context, "Authentication failed: This email is already taken",
+                            Toast.LENGTH_LONG).show();
+                }else if (code == FirebaseError.INVALID_EMAIL){
+                    Log.d(TAG, "INVALID_EMAIL !!!");
+                    Toast.makeText(context, "Authentication failed: This email is invalid. Please check your typing for spaces !",
+                            Toast.LENGTH_LONG).show();
+                }else{
+                    Log.d(TAG, "Unknown Authentication Error !!!");
+                    Toast.makeText(context, "Unknown Authentication Error",
+                            Toast.LENGTH_LONG).show();
+                }
+                MyBroadcastController.sendBroadcast(receiverAction, responseFail);
+            }
+        });
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG," - login");
+    }
+
+    private static void handleAuthError(Activity context, int code, String message){
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG,"handleAuthError");
+
+        if (code == FirebaseError.USER_DOES_NOT_EXIST) {
+            Log.w(TAG, "USER_DOES_NOT_EXIST !!!");
+            Toast.makeText(context, "Authentication failed: User does not exist!",
+                    Toast.LENGTH_LONG).show();
+        } else if (code == FirebaseError.INVALID_PASSWORD) {
+            Log.w(TAG, "INVALID_PASSWORD !!!");
+            Toast.makeText(context, "Authentication failed: Wrong password!",
+                    Toast.LENGTH_LONG).show();
+        }else if (code == FirebaseError.AUTHENTICATION_PROVIDER_DISABLED){
+            Log.w(TAG, "AUTHENTICATION_PROVIDER_DISABLED !!!");
+            Toast.makeText(context, "Authentication failed: Authentication provider is disabled",
+                    Toast.LENGTH_LONG).show();
+        }else if (code == FirebaseError.EMAIL_TAKEN){
+            Log.w(TAG, "EMAIL_TAKEN !!!");
+            Toast.makeText(context, "Authentication failed: This email is already taken",
+                    Toast.LENGTH_LONG).show();
+        }else if (code == FirebaseError.INVALID_EMAIL){
+            Log.w(TAG, "INVALID_EMAIL !!!");
+            Toast.makeText(context, "Authentication failed: This email is invalid. Please check your typing for spaces !",
+                    Toast.LENGTH_LONG).show();
+        }else if (code == FirebaseError.NETWORK_ERROR){
+            Log.w(TAG, "NETWORK_ERROR !!!");
+            Toast.makeText(context, "Authentication failed: Internet connection is lost !",
+                    Toast.LENGTH_LONG).show();
+        }else{
+            Log.e(TAG, "Unknown Authentication Error !!!");
+            Toast.makeText(context, "Unknown Authentication Error",
+                    Toast.LENGTH_LONG).show();
+            Log.e(TAG, "Error message: " + message);
+        }
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG," - handleAuthError");
+    }
+
+    protected static void createNewUser(final Activity currentActivity, Firebase location, String user, final String pass){
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG,"createNewUser");
+        // Removes all accidental spaces from the user-string.
+        user = Algorithms.removeAllSpaces(user);
+        final String finalUser = user;
+        location.createUser(user, pass, new Firebase.ResultHandler() {
+            @Override
+            public void onSuccess() {
+                Toast.makeText(currentActivity, R.string.registration_success, Toast.LENGTH_SHORT).show();
+                // todo Save credentials in shared library
+                SharedPreferencesController.simpleWritePersistentString(Globals.USERNAME, finalUser);
+                SharedPreferencesController.simpleWritePersistentString(Globals.PASSWORD, pass);
+
+                Intent startIntent = new Intent(currentActivity, ActivityLoggedIn.class);
+                currentActivity.startActivity(startIntent);
+                currentActivity.finish();
+            }
+
+            @Override
+            public void onError(FirebaseError firebaseError) {
+                int code = firebaseError.getCode();
+                String message = firebaseError.getMessage();
+
+                handleAuthError(currentActivity, code, message);
+            }
+        });
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG," - createNewUser");
+    }
 
 }
