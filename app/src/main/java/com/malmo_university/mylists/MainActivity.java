@@ -43,7 +43,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.w(TAG,"onCreate");
 
         setContentView(R.layout.activity_main);
-
+        /*
         Firebase.setAndroidContext(this);
 
         //todo login
@@ -79,7 +79,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
 
-        ////////////////////////////////////////////////////////////////////////////
+        *////////////////////////////////////////////////////////////////////////////
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
