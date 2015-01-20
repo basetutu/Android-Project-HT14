@@ -9,11 +9,9 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.firebase.client.Firebase;
 
@@ -37,6 +35,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
+    ActionBar mActionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,14 +48,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         //todo login
 
-
-        // TEST SECTION
+/*
+        // TEST SECTION /////////////////////////////////////////////////////////////////////
 
         Log.w(TAG,"0");
 
         // get the username and use it on the next line
         FirebaseController.init(Algorithms.transformEmailToKey("smg@gmail.com"));
-        //todo login
 
         Log.w(TAG,"1");
 
@@ -78,16 +77,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.w(TAG,"5");
 
         FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
-
-        ////////////////////////////////////////////////////////////////////////////
+*/
+        /////////////////////////////////////////////////////////////////////////////////////
 
         // Set up the action bar.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        mActionBar = getActionBar();
+        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter.setPageCount(3);
+        mSectionsPagerAdapter.notifyDataSetChanged();
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container_pager);
@@ -99,23 +100,46 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
+                mActionBar.setSelectedNavigationItem(position);
             }
         });
 
+    }
+
+    private void recreateTabs(){
+        mActionBar.removeAllTabs();
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             // Create a tab with text corresponding to the page title defined by
             // the adapter. Also specify this Activity object, which implements
             // the TabListener interface, as the callback (listener) for when
             // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
+            mActionBar.addTab(
+                    mActionBar.newTab()
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
     }
 
+    public void allo(View v){
+        mSectionsPagerAdapter.addPage();
+        mSectionsPagerAdapter.notifyDataSetChanged();
+        recreateTabs();
+        //mViewPager.setAdapter(mSectionsPagerAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.w(TAG, "onResume");
+
+        recreateTabs();
+
+        Log.w(TAG, " - onResume");
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -139,6 +163,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         return super.onOptionsItemSelected(item);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
@@ -154,11 +180,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private int pageCount;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -168,14 +197,22 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return FragmentChecklists.newInstance(position + 1);
+            return FragmentChecklists_2.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 8;
+            return pageCount;
         }
+        public void setPageCount(int pageCount) {
+            this.pageCount = pageCount;
+        }
+        public void addPage() {
+            this.pageCount++;
+        }
+
+
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -191,68 +228,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                     return getString(R.string.title_section3).toUpperCase(l);
             }
             //return null;
-        }
-    }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class FragmentChecklists extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static FragmentChecklists newInstance(int sectionNumber) {
-            FragmentChecklists fragment = new FragmentChecklists();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            Log.w("fsdf","onCreateView");
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            return rootView;
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            Log.w("fsdf","onCreate");
-        }
-
-        @Override
-        public void onPause() {
-            super.onPause();
-            Log.w("fsdf","onPause");
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            Log.w("fsdf","onResume");
-        }
-
-        @Override
-        public void onStop() {
-            super.onStop();
-            Log.w("fsdf","onStop");
-        }
-
-        @Override
-        public void onDestroy() {
-            super.onDestroy();
-            Log.w("fsdf","onDestroy");
         }
     }
 
