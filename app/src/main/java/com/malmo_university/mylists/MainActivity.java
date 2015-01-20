@@ -22,6 +22,8 @@ import java.util.Locale;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private static final String TAG = "MainActivity";
+    Fragment[] listViewFragments;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -80,7 +82,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
 
         ////////////////////////////////////////////////////////////////////////////
-
+        /*
+        for(int i=0; i<child.length; i++) {
+            FragmentChecklists.newInstance(i);
+        }
+        */
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -174,7 +180,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return FragmentChecklists.newInstance(position + 1);
+
+            return listViewFragments[position];
+            //return FragmentChecklists.newInstance(position + 1);
         }
 
         @Override
