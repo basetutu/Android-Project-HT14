@@ -5,21 +5,31 @@ package com.malmo_university.mylists;
  */
 public class Item {
     String ref_id;
+    String checklist_id;
     String creator;
     String date_added;
-    String order;
+    int order;
     String title;
-    String subtitle;
-    String state;
+    String note;
+    boolean state;
 
-    public Item(String ref_id, String creator, String date_added, String order, String title, String subtitle, String state) {
+    public Item(String ref_id, String checklist_id, String creator, String date_added, int order, String title, String note, boolean state) {
         this.ref_id = ref_id;
         this.creator = creator;
         this.date_added = date_added;
         this.order = order;
         this.title = title;
-        this.subtitle = subtitle;
+        this.note = note;
         this.state = state;
+        this.checklist_id = checklist_id;
+    }
+
+    public String getChecklist_id() {
+        return checklist_id;
+    }
+
+    public void setChecklist_id(String checklist_id) {
+        this.checklist_id = checklist_id;
     }
 
     public String getRef_id() {
@@ -46,11 +56,11 @@ public class Item {
         this.date_added = date_added;
     }
 
-    public String getOrder() {
+    public int getOrder() {
         return order;
     }
 
-    public void setOrder(String order) {
+    public void setOrder(int order) {
         this.order = order;
     }
 
@@ -62,19 +72,19 @@ public class Item {
         this.title = title;
     }
 
-    public String getSubtitle() {
-        return subtitle;
+    public String getNote() {
+        return note;
     }
 
-    public void setSubtitle(String subtitle) {
-        this.subtitle = subtitle;
+    public void setNote(String note) {
+        this.note = note;
     }
 
-    public String getState() {
+    public boolean getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(boolean state) {
         this.state = state;
     }
 }

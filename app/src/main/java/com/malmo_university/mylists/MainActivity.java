@@ -21,6 +21,8 @@ import java.util.Locale;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
+    private static final String TAG = "MainActivity";
+    Fragment[] listViewFragments;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -32,8 +34,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
 
-    private Firebase mFirebase;
-
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -42,18 +42,51 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.w(TAG,"onCreate");
+
         setContentView(R.layout.activity_main);
 
         Firebase.setAndroidContext(this);
 
-        FirebaseController.init();
         //todo login
+
+
+        // TEST SECTION
+
+        Log.w(TAG,"0");
+
         // get the username and use it on the next line
-        //FirebaseController.setCurrentUser( here );
+        FirebaseController.init(Algorithms.transformEmailToKey("smg@gmail.com"));
+        //todo login
 
+        Log.w(TAG,"1");
 
+        FirebaseController.createUser("smg@gmail.com");
+        FirebaseController.createUser("smg2006@gmail.com");
 
+        Log.w(TAG,"2");
 
+        FirebaseController.createChecklist("shopping list");
+        FirebaseController.createChecklist("remember these");
+
+        Log.w(TAG,"3");
+
+        FirebaseController.addContactToUserList("smg2006@gmail.com");
+
+        Log.w(TAG,"4");
+
+        FirebaseController.shareChecklist("smg2006@gmail.com","shopping list");
+
+        Log.w(TAG,"5");
+
+        FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
+
+        ////////////////////////////////////////////////////////////////////////////
+        /*
+        for(int i=0; i<child.length; i++) {
+            FragmentChecklists.newInstance(i);
+        }
+        */
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -89,6 +122,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -112,6 +146,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         return super.onOptionsItemSelected(item);
     }
 
+    /////////////////////////////////////////////////////////////////////////////////////////
+
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in
@@ -127,11 +163,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
+        //todo bookmark
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -141,7 +180,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+
+            return listViewFragments[position];
+            //return FragmentChecklists.newInstance(position + 1);
         }
 
         @Override
@@ -166,67 +207,4 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             //return null;
         }
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            Log.w("fsdf","onCreateView");
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            return rootView;
-        }
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            Log.w("fsdf","onCreate");
-        }
-
-        @Override
-        public void onPause() {
-            super.onPause();
-            Log.w("fsdf","onPause");
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-            Log.w("fsdf","onResume");
-        }
-
-        @Override
-        public void onStop() {
-            super.onStop();
-            Log.w("fsdf","onStop");
-        }
-
-        @Override
-        public void onDestroy() {
-            super.onDestroy();
-            Log.w("fsdf","onDestroy");
-        }
-    }
-
 }
