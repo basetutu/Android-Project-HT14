@@ -4,16 +4,20 @@ package com.malmo_university.mylists;
  * Created by Meep on 2015-01-19.
  */
 public class TestData {
-    public String myTitle;
-    public int myNum;
+    public String title;
+    public String description;
 
-    public TestData() {
+    public TestData(String title, String description) {
         super();
+        this.title = title;
+        this.description = description;
     }
 
-    public TestData(String myTitle, int myNum) {
-        super();
-        this.myTitle = myTitle;
-        this.myNum = myNum;
+    public String GetTitle(){
+        return title;
+    }
+
+    public String GetDescription(){
+        return description;
     }
 }

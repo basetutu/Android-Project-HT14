@@ -6,24 +6,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class FragmentChecklists extends Fragment {
     String[] checklists;
-    View[] checklists_v;
-    TextView txtView;
-
-    TestData myDataArray[]= new TestData[]{
-            new TestData("item1",10),
-            new TestData("item2",20),
-            new TestData("item3",30)
-    };
+    List<TestData> myTestData;
+    View rootView;
 
     /**
      * The fragment argument representing the section number for this
@@ -45,8 +40,7 @@ public class FragmentChecklists extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        checklists = new String[] {"potatis","mjölk"};
-
+        myTestData = new ArrayList<TestData>();
         super.onCreate(savedInstanceState);
         Log.w("fsdf","onCreate");
     }
@@ -55,48 +49,69 @@ public class FragmentChecklists extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.w("fsdf", "onCreateView");
-        View rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
-        View checklistItemLeftView = inflater.inflate(R.layout.listview_item_chat_left, container, false);
-        View checklistItemRightView = inflater.inflate(R.layout.listview_item_chat_right, container, false);
-        checklists_v = new View[] {checklistItemLeftView, checklistItemRightView};
 
-        /////
+        //checklists = new String[] {"potatis","mjölk"};
+
+        rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
+
+        populateTestData();
+        populateListView(inflater);
 
         //replaces R.layout... "android.R.layout.simple_list_item_1"
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-                R.layout.testlayout, R.id.test_tv, checklists);
+        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
+        //        R.layout.testlayout, R.id.test_left_tv, checklists);
 
 
         //ListAdaptor adapter = new ListAdaptor(getActivity(), R.layout.testlayout, myDataArray);
 
-        ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
-        list.setAdapter(adapter);
+        //ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
+        //list.setAdapter(adapter);
 
-        /*
-        txtView = (TextView) rootView.findViewById(R.id.textView_GroupList1);
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                // google fragment new instance
-
-                if(position == 0){
-                    txtView.setText("potatis");
-                }
-                else {
-                    Fragment fragment = new ChatScreen();
-                    getFragmentManager().beginTransaction().replace(R.id.container2, fragment)
-                            .addToBackStack(null).commit();
-                }
-            }
-        });
-        */
         ////
 
         return rootView;
+    }
+
+    private void populateTestData() {
+        myTestData.add(new TestData("ShoppingList","Eggs,Milk"));
+        myTestData.add(new TestData("TodoList","Training,Studying"));
+        myTestData.add(new TestData("RememberList","Mom's birthday soon"));
+    }
+
+    private ListView populateListView(LayoutInflater inflater) {
+        ArrayAdapter<TestData> adapter = new MyListAdapter(inflater);
+        ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
+        list.setAdapter(adapter);
+
+        return list;
+    }
+
+    private class MyListAdapter extends ArrayAdapter<TestData> {
+        LayoutInflater inflater;
+
+        private MyListAdapter(LayoutInflater inflater) {
+            super(getActivity(), R.layout.testlayout, myTestData);
+            this.inflater = inflater;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View itemView = convertView;
+            if(convertView == null){
+                itemView = inflater.inflate(R.layout.testlayout, parent, false);
+            }
+
+            TestData currentPos = myTestData.get(position);
+
+            TextView title = (TextView) itemView.findViewById(R.id.test_left_tv);
+            title.setText(currentPos.GetTitle());
+
+            TextView description = (TextView) itemView.findViewById(R.id.test_right_tv);
+            description.setText(currentPos.GetDescription());
+
+            return itemView;
+        }
     }
 
     @Override
@@ -122,4 +137,5 @@ public class FragmentChecklists extends Fragment {
         super.onDestroy();
         Log.w("fsdf","onDestroy");
     }
+
 }

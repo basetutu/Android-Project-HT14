@@ -28,11 +28,11 @@ public class ListAdaptor extends ArrayAdapter<TestData> {
         LayoutInflater inflater = ((Activity) context).getLayoutInflater();
         View row = inflater.inflate(resource,parent,false);
 
-        TextView title  = (TextView) row.findViewById(R.id.test_tv);
-        TextView number = (TextView) row.findViewById(R.id.test_tv2);
+        TextView title  = (TextView) row.findViewById(R.id.test_left_tv);
+        TextView number = (TextView) row.findViewById(R.id.test_right_tv);
 
-        title.setText((CharSequence) objects[position].myTitle);
-        number.setText(Integer.toString(objects[position].myNum));
+        title.setText((CharSequence) objects[position].title);
+        number.setText((CharSequence) (objects[position].description));
 
         return row;
     }
