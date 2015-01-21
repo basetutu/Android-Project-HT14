@@ -37,10 +37,8 @@ public class FragmentChecklists extends Fragment {
     private HashMap<String, ChatMessage> mMessageMap;//todo remove
     private ListView mListView;
 
-    // The name of the group to operate in
-    private String mGroupName;
     // The group-reference of firebase
-    private Firebase mFirebaseGroup;
+    private Firebase mFirebaseChecklists;
     // The message-reference of the group
     private Firebase mFirebaseGroupMessages;
     private boolean childListenerRegistered = false;
@@ -83,10 +81,7 @@ public class FragmentChecklists extends Fragment {
         mListChecklists = mParentActivity.getChecklists();
 
 
-        Bundle args = getArguments();
-        mGroupName = args.getString("GroupName");
-        mFirebaseGroup = new Firebase(args.getString("FirebaseGroupRef"));
-        mFirebaseGroupMessages = mFirebaseGroup.child("messages");
+//        mFirebaseChecklists = new Firebase(Globals.FIREBASE_DB_ROOT_URL).child(FirebaseController.);
 
 
 
@@ -102,7 +97,7 @@ public class FragmentChecklists extends Fragment {
         mListViewAdapter.notifyDataSetChanged();
 
         if (!childListenerRegistered) {
-//            FirebaseController.registerValueListener(mFirebaseGroup, mGroupValueListener);
+//            FirebaseController.registerValueListener(mFirebaseChecklists, mGroupValueListener);
 //            FirebaseController.registerChildListener(mFirebaseGroupMessages, mGroupMessageListener);
             childListenerRegistered = true;
         }
@@ -194,7 +189,7 @@ public class FragmentChecklists extends Fragment {
                 tempValues = (ChatMessage) listItems.get(position);
                 // this will indicate which view to use
 //            writeToRight = (tempValues.getFrom().equals(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME)));
-                writeToRight = (tempValues.getFrom().equals(mParentActivity.getUserName()));
+                writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
             }else{
                 tempValues = null;
                 writeToRight = false;
@@ -265,7 +260,7 @@ public class FragmentChecklists extends Fragment {
                 viewHolder.message.setText("Be the first to post a message in this group...");
             } else {
                 /************  Set Model values     from Holder elements ***********/
-                if(tempValues.getFrom().equals(mParentActivity.getUserName())){
+                if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
                     viewHolder.from.setText("You");
                     viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
                 }else {

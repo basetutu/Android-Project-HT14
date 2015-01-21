@@ -154,7 +154,7 @@ public class FragmentItems extends Fragment{
                 tempValues = (ChatMessage) listItems.get(position);
                 // this will indicate which view to use
 //            writeToRight = (tempValues.getFrom().equals(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME)));
-                writeToRight = (tempValues.getFrom().equals(mParentActivity.getUserName()));
+                writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
             }else{
                 tempValues = null;
                 writeToRight = false;
@@ -225,7 +225,7 @@ public class FragmentItems extends Fragment{
                 viewHolder.message.setText("Be the first to post a message in this group...");
             } else {
                 /************  Set Model values     from Holder elements ***********/
-                if(tempValues.getFrom().equals(mParentActivity.getUserName())){
+                if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
                     viewHolder.from.setText("You");
                     viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
                 }else {

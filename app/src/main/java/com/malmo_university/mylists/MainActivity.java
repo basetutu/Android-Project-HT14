@@ -23,15 +23,8 @@ import java.util.Locale;
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private static final String TAG = "MainActivity";
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
-     */
-    SectionsPagerAdapter mSectionsPagerAdapter;
+    // The FragmentAdapter for the ViewPager
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     // This is the fragment that shows all the checklists
     private FragmentChecklists mFragmentChecklists;
@@ -42,10 +35,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     private ArrayList<FragmentItems> mFragmentItems;
 
     // The ViewPager that will host the section contents.
-    ViewPager mViewPager;
-
-    ActionBar mActionBar;
-    private String userName;
+    private ViewPager mViewPager;
+    private ActionBar mActionBar;
     private FragmentManager fm;
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -60,15 +51,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
         MyBroadcastController.setAndroidContext(this);
 
-
         FirebaseController.setCurrentUser(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME));
-
-        if (mFragmentChecklists == null){
-            mFragmentChecklists = FragmentChecklists.newInstance();
-        }
-        if (mFragmentItems == null) {
-            mFragmentItems = new ArrayList<FragmentItems>();
-        }
 
         // Set up the action bar.
         mActionBar = getActionBar();
@@ -79,7 +62,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(fm);
-        mSectionsPagerAdapter.setPageCount(3);
+        mSectionsPagerAdapter.setPageCount(1);
         mSectionsPagerAdapter.notifyDataSetChanged();
 
         // Set up the ViewPager with the sections adapter.
@@ -97,6 +80,18 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         });
 
         purgeBackStack();
+
+        if (mFragmentChecklists == null){
+            mFragmentChecklists = FragmentChecklists.newInstance();
+            mSectionsPagerAdapter.setPageCount(1);
+            mSectionsPagerAdapter.notifyDataSetChanged();
+        }
+        if (mFragmentItems == null) {
+            mFragmentItems = new ArrayList<FragmentItems>();
+        }
+        if (mListChecklists == null) {
+            mListChecklists = new ArrayList<Checklist>();
+        }
 
 
 /*
@@ -224,10 +219,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public String getUserName() {
-        return userName;
-    }
-
     protected void logoutCleanUp(){
         // remove credentials from sharedPreferences
         Log.e(TAG, "Username: " + SharedPreferencesController.simpleDeletePersistentString(Globals.USERNAME));
@@ -278,6 +269,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public Fragment getItem(int position) {
+            Log.w(TAG, "getItem: " + position);
             if (position != 0) {
                 position--;
                 //todo
