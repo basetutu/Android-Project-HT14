@@ -31,7 +31,7 @@ public class FirebaseController {
     private static Firebase mFirebase;
 
     // This controller works within two databases
-    protected static final String DB_CHECKLISTS = "CHECKLISTS";
+    private static final String DB_CHECKLISTS = "CHECKLISTS";
     private static final String DB_USERS = "USERS";
 
     // A child with in every child is reserved for containing the root values of every child.
@@ -299,36 +299,6 @@ public class FirebaseController {
     }
 
 
-    // LISTENERS ///////////////////////////////////////////////////////////////////////////
-
-    protected class ChildEventListenerChecklists implements ChildEventListener {
-
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(FirebaseError firebaseError) {
-
-        }
-    }
-
     // AUTHENTICATION ///////////////////////////////////////////////////////////////////////
 
     /**
@@ -461,4 +431,36 @@ public class FirebaseController {
         if (Globals.DEBUG_invocation)
             Log.w(TAG," - createNewUser");
     }
+
+    // LISTENERS ///////////////////////////////////////////////////////////////////////////
+
+    protected class ChildEventListenerChecklists implements ChildEventListener {
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    }
+
+
 }

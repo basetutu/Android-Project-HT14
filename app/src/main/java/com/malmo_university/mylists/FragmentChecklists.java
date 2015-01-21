@@ -1,14 +1,19 @@
 package com.malmo_university.mylists;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +21,12 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class FragmentChecklists extends Fragment {
+    private static final String TAG = "FragmentChecklists";
     List<Checklist> listAdapterChecklists;
     View rootView;
+    ListView listView;
+    TextView txtView;
+    CheckBox checkBox;
 
     /**
      * The fragment argument representing the section number for this
@@ -54,6 +63,34 @@ public class FragmentChecklists extends Fragment {
         populateListAdapter();
         populateListView(inflater);
 
+        checkBox = (CheckBox) listView.findViewById(R.id.test_checkBox);
+        txtView = (TextView) listView.findViewById(R.id.test_right_tv);
+
+        /*
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                txtView.setText("Checkbox");
+            }
+        });
+        */
+
+        listView.setClickable(true);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.w(TAG, "onItemClick");
+                // google fragment new instance
+                if(position == 0){
+                    txtView.setText("Position 0");
+                }
+                else {
+                    txtView.setText("Other position");
+                }
+            }
+        });
+
         return rootView;
     }
 
@@ -72,8 +109,8 @@ public class FragmentChecklists extends Fragment {
      */
     private void populateListView(LayoutInflater inflater) {
         ArrayAdapter<Checklist> adapter = new MyListAdapter(inflater);
-        ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
-        list.setAdapter(adapter);
+        listView = (ListView) rootView.findViewById(R.id.listview_checklists);
+        listView.setAdapter(adapter);
     }
 
     /**
