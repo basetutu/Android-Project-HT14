@@ -13,7 +13,9 @@ public class Item {
     String note;
     boolean state;
 
-    public Item(String ref_id, String checklist_id, String creator, String date_added, int order, String title, String note, boolean state) {
+    public Item(String ref_id, String checklist_id, String creator, String date_added, int order,
+                String title, String note, boolean state) {
+
         this.ref_id = ref_id;
         this.creator = creator;
         this.date_added = date_added;

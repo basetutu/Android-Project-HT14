@@ -13,22 +13,21 @@
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:id="@+id/alertDialog_upper_linearLayout">
+            android:layout_height="fill_parent">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Title:"
-                android:id="@+id/alertDialog_upper_textField" />
+                android:id="@+id/alertDialog_2_upper_textField" />
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="44dp"
+                android:layout_marginLeft="2dp"
                 android:maxLength="40"
                 android:singleLine="true"
-                android:id="@+id/alertDialog_upper_editText" />
+                android:id="@+id/alertDialog_2_upper_editText" />
 
         </LinearLayout>
 
@@ -40,15 +39,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Description:"
-                android:id="@+id/alertDialog_bellow_textField" />
+                android:text="Note:"
+                android:id="@+id/alertDialog_2_lower_textField" />
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:maxLength="40"
-                android:id="@+id/alertDialog_bellow_editText" />
+                android:singleLine="false"
+                android:maxLength="200"
+                android:id="@+id/alertDialog_2_lower_editText" />
 
         </LinearLayout>
     </LinearLayout>
