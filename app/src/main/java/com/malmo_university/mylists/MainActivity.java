@@ -33,7 +33,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
 
-    private FragmentChecklists_2 mFragmentChecklists;
+    private FragmentChecklists mFragmentChecklists;
     private ArrayList<FragmentItems> mFragmentItems;
 
     private ArrayList<Link> mChecklists;
@@ -58,7 +58,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Firebase.setAndroidContext(this);
 
         if (mFragmentChecklists == null){
-            mFragmentChecklists = FragmentChecklists_2.newInstance();
+            mFragmentChecklists = FragmentChecklists.newInstance();
         }
         if (mFragmentItems == null) {
             mFragmentItems = new ArrayList<FragmentItems>();
@@ -235,7 +235,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
 
-            return FragmentChecklists_2.newInstance();
+            return FragmentChecklists.newInstance();
         }
 
         @Override

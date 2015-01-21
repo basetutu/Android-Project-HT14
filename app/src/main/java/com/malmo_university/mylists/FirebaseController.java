@@ -292,6 +292,7 @@ public class FirebaseController {
         return currentUser;
     }
 
+
     // AUTHENTICATION ///////////////////////////////////////////////////////////////////////
 
     /**
