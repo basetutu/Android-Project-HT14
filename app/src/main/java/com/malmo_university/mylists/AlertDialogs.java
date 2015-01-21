@@ -47,7 +47,7 @@ public class AlertDialogs {
             newGroupDialogBuilder.setTitle("Create new checklist");
             newGroupDialogBuilder.setCancelable(true);
             // Set an EditText view to get user input
-            View alertDialogView = mLayoutInflator.inflate(R.layout.row_one_edit_text, null);
+            View alertDialogView = mLayoutInflator.inflate(R.layout.dialog_one_edit_text, null);
             newGroupDialogBuilder.setView(alertDialogView);
 
             newGroupDialogBuilder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
@@ -72,7 +72,7 @@ public class AlertDialogs {
             newGroupDialogBuilder.setTitle("Create a new item");
             newGroupDialogBuilder.setCancelable(true);
             // Set two EditText views to get user input
-            View alertDialogView = mLayoutInflator.inflate(R.layout.row_two_edit_texts, null);
+            View alertDialogView = mLayoutInflator.inflate(R.layout.dialog_two_edit_texts, null);
             newGroupDialogBuilder.setView(alertDialogView);
 
             newGroupDialogBuilder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
