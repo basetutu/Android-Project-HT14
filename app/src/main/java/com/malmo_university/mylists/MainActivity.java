@@ -2,17 +2,17 @@ package com.malmo_university.mylists;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 
@@ -33,20 +33,22 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
 
+    // This is the fragment that shows all the checklists
     private FragmentChecklists mFragmentChecklists;
+    // This holds all the checklists
+    private ArrayList<Checklist> mListChecklists;
+
+    // This holds the fragment of all the open checklists
     private ArrayList<FragmentItems> mFragmentItems;
 
-    private ArrayList<Link> mChecklists;
-    private ArrayList<Link> mContacts;
-    private ArrayList<Link> mAwaiting_acceptance_links;
-
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
+    // The ViewPager that will host the section contents.
     ViewPager mViewPager;
 
     ActionBar mActionBar;
+    private String userName;
+    private FragmentManager fm;
+
+    ////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +56,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.w(TAG,"onCreate");
 
         setContentView(R.layout.activity_main);
-
         Firebase.setAndroidContext(this);
+        SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
+        MyBroadcastController.setAndroidContext(this);
+
+
+        FirebaseController.setCurrentUser(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME));
 
         if (mFragmentChecklists == null){
             mFragmentChecklists = FragmentChecklists.newInstance();
@@ -67,10 +73,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // Set up the action bar.
         mActionBar = getActionBar();
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        mActionBar.setIcon(R.drawable.ic_launcher);
 
+        fm = getFragmentManager();
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(fm);
         mSectionsPagerAdapter.setPageCount(3);
         mSectionsPagerAdapter.notifyDataSetChanged();
 
@@ -87,6 +95,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 mActionBar.setSelectedNavigationItem(position);
             }
         });
+
+        purgeBackStack();
 
 
 /*
@@ -122,6 +132,34 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.w(TAG, "onResume");
+
+        recreateTabs();
+
+        Log.w(TAG, " - onResume");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onDestroy();
+        Log.w(TAG, "onPause");
+
+        Log.w(TAG, " - onPause");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.w(TAG, "onDestroy");
+
+        Log.w(TAG, " - onDestroy");
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+
     private void recreateTabs(){
         mActionBar.removeAllTabs();
         // For each of the sections in the app, add a tab to the action bar.
@@ -137,42 +175,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.w(TAG, "onResume");
-
-        recreateTabs();
-
-        Log.w(TAG, " - onResume");
-    }
-
-
-    public void threeButtonAlertDialog(){
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-        dialogBuilder.setTitle("Welcome to ListApp");
-        dialogBuilder.setMessage("Have you been here before?");
-        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-
-        dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-
-        dialogBuilder.setNeutralButton("Dunno", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-
-            }
-        });
-        dialogBuilder.setIcon(R.drawable.ic_launcher);
-        dialogBuilder.show();
-    }
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -196,6 +199,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         return super.onOptionsItemSelected(item);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -210,7 +214,49 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        makeToast("tab is reselected");
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
+    // Used to simplify usage of toasts in fragments
+    public void makeToast(String msg) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    protected void logoutCleanUp(){
+        // remove credentials from sharedPreferences
+        Log.e(TAG, "Username: " + SharedPreferencesController.simpleDeletePersistentString(Globals.USERNAME));
+        Log.e(TAG, "Password: " + SharedPreferencesController.simpleDeletePersistentString(Globals.PASSWORD));
+        // Start ActivityAuthenticate and close ActivityLoggedIn
+        Intent startIntent = new Intent(this, ActivityAuthenticate.class);
+        startActivity(startIntent);
+        finish();
+    }
+
+    // Get the checklists that where previously received
+    public ArrayList<Checklist> getChecklists() {
+        return mListChecklists;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, "onBackPressed");
+        if (!mActionBar.getSelectedTab().getText().toString().equals(Globals.CHECKLISTS_FRAGMENT)){
+            mActionBar.setSelectedNavigationItem(0);
+        }else{
+            finish();
+        }
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, " - onBackPressed");
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -232,10 +278,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a PlaceholderFragment (defined as a static inner class below).
-
-            return FragmentChecklists.newInstance();
+            if (position != 0) {
+                position--;
+                //todo
+                //see if fragment already exists in mFragmentChecklists
+                // return that if it does
+                // use
+                return FragmentItems.newInstance(mListChecklists.get(position).getName(), mListChecklists.get(position).getRef_id());
+            }else{
+                return mFragmentChecklists;
+            }
         }
 
         @Override
@@ -250,22 +302,22 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             this.pageCount++;
         }
 
-
-
         @Override
         public CharSequence getPageTitle(int position) {
             Locale l = Locale.getDefault();
-            switch (position) {
-                case 0:
-                    return getString(R.string.title_section1).toUpperCase(l);
-                case 1:
-                    return getString(R.string.title_section2).toUpperCase(l);
-                case 2:
-                    return getString(R.string.title_section3).toUpperCase(l);
-                default:
-                    return getString(R.string.title_section3).toUpperCase(l);
+            return "new page";
+        }
+    }
+
+    //////////////////////////////////////////////////////////////////////////////////////////
+
+    protected void purgeBackStack(){
+        if (fm.getBackStackEntryCount() > 0){
+            Log.w(TAG, "BackStack is being purged...");
+            for(int i = 0; i < fm.getBackStackEntryCount(); ++i) {
+                Log.i(TAG, "BackStack popped");
+                fm.popBackStack();
             }
-            //return null;
         }
     }
 

@@ -10,6 +10,7 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -454,6 +455,24 @@ public class FirebaseController {
         public void onCancelled(FirebaseError firebaseError) {
 
         }
+    }
+
+    // Listener registrations (for reading data) ////////////////////////////////////////////
+
+    protected static void registerChildListener(Firebase location, ChildEventListener listener) {
+        location.addChildEventListener(listener);
+    }
+
+    protected static void unregisterChildListener(Firebase location, ChildEventListener listener) {
+        location.removeEventListener(listener);
+    }
+
+    protected static void registerValueListener(Firebase location, ValueEventListener listener) {
+        location.addValueEventListener(listener);
+    }
+
+    protected static void unregisterValueListener(Firebase location, ValueEventListener listener) {
+        location.removeEventListener(listener);
     }
 
 
