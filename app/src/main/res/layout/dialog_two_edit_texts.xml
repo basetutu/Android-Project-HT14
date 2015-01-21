@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -16,18 +18,20 @@
             android:layout_height="fill_parent">
 
             <TextView
+                android:id="@+id/alertDialog_2_upper_textField"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Title:"
-                android:id="@+id/alertDialog_2_upper_textField" />
+                 />
 
             <EditText
+                android:id="@+id/alertDialog_2_upper_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
                 android:maxLength="40"
                 android:singleLine="true"
-                android:id="@+id/alertDialog_2_upper_editText" />
+                 />
 
         </LinearLayout>
 
@@ -37,17 +41,19 @@
             android:layout_height="fill_parent">
 
             <TextView
+                android:id="@+id/alertDialog_2_lower_textField"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Note:"
-                android:id="@+id/alertDialog_2_lower_textField" />
+                />
 
             <EditText
+                android:id="@+id/alertDialog_2_lower_editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:singleLine="false"
                 android:maxLength="200"
-                android:id="@+id/alertDialog_2_lower_editText" />
+                />
 
         </LinearLayout>
     </LinearLayout>
