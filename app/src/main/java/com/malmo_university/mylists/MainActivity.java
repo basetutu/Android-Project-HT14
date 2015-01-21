@@ -13,15 +13,10 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-
-
 
 import com.firebase.client.Firebase;
 
+import java.util.ArrayList;
 import java.util.Locale;
 
 
@@ -37,6 +32,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      * {@link android.support.v13.app.FragmentStatePagerAdapter}.
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
+
+    private FragmentChecklists_2 mFragmentChecklists;
+    private ArrayList<FragmentItems> mFragmentItems;
+
+    private ArrayList<Link> mChecklists;
+    private ArrayList<Link> mContacts;
+    private ArrayList<Link> mAwaiting_acceptance_links;
+
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -54,7 +57,37 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         Firebase.setAndroidContext(this);
 
-        //todo login
+        if (mFragmentChecklists == null){
+            mFragmentChecklists = FragmentChecklists_2.newInstance();
+        }
+        if (mFragmentItems == null) {
+            mFragmentItems = new ArrayList<FragmentItems>();
+        }
+
+        // Set up the action bar.
+        mActionBar = getActionBar();
+        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter.setPageCount(3);
+        mSectionsPagerAdapter.notifyDataSetChanged();
+
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container_pager);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        // When swiping between different sections, select the corresponding
+        // tab. We can also use ActionBar.Tab#select() to do this if we have
+        // a reference to the Tab.
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                mActionBar.setSelectedNavigationItem(position);
+            }
+        });
+
 
 /*
         // TEST SECTION
@@ -86,30 +119,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
 */
-
-        // Set up the action bar.
-        mActionBar = getActionBar();
-        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
-        mSectionsPagerAdapter.setPageCount(3);
-        mSectionsPagerAdapter.notifyDataSetChanged();
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container_pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                mActionBar.setSelectedNavigationItem(position);
-            }
-        });
 
     }
 
