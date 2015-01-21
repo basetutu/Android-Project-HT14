@@ -41,7 +41,7 @@ public class ActivityLoggedIn extends Activity {
         super.onCreate(savedInstanceState);
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "onCreate");
-        setContentView(R.layout.activity_logged_in);
+        setContentView(R.layout.delete_activity_logged_in);
 
         Firebase.setAndroidContext(this);
         SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
