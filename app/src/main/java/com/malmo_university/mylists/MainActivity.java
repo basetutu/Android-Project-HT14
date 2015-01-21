@@ -142,6 +142,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onDestroy();
         Log.w(TAG, "onPause");
 
+        AlertDialogs dialog = new AlertDialogs();
+        dialog.init(this, getLayoutInflater());
+        dialog.dialogMakeNewChecklist();
+
         Log.w(TAG, " - onPause");
     }
 
