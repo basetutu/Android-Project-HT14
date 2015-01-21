@@ -40,7 +40,7 @@ public class MyBroadcastController extends BroadcastReceiver {
      *
      * @param context Any context will do
      */
-    protected static void setAndroidContext(Context context) {
+    protected static void init(Context context) {
         mAppContext = context.getApplicationContext();
     }
 

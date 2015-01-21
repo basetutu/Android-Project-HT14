@@ -14,12 +14,12 @@ public class AlertDialogs {
     private static Activity mParentActivity;
     private static LayoutInflater mLayoutInflator;
 
-    protected void init(Activity context, LayoutInflater layoutInflater){
-        this.mParentActivity = context;
-        this.mLayoutInflator = layoutInflater;
+    protected static void init(Activity context, LayoutInflater layoutInflater){
+        mParentActivity = context;
+        mLayoutInflator = layoutInflater;
     }
 
-    protected void dialogCloseChecklist(){
+    protected static void dialogCloseChecklist(){
         if(checkForNull()){
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("Do you wish to close this checklist?");
@@ -41,7 +41,7 @@ public class AlertDialogs {
         }
     }
 
-    protected void dialogMakeNewChecklist() {
+    protected static void dialogMakeNewChecklist() {
         if(checkForNull()) {
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("Create new checklist");
@@ -66,7 +66,7 @@ public class AlertDialogs {
         }
     }
 
-    protected void dialogMakeNewItem(){
+    protected static void dialogMakeNewItem(){
         if(checkForNull()) {
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("Create a new item");
@@ -92,7 +92,7 @@ public class AlertDialogs {
     }
 
 
-    protected void dialogMakeLongPressChecklist(){
+    protected static void dialogMakeLongPressChecklist(){
         if(checkForNull()){
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("What do you wish to do with this checklist?");
@@ -119,7 +119,7 @@ public class AlertDialogs {
         }
     }
 
-    protected void dialogMakeLongPressItem(){
+    protected static void dialogMakeLongPressItem(){
         if(checkForNull()){
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("What do you wish to do with this item?");
@@ -146,7 +146,7 @@ public class AlertDialogs {
         }
     }
 
-    private boolean checkForNull() {
+    private static boolean checkForNull() {
         if((mParentActivity == null) || (mLayoutInflator == null)){
             return false;
         }

@@ -48,8 +48,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         setContentView(R.layout.activity_main);
         Firebase.setAndroidContext(this);
-        SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
-        MyBroadcastController.setAndroidContext(this);
+        SharedPreferencesController.init(this, Globals.SHARED_PREFERENCE_MY_LISTS);
+        MyBroadcastController.init(this);
+        AlertDialogs.init(this, getLayoutInflater());
 
         FirebaseController.setCurrentUser(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME));
 
@@ -142,9 +143,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onDestroy();
         Log.w(TAG, "onPause");
 
-        AlertDialogs dialog = new AlertDialogs();
-        dialog.init(this, getLayoutInflater());
-        dialog.dialogMakeNewChecklist();
 
         Log.w(TAG, " - onPause");
     }
