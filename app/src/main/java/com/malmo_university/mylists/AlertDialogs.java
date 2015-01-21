@@ -2,17 +2,10 @@ package com.malmo_university.mylists;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Application;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 /**
  * Created by jonat_000 on 21/01/2015.
@@ -54,7 +47,7 @@ public class AlertDialogs {
             newGroupDialogBuilder.setTitle("Create new checklist");
             newGroupDialogBuilder.setCancelable(true);
             // Set an EditText view to get user input
-            View alertDialogView = mLayoutInflator.inflate(R.layout.one_edit_text, null);
+            View alertDialogView = mLayoutInflator.inflate(R.layout.layout_one_edit_text, null);
             newGroupDialogBuilder.setView(alertDialogView);
 
             newGroupDialogBuilder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
@@ -79,7 +72,7 @@ public class AlertDialogs {
             newGroupDialogBuilder.setTitle("Create a new item");
             newGroupDialogBuilder.setCancelable(true);
             // Set two EditText views to get user input
-            View alertDialogView = mLayoutInflator.inflate(R.layout.two_edit_texts, null);
+            View alertDialogView = mLayoutInflator.inflate(R.layout.layout_two_edit_texts, null);
             newGroupDialogBuilder.setView(alertDialogView);
 
             newGroupDialogBuilder.setPositiveButton("Create", new DialogInterface.OnClickListener() {
