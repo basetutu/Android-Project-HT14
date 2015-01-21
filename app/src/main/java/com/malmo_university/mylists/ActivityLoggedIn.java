@@ -44,8 +44,8 @@ public class ActivityLoggedIn extends Activity {
         setContentView(R.layout.delete_activity_logged_in);
 
         Firebase.setAndroidContext(this);
-        SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
-        MyBroadcastController.setAndroidContext(this);
+        SharedPreferencesController.init(this, Globals.SHARED_PREFERENCE_MY_LISTS);
+        MyBroadcastController.init(this);
 
         userName = SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME);
 

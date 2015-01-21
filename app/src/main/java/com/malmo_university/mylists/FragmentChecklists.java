@@ -12,16 +12,14 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.firebase.client.Firebase;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class FragmentChecklists extends Fragment {
     private static final String TAG = "FragmentChecklists";
-
     protected MainActivity mParentActivity;
 
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
@@ -31,18 +29,10 @@ public class FragmentChecklists extends Fragment {
 
     private ListView mListView;
 
-    // The group-reference of firebase
-    private Firebase mFirebaseChecklists;
-
     private boolean childListenerRegistered = false;
 
     // As default the list must scroll down lot the lowest item on the list
     private boolean mLastItemVisible = true;
-
-
-    ////
-
-
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -68,11 +58,8 @@ public class FragmentChecklists extends Fragment {
 
         mParentActivity = (MainActivity)getActivity();
 
+        // fetch the cached data from the activity
         mListViewChecklists = mParentActivity.getChecklists();
-
-
-//        mFirebaseChecklists = new Firebase(Globals.FIREBASE_DB_ROOT_URL).child(FirebaseController.);
-
 
 
         // Create the Arraylist that will store our group-names from the list
@@ -97,9 +84,9 @@ public class FragmentChecklists extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.w("fsdf", "onCreateView");
+        Log.w(TAG, "onCreateView");
 
-        View rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
         mListView = (ListView) rootView.findViewById(R.id.listview_checklists);
         mListView.setDivider(null);
         mListView.setDividerHeight(0);
@@ -122,19 +109,31 @@ public class FragmentChecklists extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.w("fsdf","onResume");
+        Log.w(TAG,"onResume");
+
+        HashMap<String,String> values = new HashMap<String, String>();
+        values.put("NAME","hallo");
+        values.put("Creating Date", FirebaseController.getTimestamp());
+        Checklist a = new Checklist("dasda",FirebaseController.getTimestamp(),
+                "my checklist", values);
+        mListViewChecklists.add(mListViewChecklists.size(),a);
+        mListViewChecklists.add(mListViewChecklists.size(),a);
+        mListViewChecklists.add(mListViewChecklists.size(),a);
+        mListViewAdapter.notifyDataSetChanged();
+
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.w("fsdf","onStop");
+        Log.w(TAG,"onStop");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.w("fsdf","onDestroy");
+        Log.w(TAG,"onDestroy");
     }
 
 
@@ -174,24 +173,17 @@ public class FragmentChecklists extends Fragment {
 
         @Override
         public View getView(int position, View vi, ViewGroup parent) {
+            if (Globals.DEBUG_results) {
+                Log.w(TAG, "getView");
+            }
             ViewHolder viewHolder;
             Checklist tempValues;
-            boolean writeToRight = false;
 
             // Our listview uses two views for its rows depending on who the sender is
             if(listItems.size() > 0) {
-                /***** Get each ChatMessage object from Arraylist ********/
-                tempValues = (Checklist) listItems.get(position);
-                // this will indicate which view to use
-//            writeToRight = (tempValues.getFrom().equals(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME)));
-                //writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
+                tempValues = listItems.get(position);
             }else{
                 tempValues = null;
-                writeToRight = false;
-            }
-
-            if (Globals.DEBUG_results) {
-                Log.w(TAG, "writeToRight= " + writeToRight);
             }
 
             // If no recycled convertView has been returned, then inflate a new view and place a
@@ -200,24 +192,16 @@ public class FragmentChecklists extends Fragment {
             if(vi == null){
                 viewHolder = new ViewHolder();
                 /****** Inflate tabitem.xml file for each row ( Defined below ) *******/
-                if (writeToRight){
-                    vi = inflater.inflate(R.layout.delete_item_chat_right, null);
-                    /****** View Holder Object to contain tabitem.xml file elements ******/
-                    viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
-                    viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_right_message);
-                    viewHolder.writeToRight = true;
-                }else {
-                    vi = inflater.inflate(R.layout.delete_item_chat_left, null);
-                    /****** View Holder Object to contain tabitem.xml file elements ******/
-                    viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_left_from);
-                    viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_left_message);
-                    viewHolder.writeToRight = false;
-                }
+                vi = inflater.inflate(R.layout.delete_item_chat_right, null);
+                /****** View Holder Object to contain tabitem.xml file elements ******/
+                viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
+                viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_right_message);
+                viewHolder.writeToRight = true;
                 /************  Set viewHolder with LayoutInflater ************/
                 vi.setTag( viewHolder );
             } else {
                 // Identify the view that is received to see if it can be used or a new must be inflated
-                if (((ViewHolder)vi.getTag()).writeToRight == writeToRight) {
+                if (((ViewHolder)vi.getTag()).writeToRight == true) {
                     if (Globals.DEBUG_results){
                         Log.i(TAG, "======== Correct view orientation ========");
                     }
@@ -230,7 +214,7 @@ public class FragmentChecklists extends Fragment {
                     // Do not reuse the vi, but reuse the contained ViewHolder
                     viewHolder = (ViewHolder) vi.getTag();
 
-                    if (writeToRight){
+                    if (true){
                         vi = inflater.inflate(R.layout.delete_item_chat_right, null);
                         /****** View Holder Object to contain tabitem.xml file elements ******/
                         viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
