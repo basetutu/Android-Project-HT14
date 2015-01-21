@@ -11,13 +11,14 @@ import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+
 
 import com.firebase.client.Firebase;
 
@@ -26,7 +27,6 @@ import java.util.Locale;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private static final String TAG = "MainActivity";
-    Fragment[] listViewFragments;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -43,6 +43,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      */
     ViewPager mViewPager;
 
+    ActionBar mActionBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +56,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         //todo login
 
-
+/*
         // TEST SECTION
 
         Log.w(TAG,"0");
 
         // get the username and use it on the next line
         FirebaseController.init(Algorithms.transformEmailToKey("smg@gmail.com"));
-        //todo login
 
         Log.w(TAG,"1");
 
@@ -84,20 +85,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.w(TAG,"5");
 
         FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
+*/
 
-        ////////////////////////////////////////////////////////////////////////////
-        /*
-        for(int i=0; i<child.length; i++) {
-            FragmentChecklists.newInstance(i);
-        }
-        */
         // Set up the action bar.
-        final ActionBar actionBar = getActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        mActionBar = getActionBar();
+        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        mSectionsPagerAdapter.setPageCount(3);
+        mSectionsPagerAdapter.notifyDataSetChanged();
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container_pager);
@@ -109,24 +107,38 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                actionBar.setSelectedNavigationItem(position);
+                mActionBar.setSelectedNavigationItem(position);
             }
         });
 
+    }
+
+    private void recreateTabs(){
+        mActionBar.removeAllTabs();
         // For each of the sections in the app, add a tab to the action bar.
         for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
             // Create a tab with text corresponding to the page title defined by
             // the adapter. Also specify this Activity object, which implements
             // the TabListener interface, as the callback (listener) for when
             // this tab is selected.
-            actionBar.addTab(
-                    actionBar.newTab()
+            mActionBar.addTab(
+                    mActionBar.newTab()
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.w(TAG, "onResume");
+
+        recreateTabs();
+
+        Log.w(TAG, " - onResume");
+    }
+
 
     public void threeButtonAlertDialog(){
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
@@ -134,22 +146,19 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         dialogBuilder.setMessage("Have you been here before?");
         dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                TextView dialog_builder_tv = (TextView) findViewById(R.id.tv_Frag1_Login);
-                dialog_builder_tv.setText("I've seen you before haven't i?");
+
             }
         });
 
         dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                TextView dialog_builder_tv = (TextView) findViewById(R.id.tv_Frag1_Login);
-                dialog_builder_tv.setText("You're new around here aint'ya?");
+
             }
         });
 
         dialogBuilder.setNeutralButton("Dunno", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
-                TextView dialog_builder_tv = (TextView) findViewById(R.id.tv_Frag1_Login);
-                dialog_builder_tv.setText("Hey uh...you?");
+
             }
         });
         dialogBuilder.setIcon(R.drawable.ic_launcher);
@@ -178,7 +187,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         return super.onOptionsItemSelected(item);
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -195,17 +203,22 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////
-
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        //todo bookmark
+        private int pageCount;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
+        }
+
+        public void notifyPageAdded(){
+            mSectionsPagerAdapter.addPage();
+            mSectionsPagerAdapter.notifyDataSetChanged();
+            recreateTabs();
+            //mViewPager.setAdapter(mSectionsPagerAdapter);
         }
 
         @Override
@@ -213,15 +226,22 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
 
-            //return listViewFragments[position];
-            return FragmentChecklists.newInstance(position + 1);
+            return FragmentChecklists_2.newInstance();
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 8;
+            return pageCount;
         }
+        public void setPageCount(int pageCount) {
+            this.pageCount = pageCount;
+        }
+        public void addPage() {
+            this.pageCount++;
+        }
+
+
 
         @Override
         public CharSequence getPageTitle(int position) {
@@ -239,4 +259,5 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             //return null;
         }
     }
+
 }

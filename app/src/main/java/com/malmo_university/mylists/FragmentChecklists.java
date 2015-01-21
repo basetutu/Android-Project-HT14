@@ -16,10 +16,8 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class FragmentChecklists extends Fragment {
-    String[] checklists;
     List<Checklist> listAdapterChecklists;
     View rootView;
-    int fragmentPos;
 
     /**
      * The fragment argument representing the section number for this
