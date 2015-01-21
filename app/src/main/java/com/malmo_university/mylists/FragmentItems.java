@@ -171,13 +171,13 @@ public class FragmentItems extends Fragment{
                 viewHolder = new ViewHolder();
                 /****** Inflate tabitem.xml file for each row ( Defined below ) *******/
                 if (writeToRight){
-                    vi = inflater.inflate(R.layout.listview_item_chat_right, null);
+                    vi = inflater.inflate(R.layout.delete_item_chat_right, null);
                     /****** View Holder Object to contain tabitem.xml file elements ******/
                     viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
                     viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_right_message);
                     viewHolder.writeToRight = true;
                 }else {
-                    vi = inflater.inflate(R.layout.listview_item_chat_left, null);
+                    vi = inflater.inflate(R.layout.delete_item_chat_left, null);
                     /****** View Holder Object to contain tabitem.xml file elements ******/
                     viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_left_from);
                     viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_left_message);
@@ -201,13 +201,13 @@ public class FragmentItems extends Fragment{
                     viewHolder = (ViewHolder) vi.getTag();
 
                     if (writeToRight){
-                        vi = inflater.inflate(R.layout.listview_item_chat_right, null);
+                        vi = inflater.inflate(R.layout.delete_item_chat_right, null);
                         /****** View Holder Object to contain tabitem.xml file elements ******/
                         viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
                         viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_right_message);
                         viewHolder.writeToRight = true;
                     }else {
-                        vi = inflater.inflate(R.layout.listview_item_chat_left, null);
+                        vi = inflater.inflate(R.layout.delete_item_chat_left, null);
                         /****** View Holder Object to contain tabitem.xml file elements ******/
                         viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_left_from);
                         viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_left_message);
