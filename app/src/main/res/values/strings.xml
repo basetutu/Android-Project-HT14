@@ -44,6 +44,6 @@
     <string name="dialog_group_exists_message">That group already existed. Type a different name for the group</string>
     <string name="toast_group_already_exists">"That group already existed"</string>
     <string name="title_activity_dialog_activity__item">DialogActivity_Item</string>
-
+    <string name="title_activity_contacts">ContactsActivity</string>
 
 </resources>
