@@ -2,9 +2,11 @@ package com.malmo_university.mylists;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 
@@ -123,6 +127,34 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
+
+    public void threeButtonAlertDialog(){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setTitle("Welcome to ListApp");
+        dialogBuilder.setMessage("Have you been here before?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                TextView dialog_builder_tv = (TextView) findViewById(R.id.tv_Frag1_Login);
+                dialog_builder_tv.setText("I've seen you before haven't i?");
+            }
+        });
+
+        dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                TextView dialog_builder_tv = (TextView) findViewById(R.id.tv_Frag1_Login);
+                dialog_builder_tv.setText("You're new around here aint'ya?");
+            }
+        });
+
+        dialogBuilder.setNeutralButton("Dunno", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                TextView dialog_builder_tv = (TextView) findViewById(R.id.tv_Frag1_Login);
+                dialog_builder_tv.setText("Hey uh...you?");
+            }
+        });
+        dialogBuilder.setIcon(R.drawable.ic_launcher);
+        dialogBuilder.show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

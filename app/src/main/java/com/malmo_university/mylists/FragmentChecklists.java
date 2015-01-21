@@ -51,43 +51,36 @@ public class FragmentChecklists extends Fragment {
                              Bundle savedInstanceState) {
         Log.w("fsdf", "onCreateView");
 
-        //checklists = new String[] {"potatis","mjölk"};
-
         rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
 
         populateListAdapter();
         populateListView(inflater);
 
-        //replaces R.layout... "android.R.layout.simple_list_item_1"
-
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-        //        R.layout.testlayout, R.id.test_left_tv, checklists);
-
-
-        //ListAdaptor adapter = new ListAdaptor(getActivity(), R.layout.testlayout, myDataArray);
-
-        //ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
-        //list.setAdapter(adapter);
-
-        ////
-
         return rootView;
     }
 
+    /**
+     * Populates the list adapter with a number of Checklist objects.
+     */
     private void populateListAdapter() {
         listAdapterChecklists.add(new Checklist("Shopping list", "Date added", "Last accessed by:"));
         listAdapterChecklists.add(new Checklist("Todo list", "Date added", "Last accessed by:"));
         listAdapterChecklists.add(new Checklist("Remember list", "Date added", "Last accessed by:"));
     }
 
-    private ListView populateListView(LayoutInflater inflater) {
+    /**
+     *  Gives the ListView an ArrayAdapter containing an array of view objects
+     * @param inflater passes the inflater down to the MyListAdapter class
+     */
+    private void populateListView(LayoutInflater inflater) {
         ArrayAdapter<Checklist> adapter = new MyListAdapter(inflater);
         ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
         list.setAdapter(adapter);
-
-        return list;
     }
 
+    /**
+     * Converts a list of checklist objects into a AdaptorArray of View objects
+     */
     private class MyListAdapter extends ArrayAdapter<Checklist> {
         LayoutInflater inflater;
 
@@ -117,7 +110,6 @@ public class FragmentChecklists extends Fragment {
 
     @Override
     public void onPause() {
-        listAdapterChecklists.clear();
         super.onPause();
         Log.w("fsdf","onPause");
     }
