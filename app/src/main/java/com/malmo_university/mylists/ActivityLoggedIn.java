@@ -27,7 +27,7 @@ public class ActivityLoggedIn extends Activity {
     private HashMap<String, ActionBar.Tab> openTabs;
     private HashMap<String, Fragment> fragments;//todo Consider using fm.putFragment();
 
-    private String currentFragment = Globals.GROUPS_FRAGMENT;
+    private String currentFragment = Globals.CHECKLISTS_FRAGMENT;
     private Bundle savedInstanceStateStored;
 
     private String userName;
@@ -41,7 +41,7 @@ public class ActivityLoggedIn extends Activity {
         super.onCreate(savedInstanceState);
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "onCreate");
-        setContentView(R.layout.activity_logged_in);
+        setContentView(R.layout.delete_activity_logged_in);
 
         Firebase.setAndroidContext(this);
         SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
@@ -92,10 +92,10 @@ public class ActivityLoggedIn extends Activity {
     public void onBackPressed() {
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "onBackPressed");
-        if (!currentFragment.equals(Globals.GROUPS_FRAGMENT)){
-            currentFragment = Globals.GROUPS_FRAGMENT;
+        if (!currentFragment.equals(Globals.CHECKLISTS_FRAGMENT)){
+            currentFragment = Globals.CHECKLISTS_FRAGMENT;
             fm.beginTransaction()
-                    .replace(R.id.container_chatActivity, fragments.get(Globals.GROUPS_FRAGMENT))
+                    .replace(R.id.container_chatActivity, fragments.get(Globals.CHECKLISTS_FRAGMENT))
                     .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                     .commit();
         }else{

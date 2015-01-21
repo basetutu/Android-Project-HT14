@@ -33,13 +33,6 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".DialogActivity_Item"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/title_activity_dialog_activity__item"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Dialog" >
-        </activity>
-        <activity
             android:name=".ContactsActivity"
             android:label="@string/title_activity_contacts" >
         </activity>

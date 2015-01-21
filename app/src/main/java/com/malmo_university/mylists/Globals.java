@@ -15,7 +15,7 @@ public class Globals {
     //protected static final String FIREBASE_GROUPS_URL = "https://da401a.firebaseio.com/";
 
     // String identifier for the group-fragment
-    protected static final String GROUPS_FRAGMENT = "the_fragment_name_that_lists_all_the_groups";
+    protected static final String CHECKLISTS_FRAGMENT = "the_fragment_name_that_lists_all_the_checklists";
     // The filename for the SharedPreference
     protected static final String SHARED_PREFERENCE_MY_LISTS = "mylists";
 

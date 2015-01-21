@@ -22,6 +22,7 @@ public class Link {
         this.date_added = date_added;
         this.type = type;
         this.reference = reference;
+        this.owner = owner;
     }
 
     public String getRef_id() {

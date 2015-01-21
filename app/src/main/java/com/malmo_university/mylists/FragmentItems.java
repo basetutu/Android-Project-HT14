@@ -9,50 +9,53 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
- * A placeholder fragment containing a simple view.
+ * Created by Saeed on 21-01-2015.
  */
-public class FragmentChecklists extends Fragment {
-    private static final String TAG = "FragmentChecklists";
+public class FragmentItems extends Fragment{
+    private static String TAG = "FragmentItems";
+    private MainActivity mParentActivity;
 
-    protected MainActivity mParentActivity;
+    // This holds all the items of this checklists
+    private ArrayList<Item> mListViewItems;
+    // Holds the various links stored in firebase
+    private ArrayList<Link> mChecklists;
+    private ArrayList<Link> mContacts;
+    private ArrayList<Link> mAwaiting_acceptance_links;
+    // The adapter of the listview
+    private ItemsAdapter mListViewAdapter;
 
-    //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-    private ArrayList<Checklist> mListViewChecklists;
-    //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-    private ChecklistsAdapter mListViewAdapter;
 
-    private ListView mListView;
+    // The name of the checklist to operate in
+    private String mChecklistName;
+    // The checklist-reference of firebase
+    private Firebase mFirebaseChecklist;
 
-    // The group-reference of firebase
-    private Firebase mFirebaseChecklists;
+    private HashMap<String, Item> mItemsMap;
+    private boolean mLastItemVisible;
 
     private boolean childListenerRegistered = false;
-
-    // As default the list must scroll down lot the lowest item on the list
-    private boolean mLastItemVisible = true;
-
-
-    ////
-
 
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
-    public static FragmentChecklists newInstance() {
+    public static FragmentChecklists newInstance(String checklist, String firebaseChecklistRef) {
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "newInstance");
+        TAG = "FragmentItems: " + checklist;
 
         FragmentChecklists newFragmentChat = new FragmentChecklists();
 
         Bundle args = new Bundle();
+        args.putString("checklist", checklist);
+        args.putString("firebaseChecklistRef", firebaseChecklistRef);
         newFragmentChat.setArguments(args);
 
         if (Globals.DEBUG_invocation)
@@ -68,25 +71,26 @@ public class FragmentChecklists extends Fragment {
 
         mParentActivity = (MainActivity)getActivity();
 
-        mListViewChecklists = mParentActivity.getChecklists();
 
-
-//        mFirebaseChecklists = new Firebase(Globals.FIREBASE_DB_ROOT_URL).child(FirebaseController.);
+        Bundle args = getArguments();
+        mChecklistName = args.getString("checklist");
+        mFirebaseChecklist = new Firebase(args.getString("firebaseChecklistRef"));
 
 
 
         // Create the Arraylist that will store our group-names from the list
-        mListViewChecklists = new ArrayList<Checklist>(50);
+        mListViewItems = new ArrayList<Item>(50);
+        mItemsMap = new HashMap<String, Item>(100);
 
-        mListViewAdapter = new ChecklistsAdapter(mParentActivity,
-                mListViewChecklists,
+        mListViewAdapter = new ItemsAdapter(mParentActivity,
+                mListViewItems,
                 getResources(),
                 this);
 
         mListViewAdapter.notifyDataSetChanged();
 
         if (!childListenerRegistered) {
-//            FirebaseController.registerValueListener(mFirebaseChecklists, mGroupValueListener);
+//            FirebaseController.registerValueListener(mFirebaseChecklist, mGroupValueListener);
 //            FirebaseController.registerChildListener(mFirebaseGroupMessages, mGroupMessageListener);
             childListenerRegistered = true;
         }
@@ -97,63 +101,29 @@ public class FragmentChecklists extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.w("fsdf", "onCreateView");
+        Log.w(TAG, "onCreateView");
 
         View rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
-        mListView = (ListView) rootView.findViewById(R.id.listview_checklists);
-        mListView.setDivider(null);
-        mListView.setDividerHeight(0);
-
-        mListView.setAdapter(mListViewAdapter);
-
-
-
-
 
         return rootView;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.w("fsdf","onPause");
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        Log.w("fsdf","onResume");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        Log.w("fsdf","onStop");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.w("fsdf","onDestroy");
-    }
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////
+    private class ItemsAdapter extends BaseAdapter {
 
-    private class ChecklistsAdapter extends BaseAdapter {
-
-        private final ArrayList<Checklist> listItems;
+        private final ArrayList listItems;
         private final Resources resources;
-        private final FragmentChecklists mFragmentChatRef;
+        private final FragmentItems mFragmentItemRef;
         private final LayoutInflater inflater;
 
         /*************  CustomAdapter Constructor *****************/
-        public ChecklistsAdapter(MainActivity context, ArrayList listItems, Resources resLocal, FragmentChecklists ref) {
+        public ItemsAdapter(MainActivity context, ArrayList listItems, Resources resLocal, FragmentItems ref) {
             /********** Take passed values **********/
             mParentActivity = context;
             this.listItems = listItems;
             resources = resLocal;
-            mFragmentChatRef = ref;
+            mFragmentItemRef = ref;
             /***********  Layout inflater to call external xml layout () ***********/
             inflater = ( LayoutInflater ) mParentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -259,7 +229,7 @@ public class FragmentChecklists extends Fragment {
                     viewHolder.from.setText("You");
                     viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
                 //}else {
-                //    //viewHolder.from.setText(tempValues.getFrom());
+                //    viewHolder.from.setText(tempValues.getFrom());
                 //    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));
                 //}
                 //viewHolder.message.setText(tempValues.getMessage());
@@ -271,11 +241,11 @@ public class FragmentChecklists extends Fragment {
             if (position >= listItems.size() -2){
                 if (Globals.DEBUG_results)
                     Log.w(TAG, "last item is visible");
-                mFragmentChatRef.setLastItemVisible(true);
+                mFragmentItemRef.setLastItemVisible(true);
             }else {
                 if (Globals.DEBUG_results)
                     Log.w(TAG, "last item is NOT visible");
-                mFragmentChatRef.setLastItemVisible(false);
+                mFragmentItemRef.setLastItemVisible(false);
             }
 
             return vi;
@@ -307,6 +277,7 @@ public class FragmentChecklists extends Fragment {
     private void onChecklistItemClicked(int mPosition) {
         //todo
     }
+
 
     protected void setLastItemVisible(boolean state){
         mLastItemVisible = state;
