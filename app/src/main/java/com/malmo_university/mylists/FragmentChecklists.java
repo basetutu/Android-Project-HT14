@@ -16,8 +16,7 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class FragmentChecklists extends Fragment {
-    String[] checklists;
-    List<TestData> myTestData;
+    List<Checklist> listAdapterChecklists;
     View rootView;
 
     /**
@@ -40,7 +39,7 @@ public class FragmentChecklists extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        myTestData = new ArrayList<TestData>();
+        listAdapterChecklists = new ArrayList<Checklist>();
         super.onCreate(savedInstanceState);
         Log.w("fsdf","onCreate");
     }
@@ -50,48 +49,41 @@ public class FragmentChecklists extends Fragment {
                              Bundle savedInstanceState) {
         Log.w("fsdf", "onCreateView");
 
-        //checklists = new String[] {"potatis","mjölk"};
-
         rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
 
-        populateTestData();
+        populateListAdapter();
         populateListView(inflater);
-
-        //replaces R.layout... "android.R.layout.simple_list_item_1"
-
-        //ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(),
-        //        R.layout.testlayout, R.id.test_left_tv, checklists);
-
-
-        //ListAdaptor adapter = new ListAdaptor(getActivity(), R.layout.testlayout, myDataArray);
-
-        //ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
-        //list.setAdapter(adapter);
-
-        ////
 
         return rootView;
     }
 
-    private void populateTestData() {
-        myTestData.add(new TestData("ShoppingList","Eggs,Milk"));
-        myTestData.add(new TestData("TodoList","Training,Studying"));
-        myTestData.add(new TestData("RememberList","Mom's birthday soon"));
+    /**
+     * Populates the list adapter with a number of Checklist objects.
+     */
+    private void populateListAdapter() {
+        listAdapterChecklists.add(new Checklist("Shopping list", "Date added", "Last accessed by:"));
+        listAdapterChecklists.add(new Checklist("Todo list", "Date added", "Last accessed by:"));
+        listAdapterChecklists.add(new Checklist("Remember list", "Date added", "Last accessed by:"));
     }
 
-    private ListView populateListView(LayoutInflater inflater) {
-        ArrayAdapter<TestData> adapter = new MyListAdapter(inflater);
+    /**
+     *  Gives the ListView an ArrayAdapter containing an array of view objects
+     * @param inflater passes the inflater down to the MyListAdapter class
+     */
+    private void populateListView(LayoutInflater inflater) {
+        ArrayAdapter<Checklist> adapter = new MyListAdapter(inflater);
         ListView list = (ListView) rootView.findViewById(R.id.listview_checklists);
         list.setAdapter(adapter);
-
-        return list;
     }
 
-    private class MyListAdapter extends ArrayAdapter<TestData> {
+    /**
+     * Converts a list of checklist objects into a AdaptorArray of View objects
+     */
+    private class MyListAdapter extends ArrayAdapter<Checklist> {
         LayoutInflater inflater;
 
         private MyListAdapter(LayoutInflater inflater) {
-            super(getActivity(), R.layout.testlayout, myTestData);
+            super(getActivity(), R.layout.testlayout, listAdapterChecklists);
             this.inflater = inflater;
         }
 
@@ -102,13 +94,13 @@ public class FragmentChecklists extends Fragment {
                 itemView = inflater.inflate(R.layout.testlayout, parent, false);
             }
 
-            TestData currentPos = myTestData.get(position);
+            Checklist currentPos = listAdapterChecklists.get(position);
 
             TextView title = (TextView) itemView.findViewById(R.id.test_left_tv);
-            title.setText(currentPos.GetTitle());
+            title.setText(currentPos.getName());
 
             TextView description = (TextView) itemView.findViewById(R.id.test_right_tv);
-            description.setText(currentPos.GetDescription());
+            description.setText(currentPos.getDate_added());
 
             return itemView;
         }
@@ -116,7 +108,6 @@ public class FragmentChecklists extends Fragment {
 
     @Override
     public void onPause() {
-        myTestData.clear();
         super.onPause();
         Log.w("fsdf","onPause");
     }
@@ -129,14 +120,14 @@ public class FragmentChecklists extends Fragment {
 
     @Override
     public void onStop() {
-        myTestData.clear();
+        listAdapterChecklists.clear();
         super.onStop();
         Log.w("fsdf","onStop");
     }
 
     @Override
     public void onDestroy() {
-        myTestData.clear();
+        listAdapterChecklists.clear();
         super.onDestroy();
         Log.w("fsdf","onDestroy");
     }

@@ -2,15 +2,23 @@ package com.malmo_university.mylists;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
+
 
 import com.firebase.client.Firebase;
 
@@ -19,6 +27,7 @@ import java.util.Locale;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private static final String TAG = "MainActivity";
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -48,7 +57,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         //todo login
 
 /*
-        // TEST SECTION /////////////////////////////////////////////////////////////////////
+        // TEST SECTION
 
         Log.w(TAG,"0");
 
@@ -77,7 +86,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
 */
-        /////////////////////////////////////////////////////////////////////////////////////
 
         // Set up the action bar.
         mActionBar = getActionBar();
@@ -132,7 +140,30 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     }
 
 
-    ////////////////////////////////////////////////////////////////////////////////////////
+    public void threeButtonAlertDialog(){
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setTitle("Welcome to ListApp");
+        dialogBuilder.setMessage("Have you been here before?");
+        dialogBuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        dialogBuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        dialogBuilder.setNeutralButton("Dunno", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+        dialogBuilder.setIcon(R.drawable.ic_launcher);
+        dialogBuilder.show();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -156,7 +187,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         return super.onOptionsItemSelected(item);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////////////
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -172,8 +202,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
-
-    ////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to

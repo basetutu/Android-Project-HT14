@@ -7,13 +7,15 @@ import java.util.ArrayList;
  */
 public class Checklist {
     String name;
-    String date_created;
+    String date_added;
+    private final String last_accessed;
     ArrayList<Item> mItems = new ArrayList<Item>();
     ArrayList<Profile> mUsers = new ArrayList<Profile>();
 
-    public Checklist(String name) {
+    public Checklist(String name, String date_added, String last_accessed) {
         this.name = name;
-        this.date_created = FirebaseController.getTimestamp();
+        this.date_added = date_added;
+        this.last_accessed = last_accessed;
     }
 
     public String getName() {
@@ -24,12 +26,12 @@ public class Checklist {
         this.name = name;
     }
 
-    public String getDate_created() {
-        return date_created;
+    public String getDate_added() {
+        return date_added;
     }
 
-    public void setDate_created(String date_created) {
-        this.date_created = date_created;
+    public void setDate_added(String date_added) {
+        this.date_added = date_added;
     }
 
     public ArrayList<Item> getmItems() {
