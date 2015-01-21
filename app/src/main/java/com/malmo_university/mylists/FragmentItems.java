@@ -145,16 +145,16 @@ public class FragmentItems extends Fragment{
         @Override
         public View getView(int position, View vi, ViewGroup parent) {
             ViewHolder viewHolder;
-            ChatMessage tempValues;
-            boolean writeToRight;
+            Checklist tempValues;
+            boolean writeToRight = false;
 
             // Our listview uses two views for its rows depending on who the sender is
             if(listItems.size() > 0) {
                 /***** Get each ChatMessage object from Arraylist ********/
-                tempValues = (ChatMessage) listItems.get(position);
+                tempValues = (Checklist) listItems.get(position);
                 // this will indicate which view to use
 //            writeToRight = (tempValues.getFrom().equals(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME)));
-                writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
+                //writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
             }else{
                 tempValues = null;
                 writeToRight = false;
@@ -225,14 +225,14 @@ public class FragmentItems extends Fragment{
                 viewHolder.message.setText("Be the first to post a message in this group...");
             } else {
                 /************  Set Model values     from Holder elements ***********/
-                if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
+                //if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
                     viewHolder.from.setText("You");
                     viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
-                }else {
-                    viewHolder.from.setText(tempValues.getFrom());
-                    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));
-                }
-                viewHolder.message.setText(tempValues.getMessage());
+                //}else {
+                //    viewHolder.from.setText(tempValues.getFrom());
+                //    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));
+                //}
+                //viewHolder.message.setText(tempValues.getMessage());
 
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
                 vi.setOnClickListener(new OnItemClickListener( position ));

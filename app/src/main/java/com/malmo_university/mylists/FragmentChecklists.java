@@ -9,15 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -28,30 +25,23 @@ public class FragmentChecklists extends Fragment {
     protected MainActivity mParentActivity;
 
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-    //private ArrayList<String> mListViewMessages;
-    public ArrayList<ChatMessage> mListViewMessages;
+    private ArrayList<Checklist> mListViewChecklists;
     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
     private ChecklistsAdapter mListViewAdapter;
 
-    // List of all ChatMessages that is received (not needed)
-    private HashMap<String, ChatMessage> mMessageMap;//todo remove
     private ListView mListView;
 
     // The group-reference of firebase
     private Firebase mFirebaseChecklists;
-    // The message-reference of the group
-    private Firebase mFirebaseGroupMessages;
+
     private boolean childListenerRegistered = false;
 
     // As default the list must scroll down lot the lowest item on the list
     private boolean mLastItemVisible = true;
 
-    private EditText text_footer_message;
-    private ImageButton btn_footer_send;
 
     ////
 
-    ArrayList<Checklist> mListChecklists;
 
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -78,7 +68,7 @@ public class FragmentChecklists extends Fragment {
 
         mParentActivity = (MainActivity)getActivity();
 
-        mListChecklists = mParentActivity.getChecklists();
+        mListViewChecklists = mParentActivity.getChecklists();
 
 
 //        mFirebaseChecklists = new Firebase(Globals.FIREBASE_DB_ROOT_URL).child(FirebaseController.);
@@ -86,11 +76,10 @@ public class FragmentChecklists extends Fragment {
 
 
         // Create the Arraylist that will store our group-names from the list
-        mListViewMessages = new ArrayList<ChatMessage>(50);
-        mMessageMap = new HashMap<String, ChatMessage>(100);
+        mListViewChecklists = new ArrayList<Checklist>(50);
 
         mListViewAdapter = new ChecklistsAdapter(mParentActivity,
-                mListViewMessages,
+                mListViewChecklists,
                 getResources(),
                 this);
 
@@ -111,6 +100,12 @@ public class FragmentChecklists extends Fragment {
         Log.w("fsdf", "onCreateView");
 
         View rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
+        mListView = (ListView) rootView.findViewById(R.id.listview_checklists);
+        mListView.setDivider(null);
+        mListView.setDividerHeight(0);
+
+        mListView.setAdapter(mListViewAdapter);
+
 
 
 
@@ -147,7 +142,7 @@ public class FragmentChecklists extends Fragment {
 
     private class ChecklistsAdapter extends BaseAdapter {
 
-        private final ArrayList listItems;
+        private final ArrayList<Checklist> listItems;
         private final Resources resources;
         private final FragmentChecklists mFragmentChatRef;
         private final LayoutInflater inflater;
@@ -180,16 +175,16 @@ public class FragmentChecklists extends Fragment {
         @Override
         public View getView(int position, View vi, ViewGroup parent) {
             ViewHolder viewHolder;
-            ChatMessage tempValues;
-            boolean writeToRight;
+            Checklist tempValues;
+            boolean writeToRight = false;
 
             // Our listview uses two views for its rows depending on who the sender is
             if(listItems.size() > 0) {
                 /***** Get each ChatMessage object from Arraylist ********/
-                tempValues = (ChatMessage) listItems.get(position);
+                tempValues = (Checklist) listItems.get(position);
                 // this will indicate which view to use
 //            writeToRight = (tempValues.getFrom().equals(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME)));
-                writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
+                //writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
             }else{
                 tempValues = null;
                 writeToRight = false;
@@ -260,14 +255,14 @@ public class FragmentChecklists extends Fragment {
                 viewHolder.message.setText("Be the first to post a message in this group...");
             } else {
                 /************  Set Model values     from Holder elements ***********/
-                if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
+                //if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
                     viewHolder.from.setText("You");
                     viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
-                }else {
-                    viewHolder.from.setText(tempValues.getFrom());
-                    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));
-                }
-                viewHolder.message.setText(tempValues.getMessage());
+                //}else {
+                //    //viewHolder.from.setText(tempValues.getFrom());
+                //    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));
+                //}
+                //viewHolder.message.setText(tempValues.getMessage());
 
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
                 vi.setOnClickListener(new OnItemClickListener( position ));

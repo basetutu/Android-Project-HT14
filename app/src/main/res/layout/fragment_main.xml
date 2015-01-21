@@ -7,7 +7,7 @@
     tools:context=".FragmentChecklists">
 
 <ListView
-    android:id="@+id/listview_checklists"
+    android:id="@+id/listview_checklists_2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:divider="@color/red">
