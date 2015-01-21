@@ -28,17 +28,20 @@
         </activity>
         <activity
             android:name=".ActivityLoggedIn"
-            android:label="@string/title_chat_list"
-            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
-            >
+            android:label="@string/title_chat_list"
+            android:screenOrientation="portrait" >
         </activity>
         <activity
             android:name=".DialogActivity_Item"
-            android:screenOrientation="portrait"
             android:configChanges="orientation|keyboardHidden"
-            android:theme="@android:style/Theme.Dialog"
-            android:label="@string/title_activity_dialog_activity__item" >
+            android:label="@string/title_activity_dialog_activity__item"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Dialog" >
+        </activity>
+        <activity
+            android:name=".ContactsActivity"
+            android:label="@string/title_activity_contacts" >
         </activity>
     </application>
 
