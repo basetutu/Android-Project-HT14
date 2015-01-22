@@ -103,7 +103,7 @@ public class FragmentChecklists extends Fragment {
     public void onResume() {
         super.onResume();
         Log.w(TAG,"onResume");
-
+/*
         HashMap<String,String> values = new HashMap<String, String>();
         values.put("NAME","hallo");
         values.put("Creating Date", FirebaseController.getTimestamp());
@@ -114,7 +114,7 @@ public class FragmentChecklists extends Fragment {
         mChecklistsArray.add(mChecklistsArray.size(),a);
         mChecklistsArray.add(mChecklistsArray.size(),a);
         mListViewAdapter.notifyDataSetChanged();
-
+*/
 
     }
 
@@ -227,7 +227,7 @@ public class FragmentChecklists extends Fragment {
             @Override
             public void onClick(View arg0) {
                 /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
-                onChecklistItemClicked(mPosition);
+                mParentActivity.onChecklistItemClicked(mPosition);
             }
         }
 
@@ -238,21 +238,6 @@ public class FragmentChecklists extends Fragment {
         }
 
     }
-
-    private void onChecklistItemClicked(int mPosition) {
-        Log.w(TAG,"onChecklistItemClicked");
-
-        //todo
-        // get the checklist
-        // see if the corresponding fragment is already open
-        // if it is, select the tab
-        // if NOT, initialize a new FragmentItems
-        // add it to the mChecklistsArray and mChecklistsMap
-        // invoke mSectionPageAdapter.pageAdded()
-        // select the new tab
-
-    }
-
 
     // Listeners //////////////////////////////////////////////////////////////////////////
 

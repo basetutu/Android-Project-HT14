@@ -40,7 +40,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     private FragmentChecklists mFragmentChecklists;
 
     // This holds the fragment of all the open checklists (they hold their own data)
-    private ArrayList<FragmentItems> mFragmentItems;
+    private HashMap<String,FragmentItems> mFragmentItems;
 
     //////////////////////////////////////////////////////////
     // CHECKLISTS RELATED DATA                              //
@@ -111,10 +111,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             mSectionsPagerAdapter.notifyDataSetChanged();
         }
         if (mFragmentItems == null) {
-            mFragmentItems = new ArrayList<FragmentItems>();
+            mFragmentItems = new HashMap<String, FragmentItems>();
         }
         if (mChecklistsArray == null) {
             mChecklistsArray = new ArrayList<Checklist>();
+            mChecklistsMap = new HashMap<String, Checklist>();
         }
 
         if (mUserChecklistsArray == null) {
@@ -181,8 +182,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     protected void onResume() {
         super.onResume();
         Log.w(TAG, "onResume");
-
         recreateTabs();
+
+        // TEST
+        Checklist checklist = new Checklist("ref id", FirebaseController.getTimestamp(), "test", null);
+        mChecklistsArray.add(mChecklistsArray.size(), checklist);
+
+        ThreadController.delay(5000);
+
+        onChecklistItemClicked(0);
 
         Log.w(TAG, " - onResume");
     }
@@ -305,6 +313,28 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Log.w(TAG, " - onBackPressed");
     }
 
+    protected void onChecklistItemClicked(int mPosition) {
+        Log.w(TAG,"onChecklistItemClicked");
+
+        //todo
+        // get the checklist from mChecklistsArray
+        Checklist checklist = mChecklistsArray.get(mPosition);
+        // see if there is a corresponding FragmentItems for this in mFragmentItems
+        if (mFragmentItems.get(checklist.getRef_id()) != null){
+            // if it is there must be a page for it too, select the page
+            mViewPager.setCurrentItem(mPosition);
+        }else{
+            // if NOT, initialize a new FragmentItems with checklist
+            FragmentItems fragmentItems = FragmentItems.newInstance(checklist.getName(),checklist.getRef_id());
+            // add it to mFragmentItems
+            mFragmentItems.put(checklist.getRef_id(), fragmentItems);
+            // Inform ViewPager that there is a new page added by invoking mSectionPageAdapter.fragmentAdded()
+            mSectionsPagerAdapter.fragmentAdded();
+            // select the new tab/page
+            mViewPager.setCurrentItem(mPosition);
+        }
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -318,7 +348,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             super(fm);
         }
 
-        public void notifyPageAdded(){
+        public void fragmentAdded(){
             addPage();
             notifyDataSetChanged();
             recreateTabs();
@@ -330,13 +360,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Log.w(TAG, "getItem: " + position);
             if (position != 0) {
                 position--;
+                Checklist checklist = mChecklistsArray.get(position);
+                String checklist_ref_id = checklist.getRef_id();
                 //see if fragment already exists in mFragmentItems
-                FragmentItems fragmentItems = mFragmentItems.get(position);
+                FragmentItems fragmentItems = mFragmentItems.get(checklist_ref_id);
                 if(fragmentItems == null){
-                    String checklistName = mChecklistsArray.get(position).getName();
-                    String checklist_ref_id = mChecklistsArray.get(position).getRef_id();
+                    String checklistName = checklist.getName();
                     fragmentItems = FragmentItems.newInstance(checklistName, checklist_ref_id);
-                    mFragmentItems.add(position, fragmentItems);
+                    mFragmentItems.put(checklist_ref_id, fragmentItems);
                 }
                 return fragmentItems;
             }else{
