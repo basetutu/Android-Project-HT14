@@ -5,33 +5,33 @@ package com.malmo_university.mylists;
  */
 public class Item {
     String ref_id;
-    String checklist_id;
-    String creator;
-    String date_added;
+    String checklist_ref_id;
+    String lastModifiedBy;
+    String creation_date;
     int order;
     String title;
     String note;
-    boolean state;
+    boolean checked;
 
-    public Item(String ref_id, String checklist_id, String creator, String date_added, int order,
-                String title, String note, boolean state) {
+    public Item(String ref_id, String checklist_ref_id, String lastModifiedBy, String creation_date, int order,
+                String title, String note, boolean checked) {
 
         this.ref_id = ref_id;
-        this.creator = creator;
-        this.date_added = date_added;
+        this.lastModifiedBy = lastModifiedBy;
+        this.creation_date = creation_date;
         this.order = order;
         this.title = title;
         this.note = note;
-        this.state = state;
-        this.checklist_id = checklist_id;
+        this.checked = checked;
+        this.checklist_ref_id = checklist_ref_id;
     }
 
-    public String getChecklist_id() {
-        return checklist_id;
+    public String getChecklist_ref_id() {
+        return checklist_ref_id;
     }
 
-    public void setChecklist_id(String checklist_id) {
-        this.checklist_id = checklist_id;
+    public void setChecklist_ref_id(String checklist_ref_id) {
+        this.checklist_ref_id = checklist_ref_id;
     }
 
     public String getRef_id() {
@@ -42,20 +42,20 @@ public class Item {
         this.ref_id = ref_id;
     }
 
-    public String getCreator() {
-        return creator;
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
     }
 
-    public void setCreator(String creator) {
-        this.creator = creator;
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
     }
 
-    public String getDate_added() {
-        return date_added;
+    public String getCreation_date() {
+        return creation_date;
     }
 
-    public void setDate_added(String date_added) {
-        this.date_added = date_added;
+    public void setCreation_date(String creation_date) {
+        this.creation_date = creation_date;
     }
 
     public int getOrder() {
@@ -82,11 +82,11 @@ public class Item {
         this.note = note;
     }
 
-    public boolean getState() {
-        return state;
+    public boolean getChecked() {
+        return checked;
     }
 
-    public void setState(boolean state) {
-        this.state = state;
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 }

@@ -9,12 +9,12 @@
     android:descendantFocusability="afterDescendants">
 
     <ListView
-        android:id="@+id/listview_checklists"
+        android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusableInTouchMode="true"
-        android:focusable="true"
-        android:clickable="true"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:clickable="false"
         android:longClickable="true"
         android:background="@color/transparent"
         >

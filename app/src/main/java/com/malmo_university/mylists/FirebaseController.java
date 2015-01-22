@@ -188,9 +188,9 @@ public class FirebaseController {
         // then delete the checklist, otherwise remove this user from list
 
         // Remove the checklist entirely
-//        mFirebaseCHECKLISTS.child(checklist_id).removeValue();
+//        mFirebaseCHECKLISTS.child(checklist_ref_id).removeValue();
         // delete this user from the checklist's list of users with reference to it
-//        mFirebaseCHECKLISTS.child(checklist_id).child(USERS_REF).child(getCurrentUserKey()).removeValue();
+//        mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child(getCurrentUserKey()).removeValue();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -200,23 +200,23 @@ public class FirebaseController {
         Item item = new Item(ref_id, checklist_id, getCurrentUser(), getTimestamp(), 0, title, note, false);
         mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).child(ref_id).setValue(item);
         ThreadController.delay(5000);
-        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).removeValue();
+        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
 
     protected static void editItemOnChecklist(String title, String note, Item item){
         item.setTitle(title);
         item.setNote(note);
-        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).setValue(item);
+        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
     }
 
     protected static void checkItemOnChecklist(boolean state, Item item){
-        item.state = state;
-        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).setValue(item);
+        item.checked = state;
+        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
     }
 
     // todo not tested
     protected static void removeItemFromChecklist(Item item){
-        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).removeValue();
+        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
 
     ////////////////////////////////////////////////////////////////////7
