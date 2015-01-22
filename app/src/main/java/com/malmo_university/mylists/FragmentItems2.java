@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.client.Firebase;
@@ -20,7 +19,7 @@ import java.util.HashMap;
 /**
  * Created by Saeed on 21-01-2015.
  */
-public class FragmentItems extends Fragment{
+public class FragmentItems2 extends Fragment{
     private static String TAG = "FragmentItems";
     private MainActivity mParentActivity;
 
@@ -33,7 +32,6 @@ public class FragmentItems extends Fragment{
     // The adapter of the listview
     private ItemsAdapter mListViewAdapter;
 
-    private ListView mListView;
 
     // The name of the checklist to operate in
     private String mChecklistName;
@@ -76,7 +74,7 @@ public class FragmentItems extends Fragment{
 
         Bundle args = getArguments();
         mChecklistName = args.getString("checklist");
-        //mFirebaseChecklist = new Firebase(args.getString("firebaseChecklistRef"));
+        mFirebaseChecklist = new Firebase(args.getString("firebaseChecklistRef"));
 
 
 
@@ -107,12 +105,6 @@ public class FragmentItems extends Fragment{
 
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
 
-        mListView = (ListView) rootView.findViewById(R.id.listview);
-        mListView.setDivider(null);
-        mListView.setDividerHeight(0);
-
-        mListView.setAdapter(mListViewAdapter);
-
         return rootView;
     }
 
@@ -122,11 +114,11 @@ public class FragmentItems extends Fragment{
 
         private final ArrayList listItems;
         private final Resources resources;
-        private final FragmentItems mFragmentItemRef;
+        private final FragmentItems2 mFragmentItemRef;
         private final LayoutInflater inflater;
 
         /*************  CustomAdapter Constructor *****************/
-        public ItemsAdapter(MainActivity context, ArrayList listItems, Resources resLocal, FragmentItems ref) {
+        public ItemsAdapter(MainActivity context, ArrayList listItems, Resources resLocal, FragmentItems2 ref) {
             /********** Take passed values **********/
             mParentActivity = context;
             this.listItems = listItems;
@@ -234,8 +226,8 @@ public class FragmentItems extends Fragment{
             } else {
                 /************  Set Model values     from Holder elements ***********/
                 //if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
-                    viewHolder.from.setText("You");
-                    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
+                viewHolder.from.setText("You");
+                viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
                 //}else {
                 //    viewHolder.title.setText(tempValues.getFrom());
                 //    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));

@@ -87,7 +87,7 @@ public class FragmentChecklists extends Fragment {
         Log.w(TAG, "onCreateView");
 
         View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
-        mListView = (ListView) rootView.findViewById(R.id.listview_checklists);
+        mListView = (ListView) rootView.findViewById(R.id.listview);
         mListView.setDivider(null);
         mListView.setDividerHeight(0);
 
@@ -248,8 +248,10 @@ public class FragmentChecklists extends Fragment {
     }
 
     private void onChecklistItemClicked(int mPosition) {
+
         //todo
         Log.w(TAG,"onChecklistItemClicked");
+
     }
 
     protected void setLastItemVisible(boolean state){

@@ -278,7 +278,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 //see if fragment already exists in mFragmentChecklists
                 // return that if it does
                 // use
-                return FragmentItems.newInstance(mListChecklists.get(position).getName(), mListChecklists.get(position).getRef_id());
+                return FragmentItems.newInstance(mListChecklists.get(position).getName(),
+                        mListChecklists.get(position).getRef_id());
             }else{
                 return mFragmentChecklists;
             }
