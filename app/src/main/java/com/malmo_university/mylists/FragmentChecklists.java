@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -67,8 +68,7 @@ public class FragmentChecklists extends Fragment {
 
         mListViewAdapter = new ChecklistsAdapter(mParentActivity,
                 mListViewChecklists,
-                getResources(),
-                this);
+                getResources());
 
         mListViewAdapter.notifyDataSetChanged();
 
@@ -93,10 +93,6 @@ public class FragmentChecklists extends Fragment {
 
         mListView.setAdapter(mListViewAdapter);
 
-
-
-
-
         return rootView;
     }
 
@@ -116,6 +112,7 @@ public class FragmentChecklists extends Fragment {
         values.put("Creating Date", FirebaseController.getTimestamp());
         Checklist a = new Checklist("dasda",FirebaseController.getTimestamp(),
                 "my checklist", values);
+        mListViewChecklists.add(mListViewChecklists.size(),a);
         mListViewChecklists.add(mListViewChecklists.size(),a);
         mListViewChecklists.add(mListViewChecklists.size(),a);
         mListViewChecklists.add(mListViewChecklists.size(),a);
@@ -140,19 +137,20 @@ public class FragmentChecklists extends Fragment {
     ////////////////////////////////////////////////////////////////////////////////////////
 
     private class ChecklistsAdapter extends BaseAdapter {
+        private final String TAG = "ChecklistsAdapter";
 
         private final ArrayList<Checklist> listItems;
         private final Resources resources;
-        private final FragmentChecklists mFragmentChatRef;
+        //private final FragmentChecklists mFragmentChatRef;
         private final LayoutInflater inflater;
 
         /*************  CustomAdapter Constructor *****************/
-        public ChecklistsAdapter(MainActivity context, ArrayList listItems, Resources resLocal, FragmentChecklists ref) {
+        public ChecklistsAdapter(MainActivity context, ArrayList listItems, Resources resLocal) {
             /********** Take passed values **********/
             mParentActivity = context;
             this.listItems = listItems;
             resources = resLocal;
-            mFragmentChatRef = ref;
+            //mFragmentChatRef = ref;
             /***********  Layout inflater to call external xml layout () ***********/
             inflater = ( LayoutInflater ) mParentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -173,6 +171,7 @@ public class FragmentChecklists extends Fragment {
 
         @Override
         public View getView(int position, View vi, ViewGroup parent) {
+            //mListView.smoothScrollToPosition(0);
             if (Globals.DEBUG_results) {
                 Log.w(TAG, "getView");
             }
@@ -191,63 +190,24 @@ public class FragmentChecklists extends Fragment {
             // Otherwise reuse convertView by getting its ViewHolder.
             if(vi == null){
                 viewHolder = new ViewHolder();
-                /****** Inflate tabitem.xml file for each row ( Defined below ) *******/
-                vi = inflater.inflate(R.layout.delete_item_chat_right, null);
+                vi = inflater.inflate(R.layout.row_checklist, null);
                 /****** View Holder Object to contain tabitem.xml file elements ******/
-                viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
-                viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_right_message);
-                viewHolder.writeToRight = true;
+                viewHolder.title = (TextView) vi.findViewById(R.id.row_checklist_title);
+                viewHolder.check = (ImageView) vi.findViewById(R.id.row_checklist_check);
                 /************  Set viewHolder with LayoutInflater ************/
                 vi.setTag( viewHolder );
             } else {
-                // Identify the view that is received to see if it can be used or a new must be inflated
-                if (((ViewHolder)vi.getTag()).writeToRight == true) {
-                    if (Globals.DEBUG_results){
-                        Log.i(TAG, "======== Correct view orientation ========");
-                    }
-                    // Fetch the ViewHolder and reuse the vi
-                    viewHolder = (ViewHolder) vi.getTag();
-                }else{
-                    if (Globals.DEBUG_results) {
-                        Log.i(TAG, "======== Incorrect view orientation ========");
-                    }
-                    // Do not reuse the vi, but reuse the contained ViewHolder
-                    viewHolder = (ViewHolder) vi.getTag();
-
-                    if (true){
-                        vi = inflater.inflate(R.layout.delete_item_chat_right, null);
-                        /****** View Holder Object to contain tabitem.xml file elements ******/
-                        viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
-                        viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_right_message);
-                        viewHolder.writeToRight = true;
-                    }else {
-                        vi = inflater.inflate(R.layout.delete_item_chat_left, null);
-                        /****** View Holder Object to contain tabitem.xml file elements ******/
-                        viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_left_from);
-                        viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_left_message);
-                        viewHolder.writeToRight = false;
-                    }
-
-                    /************  Set viewHolder with LayoutInflater ************/
-                    vi.setTag( viewHolder );
-                }
+                // Fetch the ViewHolder and reuse the vi
+                viewHolder = (ViewHolder) vi.getTag();
             }
 
             // Now that we have a viewholder, we can place new data inside its views
             if(tempValues == null){
-                viewHolder.from.setText("");
-                viewHolder.message.setText("Be the first to post a message in this group...");
+                viewHolder.title.setText("Empty checklist");
+                viewHolder.check.setVisibility(View.INVISIBLE);
             } else {
                 /************  Set Model values     from Holder elements ***********/
-                //if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
-                    viewHolder.from.setText("You");
-                    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
-                //}else {
-                //    //viewHolder.from.setText(tempValues.getFrom());
-                //    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));
-                //}
-                //viewHolder.message.setText(tempValues.getMessage());
-
+                viewHolder.title.setText(tempValues.getName());
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
                 vi.setOnClickListener(new OnItemClickListener( position ));
             }
@@ -255,11 +215,11 @@ public class FragmentChecklists extends Fragment {
             if (position >= listItems.size() -2){
                 if (Globals.DEBUG_results)
                     Log.w(TAG, "last item is visible");
-                mFragmentChatRef.setLastItemVisible(true);
+                setLastItemVisible(true);
             }else {
                 if (Globals.DEBUG_results)
                     Log.w(TAG, "last item is NOT visible");
-                mFragmentChatRef.setLastItemVisible(false);
+                setLastItemVisible(false);
             }
 
             return vi;
@@ -281,15 +241,15 @@ public class FragmentChecklists extends Fragment {
 
         /********* Create a holder Class to contain inflated xml file elements *********/
         public class ViewHolder{
-            public TextView from;
-            public TextView message;
-            public boolean writeToRight;
+            public TextView title;
+            public ImageView check;
         }
 
     }
 
     private void onChecklistItemClicked(int mPosition) {
         //todo
+        Log.w(TAG,"onChecklistItemClicked");
     }
 
     protected void setLastItemVisible(boolean state){
