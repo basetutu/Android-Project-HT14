@@ -21,7 +21,7 @@ import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
+import java.util.Map;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
@@ -380,33 +380,83 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     }
 
+    // LISTENERS ////////////////////////////////////////////////////////////////////////////
 
-    private ChildEventListener mCONTACTS_REF_Listener = new ChildEventListener() {
-        //todo
-
+    private ChildEventListener mCHECKLISTS_REF_Listener = new ChildEventListener() {
+        private final String TAG = "mUserChecklistsListener";
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            if (Globals.DEBUG_invocation) {
+                Log.d(TAG, "onChildAdded");
+            }
+            // We do this only to be able to divide the string that we receive into variable
+            // like "id" and "from".
+            Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
+            // Extract data
+            String date_added = String.valueOf(dataMap.get("creation_date"));
+            String owner = String.valueOf(dataMap.get("owner"));
+            String ref_id = String.valueOf(dataMap.get("ref_id"));
+            String reference = String.valueOf(dataMap.get("reference"));
+            String type = String.valueOf(dataMap.get("type"));
+            // DEBUG
+            if (Globals.DEBUG_results) {
+                Log.d(TAG, "Child creation_date: " + date_added);
+                Log.d(TAG, "Child owner: " + owner);
+                Log.d(TAG, "Child ref_id: " + ref_id);
+                Log.d(TAG, "Child reference: " + reference);
+                Log.d(TAG, "Child type: " + type);
+            }
 
+            // Create new ChatMessage-object
+            Link link = new Link(ref_id, owner, date_added, type, reference);
+
+            if (!getUserChecklistsMap().containsKey(reference)) {
+                getUserChecklistsMap().put(reference, link);
+                //mListViewMessages.add(newChatMessage.getMessage());
+                getUserChecklistsArray().add(link);
+                notifyAdapter();
+            }
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildChanged");
+            makeToast("onChildChanged");
+            //not needed
+            // DEBUG_invocation
+            if (Globals.DEBUG_invocation) {
+                Log.d(TAG, String.valueOf(dataSnapshot.getValue()));
+            }
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildRemoved");
+            makeToast("onChildRemoved");
+            //not needed
         }
 
         @Override
         public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildMoved");
+            makeToast("onChildMoved");
+            // not needed
         }
 
         @Override
         public void onCancelled(FirebaseError firebaseError) {
-
+            if (Globals.DEBUG_invocation)
+                Log.e(TAG, "onCancelled");
+            makeToast("onCancelled - ERROR");
+            // ValueEventListener defines a onCancelled method (lines 12 - 15) that will be
+            // called if the read is ever cancelled. A read would be cancelled if the client
+            // doesn't have permission to read from a Firebase location. This method will be
+            // passed a FirebaseError object indicating why the failure occurred.
+            if (Globals.DEBUG_invocation)
+                Log.e(TAG, " - ");
         }
     };
 
@@ -438,5 +488,64 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
     };
 
+    private ChildEventListener mCONTACTS_REF_Listener = new ChildEventListener() {
+        //todo
 
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    };
+
+    private ChildEventListener mVALUES_USER_Listener = new ChildEventListener() {
+        //todo
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    };
+
+    /////////////////////////////////////////////////////////////////////////////////////////
 }
