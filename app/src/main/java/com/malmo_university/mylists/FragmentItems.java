@@ -229,7 +229,7 @@ public class FragmentItems extends Fragment{
                     viewHolder.from.setText("You");
                     viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
                 //}else {
-                //    viewHolder.from.setText(tempValues.getFrom());
+                //    viewHolder.title.setText(tempValues.getFrom());
                 //    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));
                 //}
                 //viewHolder.message.setText(tempValues.getMessage());
