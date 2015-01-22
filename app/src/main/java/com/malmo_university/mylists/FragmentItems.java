@@ -103,7 +103,7 @@ public class FragmentItems extends Fragment{
                              Bundle savedInstanceState) {
         Log.w(TAG, "onCreateView");
 
-        View rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
 
         return rootView;
     }

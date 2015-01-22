@@ -32,8 +32,9 @@ public class ActivityAuthenticate extends Activity {
 
         // instantiate several application wide controllers
         Firebase.setAndroidContext(this);
-        SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
-        MyBroadcastController.setAndroidContext(this);
+        SharedPreferencesController.init(this, Globals.SHARED_PREFERENCE_MY_LISTS);
+        MyBroadcastController.init(this);
+        AlertDialogs.init(this, getLayoutInflater());
 
         fm = getFragmentManager();
 

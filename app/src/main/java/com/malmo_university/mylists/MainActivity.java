@@ -22,22 +22,22 @@ import java.util.Locale;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private static final String TAG = "MainActivity";
-
-    // The FragmentAdapter for the ViewPager
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    // This is the fragment that shows all the checklists
-    private FragmentChecklists mFragmentChecklists;
-    // This holds all the checklists
-    private ArrayList<Checklist> mListChecklists;
-
-    // This holds the fragment of all the open checklists
-    private ArrayList<FragmentItems> mFragmentItems;
+    private ActionBar mActionBar;
+    private FragmentManager fm;
 
     // The ViewPager that will host the section contents.
     private ViewPager mViewPager;
-    private ActionBar mActionBar;
-    private FragmentManager fm;
+    // The FragmentAdapter for the ViewPager
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+
+    // This is the fragment that will show the list of checklists
+    private FragmentChecklists mFragmentChecklists;
+    // This holds all the checklists as a form of caching
+    private ArrayList<Checklist> mListChecklists;
+
+    // This holds the fragment of all the open checklists (they hold their own data)
+    private ArrayList<FragmentItems> mFragmentItems;
+
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -48,8 +48,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         setContentView(R.layout.activity_main);
         Firebase.setAndroidContext(this);
-        SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
-        MyBroadcastController.setAndroidContext(this);
+        SharedPreferencesController.init(this, Globals.SHARED_PREFERENCE_MY_LISTS);
+        MyBroadcastController.init(this);
+        AlertDialogs.init(this, getLayoutInflater());
 
         FirebaseController.setCurrentUser(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME));
 
@@ -142,9 +143,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         super.onDestroy();
         Log.w(TAG, "onPause");
 
-        AlertDialogs dialog = new AlertDialogs();
-        dialog.init(this, getLayoutInflater());
-        dialog.dialogMakeNewChecklist();
 
         Log.w(TAG, " - onPause");
     }
