@@ -202,7 +202,6 @@ public class FragmentItems extends Fragment{
 
             // Our listview uses two views for its rows depending on who the sender is
             if(listItems.size() > 0) {
-                /***** Get each ChatMessage object from Arraylist ********/
                 tempValues = listItems.get(position);
                 // this will indicate which view to use
 //            writeToRight = (tempValues.getFrom().equals(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME)));
