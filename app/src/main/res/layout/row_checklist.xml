@@ -4,46 +4,38 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:descendantFocusability="blocksDescendants">
 
     <ImageView
         android:background="@drawable/ic_launcher_chat"
         android:layout_gravity="center"
+        android:focusable="false"
+        android:clickable="false"
+        android:focusableInTouchMode="false"
         android:layout_width="60dp"
         android:layout_height="60dp" />
-    <LinearLayout
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/row_checklist_title"
+        android:focusable="false"
+        android:clickable="false"
+        android:focusableInTouchMode="false"
+        android:paddingTop="8dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="4dp"
+        android:paddingBottom="0dp"
+        android:text="tedsdsdsdsdssdstsdsdsdsdsdsdsdsds"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_weight="1">
-        <TextView
-            android:id="@+id/row_checklist_title"
-            android:paddingTop="8dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingBottom="0dp"
-            android:text="tedsdsdsdsdssdstsdsdsdsdsdsdsdsds"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:lines="2"
-            android:maxLength="33"
-            android:textSize="24dp"/>
-        <TextView
-            android:id="@+id/row_checklist_note"
-            android:paddingTop="0dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:paddingBottom="8dp"
-            android:text="testsdsdsdsdsdsdsdsdsdsdsdssdsdsssdsdsdsdsdsdsd"
-            android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="40"
-            android:textSize="20dp"/>
-    </LinearLayout>
+        android:maxLength="33"
+        android:textSize="24dp"
+        android:layout_weight="1"/>
     <ImageView
         android:id="@+id/row_checklist_check"
         android:layout_gravity="center"
+        android:focusable="false"
+        android:clickable="false"
+        android:focusableInTouchMode="false"
         android:background="@drawable/camera_test"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
