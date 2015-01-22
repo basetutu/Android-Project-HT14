@@ -14,14 +14,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private static final String TAG = "MainActivity";
+    private static final CharSequence CHECKLISTS_FRAGMENT_TAB_NAME = "My Checklists";
+
     private ActionBar mActionBar;
     private FragmentManager fm;
 
@@ -32,11 +38,29 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     // This is the fragment that will show the list of checklists
     private FragmentChecklists mFragmentChecklists;
-    // This holds all the checklists as a form of caching
-    private ArrayList<Checklist> mListChecklists;
 
     // This holds the fragment of all the open checklists (they hold their own data)
     private ArrayList<FragmentItems> mFragmentItems;
+
+    //////////////////////////////////////////////////////////
+    // CHECKLISTS RELATED DATA                              //
+    // This holds all the checklists as a form of caching   //
+    private ArrayList<Checklist> mChecklistsArray;          //
+    private HashMap<String, Checklist> mChecklistsMap;      //
+    //////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////
+    // USER-RELATED DATA                                    //
+    // User Checklists                                      //
+    ArrayList<Link> mUserChecklistsArray;                   //
+    HashMap<String, Link> mUserChecklistsMap;               //
+    // User Awaiting acceptance                             //
+    ArrayList<Link> mUserAwaitingArray;                     //
+    // User Contacts                                        //
+    ArrayList<Contact> mUserContactsArray;                  //
+    //////////////////////////////////////////////////////////
+
+
 
 
     ////////////////////////////////////////////////////////////////////////////////////////
@@ -51,8 +75,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         SharedPreferencesController.init(this, Globals.SHARED_PREFERENCE_MY_LISTS);
         MyBroadcastController.init(this);
         AlertDialogs.init(this, getLayoutInflater());
-
-        FirebaseController.setCurrentUser(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME));
+        FirebaseController.init(this, SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME).toLowerCase());
 
         // Set up the action bar.
         mActionBar = getActionBar();
@@ -90,18 +113,26 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         if (mFragmentItems == null) {
             mFragmentItems = new ArrayList<FragmentItems>();
         }
-        if (mListChecklists == null) {
-            mListChecklists = new ArrayList<Checklist>();
+        if (mChecklistsArray == null) {
+            mChecklistsArray = new ArrayList<Checklist>();
+        }
+
+        if (mUserChecklistsArray == null) {
+            // USER-RELATED DATA
+            // User Checklists
+            ArrayList<Link> mUserChecklists = new ArrayList<Link>();
+            HashMap<String, Link> mUserChecklistsMap = new HashMap<String, Link>();
+            // User Awaiting acceptance
+            ArrayList<Link> mUserAwaiting = new ArrayList<Link>();
+            // User Contacts
+            ArrayList<Contact> mUserContacts = new ArrayList<Contact>();
         }
 
 
-/*
+
         // TEST SECTION
 
         Log.w(TAG,"0");
-
-        // get the username and use it on the next line
-        FirebaseController.init(Algorithms.transformEmailToKey("smg@gmail.com"));
 
         Log.w(TAG,"1");
 
@@ -123,10 +154,28 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         Log.w(TAG,"5");
 
-        FirebaseController.addItemToChecklist(FirebaseController.makeUniqueChecklistId("shopping list"), "title", "note");
-*/
-
+        FirebaseController.addItemToChecklist("shopping list", "title", "note");
     }
+
+    protected void notifyAdapter(){
+        mSectionsPagerAdapter.notifyDataSetChanged();
+    }
+
+    ///////////////////////////////////////////////////////////////////////////
+
+    protected ArrayList<Link> getUserChecklistsArray(){
+        return mUserChecklistsArray;
+    }
+    protected HashMap<String, Link> getUserChecklistsMap(){
+        return mUserChecklistsMap;
+    }
+    protected ArrayList<Link> getUserAwaitingArray(){
+        return mUserAwaitingArray;
+    }
+    protected ArrayList<Contact> getUserContactsArray(){
+        return mUserContactsArray;
+    }
+    ///////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void onResume() {
@@ -232,17 +281,24 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     }
 
     // Get the checklists that where previously received
-    public ArrayList<Checklist> getChecklists() {
-        return mListChecklists;
+    public ArrayList<Checklist> getChecklistsArray() {
+        return mChecklistsArray;
     }
+
+    // Get the checklists that where previously received
+    public HashMap<String, Checklist> getChecklistsMap() {
+        return mChecklistsMap;
+    }
+
 
     @Override
     public void onBackPressed() {
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "onBackPressed");
-        if (!mActionBar.getSelectedTab().getText().toString().equals(Globals.CHECKLISTS_FRAGMENT)){
+        if (!mActionBar.getSelectedTab().getText().equals(CHECKLISTS_FRAGMENT_TAB_NAME)){
             mActionBar.setSelectedNavigationItem(0);
         }else{
+            purgeBackStack();
             finish();
         }
         if (Globals.DEBUG_invocation)
@@ -263,8 +319,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }
 
         public void notifyPageAdded(){
-            mSectionsPagerAdapter.addPage();
-            mSectionsPagerAdapter.notifyDataSetChanged();
+            addPage();
+            notifyDataSetChanged();
             recreateTabs();
             //mViewPager.setAdapter(mSectionsPagerAdapter);
         }
@@ -274,11 +330,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Log.w(TAG, "getItem: " + position);
             if (position != 0) {
                 position--;
-                //todo
-                //see if fragment already exists in mFragmentChecklists
-                // return that if it does
-                // use
-                return FragmentItems.newInstance(mListChecklists.get(position).getName(), mListChecklists.get(position).getRef_id());
+                //see if fragment already exists in mFragmentItems
+                FragmentItems fragmentItems = mFragmentItems.get(position);
+                if(fragmentItems == null){
+                    String checklistName = mChecklistsArray.get(position).getName();
+                    String checklist_ref_id = mChecklistsArray.get(position).getRef_id();
+                    fragmentItems = FragmentItems.newInstance(checklistName, checklist_ref_id);
+                    mFragmentItems.add(position, fragmentItems);
+                }
+                return fragmentItems;
             }else{
                 return mFragmentChecklists;
             }
@@ -298,8 +358,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public CharSequence getPageTitle(int position) {
-            Locale l = Locale.getDefault();
-            return "new page";
+            Log.w(TAG, "getPageTitle: " + position);
+            if (position != 0) {
+                position--;
+                return mChecklistsArray.get(position).getName();
+            }else{
+                return CHECKLISTS_FRAGMENT_TAB_NAME;
+            }
         }
     }
 
@@ -314,5 +379,64 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             }
         }
     }
+
+
+    private ChildEventListener mCONTACTS_REF_Listener = new ChildEventListener() {
+        //todo
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    };
+
+    private ChildEventListener mAWAITING_ACCEPTANCE_REF_Listener = new ChildEventListener() {
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
+        }
+    };
+
 
 }

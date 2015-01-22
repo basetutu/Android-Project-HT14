@@ -5,20 +5,18 @@
     android:layout_height="match_parent"
     android:padding="0dp"
     android:orientation="vertical"
-    android:weightSum="1">
+    android:weightSum="1"
+    android:descendantFocusability="afterDescendants">
 
-    <FrameLayout
-        android:id="@+id/top_frame"
+    <ListView
+        android:id="@+id/listview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentBottom="true">
-        <ListView
-            android:id="@+id/listview_checklists"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/transparent"
-            >
-        </ListView>
-    </FrameLayout>
+        android:layout_height="match_parent"
+        android:focusableInTouchMode="false"
+        android:focusable="false"
+        android:clickable="false"
+        android:longClickable="true"
+        android:background="@color/transparent"
+        >
+    </ListView>
 </RelativeLayout>
