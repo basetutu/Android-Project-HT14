@@ -103,7 +103,7 @@ public class FragmentChecklists extends Fragment {
     public void onResume() {
         super.onResume();
         Log.w(TAG,"onResume");
-
+/*
         HashMap<String,String> values = new HashMap<String, String>();
         values.put("NAME","hallo");
         values.put("Creating Date", FirebaseController.getTimestamp());
@@ -114,7 +114,7 @@ public class FragmentChecklists extends Fragment {
         mChecklistsArray.add(mChecklistsArray.size(),a);
         mChecklistsArray.add(mChecklistsArray.size(),a);
         mListViewAdapter.notifyDataSetChanged();
-
+*/
 
     }
 
