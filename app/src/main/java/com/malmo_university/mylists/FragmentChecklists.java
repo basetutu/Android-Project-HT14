@@ -29,7 +29,8 @@ public class FragmentChecklists extends Fragment {
     protected MainActivity mParentActivity;
 
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-    private ArrayList<Checklist> mListViewChecklists;
+    private ArrayList<Checklist> mChecklistsArray;
+    private HashMap<String, Checklist> mChecklistsMap;
     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
     private ChecklistsAdapter mListViewAdapter;
 
@@ -42,6 +43,7 @@ public class FragmentChecklists extends Fragment {
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
+    // Not needed (the information is hardcoded since there is only one of its kind)
     public static FragmentChecklists newInstance() {
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "newInstance");
@@ -65,16 +67,12 @@ public class FragmentChecklists extends Fragment {
         mParentActivity = (MainActivity)getActivity();
 
         // fetch the cached data from the activity
-        mListViewChecklists = mParentActivity.getChecklists();
-
-
-        // Create the Arraylist that will store our group-names from the list
-        mListViewChecklists = new ArrayList<Checklist>(50);
+        mChecklistsArray = mParentActivity.getChecklistsArray();
+        mChecklistsMap = mParentActivity.getChecklistsMap();
 
         mListViewAdapter = new ChecklistsAdapter(mParentActivity,
-                mListViewChecklists,
+                mChecklistsArray,
                 getResources());
-
         mListViewAdapter.notifyDataSetChanged();
 
         if (!childListenerRegistered) {
@@ -102,12 +100,6 @@ public class FragmentChecklists extends Fragment {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        Log.w("fsdf","onPause");
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         Log.w(TAG,"onResume");
@@ -117,13 +109,19 @@ public class FragmentChecklists extends Fragment {
         values.put("Creating Date", FirebaseController.getTimestamp());
         Checklist a = new Checklist("dasda",FirebaseController.getTimestamp(),
                 "my checklist", values);
-        mListViewChecklists.add(mListViewChecklists.size(),a);
-        mListViewChecklists.add(mListViewChecklists.size(),a);
-        mListViewChecklists.add(mListViewChecklists.size(),a);
-        mListViewChecklists.add(mListViewChecklists.size(),a);
+        mChecklistsArray.add(mChecklistsArray.size(),a);
+        mChecklistsArray.add(mChecklistsArray.size(),a);
+        mChecklistsArray.add(mChecklistsArray.size(),a);
+        mChecklistsArray.add(mChecklistsArray.size(),a);
         mListViewAdapter.notifyDataSetChanged();
 
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.w(TAG,"onPause");
     }
 
     @Override
@@ -216,17 +214,6 @@ public class FragmentChecklists extends Fragment {
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
                 vi.setOnClickListener(new OnItemClickListener( position ));
             }
-            // Set weather or not the last item has been shown
-            if (position >= listItems.size() -2){
-                if (Globals.DEBUG_results)
-                    Log.w(TAG, "last item is visible");
-                setLastItemVisible(true);
-            }else {
-                if (Globals.DEBUG_results)
-                    Log.w(TAG, "last item is NOT visible");
-                setLastItemVisible(false);
-            }
-
             return vi;
         }
 
@@ -253,15 +240,19 @@ public class FragmentChecklists extends Fragment {
     }
 
     private void onChecklistItemClicked(int mPosition) {
-
-        //todo
         Log.w(TAG,"onChecklistItemClicked");
 
+        //todo
+        // get the checklist
+        // see if the corresponding fragment is already open
+        // if it is, select the tab
+        // if NOT, initialize a new FragmentItems
+        // add it to the mChecklistsArray and mChecklistsMap
+        // invoke mSectionPageAdapter.pageAdded()
+        // select the new tab
+
     }
 
-    protected void setLastItemVisible(boolean state){
-        mLastItemVisible = state;
-    }
 
     // Listeners //////////////////////////////////////////////////////////////////////////
 
@@ -276,14 +267,14 @@ public class FragmentChecklists extends Fragment {
             // like "id" and "from".
             Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
             // Extract data
-            String date_added = String.valueOf(dataMap.get("date_added"));
+            String date_added = String.valueOf(dataMap.get("creation_date"));
             String owner = String.valueOf(dataMap.get("owner"));
             String ref_id = String.valueOf(dataMap.get("ref_id"));
             String reference = String.valueOf(dataMap.get("reference"));
             String type = String.valueOf(dataMap.get("type"));
             // DEBUG
             if (Globals.DEBUG_results) {
-                Log.d(TAG, "Child date_added: " + date_added);
+                Log.d(TAG, "Child creation_date: " + date_added);
                 Log.d(TAG, "Child owner: " + owner);
                 Log.d(TAG, "Child ref_id: " + ref_id);
                 Log.d(TAG, "Child reference: " + reference);

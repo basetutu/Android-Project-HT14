@@ -7,12 +7,12 @@ import java.util.HashMap;
  * Created by Saeed on 18-01-15.
  */
 public class Checklist {
-    private final String REF_ID = "REF_ID";
-    private final String NAME = "NAME";
-    private final String CREATION_DATE = "CREATION_DATE";
+    protected final String REF_ID = "REF_ID";
+    protected final String NAME = "NAME";
+    protected final String CREATION_DATE = "CREATION_DATE";
 
     String ref_id;
-    String date_added;
+    String creation_date;
     String name;
     HashMap<String,String> values;
     // email addresses
@@ -22,9 +22,9 @@ public class Checklist {
 
     //////////////////////////////////////////////////////////////////////////////////////////
 
-    public Checklist(String ref_id, String date_added, String name, HashMap<String, String> values) {
+    public Checklist(String ref_id, String creation_date, String name, HashMap<String, String> values) {
         this.ref_id = ref_id;
-        this.date_added = date_added;
+        this.creation_date = creation_date;
         this.name = name;
         this.values = values;
     }
@@ -37,12 +37,12 @@ public class Checklist {
         this.ref_id = ref_id;
     }
 
-    public String getDate_added() {
-        return date_added;
+    public String getCreation_date() {
+        return creation_date;
     }
 
-    public void setDate_added(String date_added) {
-        this.date_added = date_added;
+    public void setCreation_date(String creation_date) {
+        this.creation_date = creation_date;
     }
 
     public String getName() {

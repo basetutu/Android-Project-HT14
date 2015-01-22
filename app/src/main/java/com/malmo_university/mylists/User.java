@@ -13,7 +13,7 @@ public class User {
     // The user profile
     Profile profile;
 
-    // contains data of the VALUES-child (username and date_added)
+    // contains data of the VALUES-child (username and creation_date)
     HashMap<String,String> values = new HashMap<String, String>();
 
     // Various different Links
