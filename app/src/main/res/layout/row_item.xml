@@ -7,7 +7,7 @@
     android:weightSum="1">
 
     <ImageView
-        android:background="@drawable/ic_launcher_chat"
+        android:background="@drawable/pen"
         android:layout_gravity="center"
         android:layout_width="60dp"
         android:layout_height="60dp" />
@@ -22,7 +22,7 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:paddingBottom="0dp"
-            android:text="tedsdsdsdsdssdstsdsdsdsdsdsdsdsds"
+            android:text="Item Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="2"
@@ -34,7 +34,7 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:paddingBottom="8dp"
-            android:text="testsdsdsdsdsdsdsdsdsdsdsdssdsdsssdsdsdsdsdsdsd"
+            android:text="Item Note"
             android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
     <ImageView
         android:id="@+id/row_item_check"
         android:layout_gravity="center"
-        android:background="@drawable/camera_test"
+        android:background="@drawable/check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"

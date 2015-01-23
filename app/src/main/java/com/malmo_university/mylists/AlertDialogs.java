@@ -19,7 +19,7 @@ public class AlertDialogs {
         mLayoutInflator = layoutInflater;
     }
 
-    protected static void dialogCloseChecklist(){
+    protected static void makeCloseChecklistDialog(){
         if(checkForNull()){
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("Do you wish to close this checklist?");
@@ -41,7 +41,7 @@ public class AlertDialogs {
         }
     }
 
-    protected static void dialogMakeNewChecklist() {
+    protected static void makeNewChecklistDialog() {
         if(checkForNull()) {
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("Create new checklist");
@@ -66,7 +66,7 @@ public class AlertDialogs {
         }
     }
 
-    protected static void dialogMakeNewItem(){
+    protected static void makeNewItemDialog(){
         if(checkForNull()) {
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("Create a new item");
@@ -92,7 +92,7 @@ public class AlertDialogs {
     }
 
 
-    protected static void dialogMakeLongPressChecklist(){
+    protected static void makeLongPressChecklistDialog(){
         if(checkForNull()){
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("What do you wish to do with this checklist?");
@@ -119,7 +119,7 @@ public class AlertDialogs {
         }
     }
 
-    protected static void dialogMakeLongPressItem(){
+    protected static void makeLongPressItemDialog(){
         if(checkForNull()){
             final AlertDialog.Builder newGroupDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newGroupDialogBuilder.setTitle("What do you wish to do with this item?");

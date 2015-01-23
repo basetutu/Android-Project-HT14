@@ -47,7 +47,7 @@ public class ActivityAuthenticate extends Activity {
         // actionBar.setIcon(getResources().getDrawable(R.drawable.ic_launcher_2);
         // Keep i mind that there are two overloading functions called setIcon()
         // But only one function for setBackgroundDrawable() !
-        actionBar.setIcon(R.drawable.ic_launcher);
+        actionBar.setIcon(R.drawable.android);
 
         fragment = fm.findFragmentById(R.id.container_loginActivity);
         if (fragment == null) {
