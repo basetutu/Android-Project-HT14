@@ -140,7 +140,7 @@ public class FragmentItems extends Fragment{
         int order = 0;
         boolean state = false;
         Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-        "ItemTitlef fs fsdf sdf sdf sdfsdf sdf", "ItemNotes fsf sdf sfd sdfsdf sf", state);
+        "ItemTitle", "ItemNote", state);
         mItemsArray.add(mItemsArray.size(),a);
         mItemsArray.add(mItemsArray.size(),a);
         state = false;
@@ -245,18 +245,6 @@ public class FragmentItems extends Fragment{
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
                 vi.setOnLongClickListener(onItemLongClickListener);
             }
-
-            // Set weather or not the last item has been shown
-            if (position >= listItems.size() -2){
-                if (Globals.DEBUG_results)
-                    Log.w(TAG, "last item is visible");
-                setLastItemVisible(true);
-            }else {
-                if (Globals.DEBUG_results)
-                    Log.w(TAG, "last item is NOT visible");
-                setLastItemVisible(false);
-            }
-
             return vi;
         }
 
