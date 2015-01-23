@@ -344,7 +344,7 @@ public class FragmentItems extends Fragment{
         // handle item selection
         switch (item.getItemId()) {
             case R.id.menu_item_add_item:
-                AlertDialogs.makeNewItemDialog();
+                AlertDialogs.makeNewItemDialog(mChecklist_ref_id);
                 return true;
             case R.id.menu_item_logout:
                 mParentActivity.logoutCleanUp();
