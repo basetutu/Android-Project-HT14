@@ -21,12 +21,13 @@
     <string name="btn_about">About this app</string>
     <string name="btn_back">Go back</string>
     <string name="btn_exit">Exit</string>
-    <string name="about_text">This app is my first assignment within the course:
-        Application Development for Android. It consists of 5 fragments and 2 activities.
-        The activities use the fragment manager to change between the different fragments.</string>
-    <string name="about_developer">Developer:</string>
+    <string name="about_text">This is an app made for the course: Application Development for
+        Android. The app allows for creating, storing and sharing of your own custom made lists.
+        It primarily consists of one activity for login and another for viewing lists and its
+        contents. </string>
+    <string name="about_developer">Developers:</string>
     <string name="about_info">App info:</string>
-    <string name="about_developer_name">Saeed Mir Ghasemi</string>
+    <string name="about_developer_name">Saeed Mir Ghasemi and Jonathan Bjarnason</string>
     <string name="settings_msg">Settings selected but currently not available</string>
     <string name="register_user_hint">Type your desired username</string>
     <string name="register_pass_hint">Type your desired pass</string>
