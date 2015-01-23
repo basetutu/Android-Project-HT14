@@ -55,7 +55,7 @@ public class ActivityLoggedIn extends Activity {
         fm = getFragmentManager();
         purgeBackStack();
 
-        actionBar.setIcon(R.drawable.ic_launcher);
+        actionBar.setIcon(R.drawable.android);
 
         // to be used at a later time
         savedInstanceStateStored = savedInstanceState;
