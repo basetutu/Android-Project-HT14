@@ -255,10 +255,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -303,6 +300,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // remove credentials from sharedPreferences
         Log.e(TAG, "Username: " + SharedPreferencesController.simpleDeletePersistentString(Globals.USERNAME));
         Log.e(TAG, "Password: " + SharedPreferencesController.simpleDeletePersistentString(Globals.PASSWORD));
+        new Firebase(Globals.FIREBASE_DB_ROOT_URL).unauth();
         // Start ActivityAuthenticate and close ActivityLoggedIn
         Intent startIntent = new Intent(this, ActivityAuthenticate.class);
         startActivity(startIntent);
