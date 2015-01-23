@@ -4,22 +4,22 @@
     tools:context="com.malmo_university.mylist.ActivityMain">
 
     <item
-        android:id="@+id/menu_checklists_add_checklist"
+        android:id="@+id/menu_checklists_add_checklist_fragmentChecklist"
         android:title="@string/menu_checklists_add_checklist"
         android:orderInCategory="97"
-        android:showAsAction="never" />
+        android:showAsAction="always" />
     <item
-        android:id="@+id/menu_item_close"
+        android:id="@+id/menu_item_close_fragmentChecklist"
         android:title="@string/menu_close"
         android:orderInCategory="98"
         android:showAsAction="never" />
     <item
-        android:id="@+id/menu_item_logout"
+        android:id="@+id/menu_item_logout_fragmentChecklist"
         android:title="@string/menu_logout"
         android:orderInCategory="99"
         android:showAsAction="never" />
     <item
-        android:id="@+id/menu_item_exit"
+        android:id="@+id/menu_item_exit_fragmentChecklist"
         android:title="@string/menu_exit"
         android:orderInCategory="100"
         android:showAsAction="never" />

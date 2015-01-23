@@ -44,6 +44,8 @@ public class FragmentChecklists extends Fragment {
 
     // As default the list must scroll down lot the lowest item on the list
     private boolean mLastItemVisible = true;
+    private ArrayList<Link> mUserChecklistArray;
+    private HashMap<String, Link> mUserChecklistMap;
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -73,6 +75,8 @@ public class FragmentChecklists extends Fragment {
         // fetch the cached data from the activity
         mChecklistsArray = mParentActivity.getChecklistsArray();
         mChecklistsMap = mParentActivity.getChecklistsMap();
+        mUserChecklistArray = mParentActivity.getUserChecklistsArray();
+        mUserChecklistMap = mParentActivity.getUserChecklistsMap();
 
         mListViewAdapter = new ChecklistsAdapter(mParentActivity,
                 mChecklistsArray,
@@ -117,18 +121,22 @@ public class FragmentChecklists extends Fragment {
 
 //        Log.w(TAG,"0");
 //
-//        FirebaseController.createUser("smg@gmail.com", "Saeed Ghasemi", "0046763150074");
-//        FirebaseController.createUser("smg2006@gmail.com", "Tom Andersen", "0763212445");
+        FirebaseController.createUser("smg@gmail.com", "Saeed Ghasemi", "0046763150074");
+        FirebaseController.createUser("smg2006@gmail.com", "Tom Andersen", "0763212445");
+        FirebaseController.createUser("meem@gmail.com", "Jonathan Bjarnason", "0738145244");
+        FirebaseController.createUser("erik@yahoo.com", "Erik Trulsson", "0763212445");
+        FirebaseController.createUser("andreas.Goransson@mah.se", "Andreas Goransson", "0763212445");
 //        Log.w(TAG,"1");
 //
 //        FirebaseController.createChecklist("shopping list");
 //        FirebaseController.createChecklist("remember these");
 //        Log.w(TAG,"2");
 //
-//        FirebaseController.addContactToUserList("smg2006@gmail.com");
+        FirebaseController.addContactToUserList("smg2006@gmail.com");
+        FirebaseController.addContactToUserList("andreas.Goransson@mah.se");
 //        Log.w(TAG,"3");
 //
-//        FirebaseController.shareChecklist("smg2006@gmail.com","checklistName","ref_id shopping list");
+        FirebaseController.shareChecklist("andreas.Goransson@mah.se","Shopping list","-Jsdfsdgsds45wef");
 //        Log.w(TAG,"4");
 //
 //        FirebaseController.addItemToChecklist("shopping list", "title", "note");
@@ -289,6 +297,13 @@ public class FragmentChecklists extends Fragment {
                 values.put(Checklist.CREATION_DATE,creation_date);
                 values.put(Checklist.NAME,checklistName);
 
+                Link link = new Link(ref_id, owner, creation_date, type, reference, checklistName);
+
+                // better
+                mUserChecklistArray.add(link);
+                mUserChecklistMap.put(reference,link);
+
+                // ?
                 Checklist checklist = new Checklist(ref_id, creation_date, checklistName, values);
                 mChecklistsArray.add(mChecklistsArray.size(), checklist);
                 mChecklistsMap.put(reference, checklist);
@@ -444,15 +459,15 @@ public class FragmentChecklists extends Fragment {
             Log.w(TAG, " - onOptionsItemSelected");
         // handle item selection
         switch (item.getItemId()) {
-            case R.id.menu_checklists_add_checklist:
+            case R.id.menu_checklists_add_checklist_fragmentChecklist:
                 AlertDialogs.makeNewChecklistDialog();
                 return true;
-            case R.id.menu_item_logout:
+            case R.id.menu_item_logout_fragmentChecklist:
                 mParentActivity.logoutCleanUp();
                 return true;
-            case R.id.menu_item_close:
+            case R.id.menu_item_close_fragmentChecklist:
                 return true;
-            case R.id.menu_item_exit:
+            case R.id.menu_item_exit_fragmentChecklist:
                 getActivity().finish();
                 return true;
             default:

@@ -3,6 +3,7 @@ package com.malmo_university.mylists;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,7 +23,6 @@ import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -53,7 +53,7 @@ public class FragmentItems extends Fragment{
     // The checklist-reference of firebase
     private Firebase mFirebaseChecklist;
 
-    private HashMap<String, Item> mItemsMap;
+    //private HashMap<String, Item> mItemsMap;
     private boolean mLastItemVisible;
 
     private boolean childListenerRegistered = false;
@@ -92,10 +92,12 @@ public class FragmentItems extends Fragment{
         mChecklist_ref_id = args.getString(FRAGMENT_REF_ID);
         mFirebaseChecklist = new Firebase(FirebaseController.makeChecklistPath(args.getString(FRAGMENT_REF_ID)));
 
+        Checklist checklist = mParentActivity.getChecklistsMap().get(mChecklist_ref_id);
+        mItemsArray = checklist.getItems();
 
         // Create the Arraylist that will store our group-names from the list
-        mItemsArray = new ArrayList<Item>(50);
-        mItemsMap = new HashMap<String, Item>(100);
+        //mItemsArray = new ArrayList<Item>(50);
+        //mItemsMap = new HashMap<String, Item>(100);
 
         mListViewAdapter = new ItemsAdapter(mParentActivity,
                 mItemsArray,
@@ -146,21 +148,21 @@ public class FragmentItems extends Fragment{
         FirebaseController.registerChildListener(firebase, mITEMS_Listener);
 
 
-        HashMap<String,String> values = new HashMap<String, String>();
-        values.put("NAME","hallo");
-        values.put("Creating Date", FirebaseController.getTimestamp());
-        int order = 0;
-        boolean state = false;
-        Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-        "ItemTitle", "ItemNote", state);
-        mItemsArray.add(mItemsArray.size(),a);
-        mItemsArray.add(mItemsArray.size(),a);
-        state = true;
-        a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-                "Itesdf sdmTitlef fs fsdf sdf sdf sdfsdf sdf", "Itef sdff mNotes fsf sdf sfd sdfsdf sf", state);
-        mItemsArray.add(mItemsArray.size(),a);
-        mItemsArray.add(mItemsArray.size(),a);
-        mListViewAdapter.notifyDataSetChanged();
+//        HashMap<String,String> values = new HashMap<String, String>();
+//        values.put("NAME","hallo");
+//        values.put("Creating Date", FirebaseController.getTimestamp());
+//        int order = 0;
+//        boolean state = false;
+//        Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
+//        "ItemTitle", "ItemNote", state);
+//        mItemsArray.add(mItemsArray.size(),a);
+//        mItemsArray.add(mItemsArray.size(),a);
+//        state = true;
+//        a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
+//                "Itesdf sdmTitlef fs fsdf sdf sdf sdfsdf sdf", "Itef sdff mNotes fsf sdf sfd sdfsdf sf", state);
+//        mItemsArray.add(mItemsArray.size(),a);
+//        mItemsArray.add(mItemsArray.size(),a);
+//        mListViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -251,8 +253,12 @@ public class FragmentItems extends Fragment{
                 viewHolder.note.setText(tempValues.getNote());
                 if (tempValues.getChecked()){
                     viewHolder.check.setVisibility(View.VISIBLE);
+                    viewHolder.title.setPaintFlags(viewHolder.title.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                    viewHolder.note.setPaintFlags(viewHolder.note.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 }else {
                     viewHolder.check.setVisibility(View.INVISIBLE);
+                    viewHolder.title.setPaintFlags( viewHolder.title.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
+                    viewHolder.note.setPaintFlags( viewHolder.note.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
                 }
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
                 vi.setOnClickListener(onItemClickListener);
@@ -289,12 +295,18 @@ public class FragmentItems extends Fragment{
 
     private void onChecklistItemClicked(int positionForView) {
         Log.w(TAG,"onChecklistItemClicked");
-        Item item = mParentActivity.getChecklistsMap().get(mChecklistName).getItems().get(positionForView);
+        mItemsArray.get(positionForView).toggleChecked();
+        mListViewAdapter.notifyDataSetChanged();
+        Item item = mParentActivity.getChecklistsMap().get(mChecklist_ref_id).getItems().get(positionForView);
         boolean checked = item.getChecked();
+        Log.e(TAG,""+checked);
         String checklist_ref_id = item.getChecklist_ref_id();
+        Log.e(TAG,checklist_ref_id);
         String item_ref_id = item.getRef_id();
+        Log.e(TAG,item_ref_id);
+
         // Needs items
-        FirebaseController.checkItemOnChecklist(checklist_ref_id, item_ref_id, !checked);
+        FirebaseController.checkItemOnChecklist(checklist_ref_id, item_ref_id, checked);
     }
 
     private void onChecklistItemLongClicked(int mPosition) {
@@ -339,15 +351,15 @@ public class FragmentItems extends Fragment{
             Log.w(TAG, " - onOptionsItemSelected");
         // handle item selection
         switch (item.getItemId()) {
-            case R.id.menu_item_add_item:
+            case R.id.menu_item_add_item_fragmentItem:
                 AlertDialogs.makeNewItemDialog(mChecklist_ref_id);
                 return true;
-            case R.id.menu_item_logout:
+            case R.id.menu_item_logout_fragmentItem:
                 mParentActivity.logoutCleanUp();
                 return true;
-            case R.id.menu_item_close:
+            case R.id.menu_item_close_fragmentItem:
                 return true;
-            case R.id.menu_item_exit:
+            case R.id.menu_item_exit_fragmentItem:
                 getActivity().finish();
                 return true;
             default:
@@ -448,24 +460,16 @@ public class FragmentItems extends Fragment{
                 Log.i(TAG, "Child title: " + title);
             }
 
-            ThreadController.delay(1000);
+            Item item = new Item(ref_id, checklist_ref_id, lastModifiedBy, creation_date, 0, title, note, checked.equals("true"));
 
             // todo psudo
 
-            if (!mParentActivity.getChecklistsMap().containsKey(checklist_ref_id)) {
-//todo
-                Item item = new Item(ref_id, checklist_ref_id, lastModifiedBy, creation_date, 0, title, note, checked.equals("true"));
+            //Checklist checklist = mParentActivity.getChecklistsMap().get(checklist_ref_id);
+            //checklist.getItems().add(checklist.getItems().size(), item);
+            mItemsArray.add(mItemsArray.size(), item);
 
-                Checklist checklist = mParentActivity.getChecklistsMap().get(checklist_ref_id);
-                checklist.getItems().add(checklist.getItems().size(), item);
-                mItemsArray.add(mItemsArray.size(), item);
+            mListViewAdapter.notifyDataSetChanged();
 
-                mListViewAdapter.notifyDataSetChanged();
-            }else{
-                Log.w(TAG,"Checklist_REF link already existed");
-            }
-
-            ThreadController.delay(5000);
         }
 
         @Override
