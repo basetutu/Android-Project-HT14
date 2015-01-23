@@ -6,6 +6,9 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -292,7 +295,7 @@ public class FragmentChecklists extends Fragment {
 
                 mListViewAdapter.notifyDataSetChanged();
             }else{
-                Log.w(TAG,"Checklist_REF link already existed");
+                Log.w(TAG, "Checklist_REF link already existed");
             }
 
 //            ThreadController.delay(10000);
@@ -408,6 +411,56 @@ public class FragmentChecklists extends Fragment {
                 Log.e(TAG, " - ");
         }
     };
+
+    ////////////////////////////////// Menu //////////////////////////////////////////
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, "onActivityCreated");
+        setHasOptionsMenu(true);
+        setRetainInstance(false);
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, " - onActivityCreated");
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, "onCreateOptionsMenu");
+
+        inflater.inflate(R.menu.menu_fragment_checklists, menu);
+
+        if (Globals.DEBUG_invocation)
+            Log.i(TAG, " - onCreateOptionsMenu");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, "onOptionsItemSelected");
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, " - onOptionsItemSelected");
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_checklists_add_checklist:
+                AlertDialogs.makeNewChecklistDialog();
+                return true;
+            case R.id.menu_item_logout:
+                mParentActivity.logoutCleanUp();
+                return true;
+            case R.id.menu_item_close:
+                return true;
+            case R.id.menu_item_exit:
+                getActivity().finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    //////////////////////////////// Menu end ///////////////////////////////////////////
 
     // returns -1 if it was not found in the array
     protected int findWithinListArray(Checklist checklist){

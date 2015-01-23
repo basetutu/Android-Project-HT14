@@ -6,12 +6,12 @@
     <string name="title_section2">Item 1</string>
     <string name="title_section3">Next item</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <!--<string name="action_settings">Settings</string>-->
     <string name="app_subtitle">Structured collaboration</string>
     <string name="title_chat_list">My conversations</string>
     <string name="menu_item_settings">Settings</string>
-    <string name="menu_item_logout">Logout</string>
-    <string name="menu_item_close">Close</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_close">Close</string>
     <string name="tv_login">Type in your credentials here:</string>
     <string name="tv_register">If you haven\'t yet registered, you can create one here</string>
     <string name="et_user_hint">Username</string>
@@ -38,9 +38,11 @@
         login...</string>
     <string name="Group">Group: </string>
     <string name="about_version">Version 0.1</string>
-    <string name="menu_item_exit">Exit</string>
+    <string name="menu_exit">Exit application</string>
     <string name="menu_item_addNewGroup">Add new group</string>
     <string name="menu_item_removeSelectedGroup">Remove selected group</string>
+    <string name="menu_item_add_item">Add item</string>
+    <string name="menu_checklists_add_checklist">Add checklist</string>
     <string name="dialog_std_message">Type a name for the new group</string>
     <string name="dialog_group_exists_message">That group already existed. Type a different name for
         the group</string>
@@ -49,5 +51,6 @@
     <string name="title_activity_contacts">ContactsActivity</string>
     <string name="initial_item_note">This is a note. Provides additional information about the item.
         Bla bla bla bla bla</string>
+
 
 </resources>
