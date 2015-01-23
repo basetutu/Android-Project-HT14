@@ -10,6 +10,7 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.malmo_university.mylists.entities.Item;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -224,7 +225,7 @@ public class FirebaseController {
     protected static void editItemOnChecklist(String title, String note, Item item){
         item.setTitle(title);
         item.setNote(note);
-        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
+        mFirebaseCHECKLISTS.child(item.getChecklist_ref_id()).child(item.getRef_id()).setValue(item);
     }
 
     protected static void checkItemOnChecklist(String checklist_ref_id, String item_ref_id, boolean state){
@@ -233,7 +234,7 @@ public class FirebaseController {
 
     // todo not tested
     protected static void removeItemFromChecklist(Item item){
-        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
+        mFirebaseCHECKLISTS.child(item.getChecklist_ref_id()).child(item.getRef_id()).removeValue();
     }
 
 

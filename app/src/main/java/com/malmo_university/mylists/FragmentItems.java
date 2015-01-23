@@ -21,6 +21,7 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.malmo_university.mylists.entities.Item;
 
 import java.util.ArrayList;
 import java.util.Map;

@@ -1,5 +1,7 @@
 package com.malmo_university.mylists;
 
+import com.malmo_university.mylists.entities.Item;
+
 /**
  * Created by Saeed on 18-01-15.
  */
