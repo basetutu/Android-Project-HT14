@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.entities;
 
 /**
  * Created by Saeed on 18-01-15.
