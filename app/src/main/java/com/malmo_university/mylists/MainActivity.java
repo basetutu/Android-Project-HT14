@@ -31,6 +31,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     private ActionBar mActionBar;
     private FragmentManager fm;
+    private int tabChecker;
 
     // The ViewPager that will host the section contents.
     private ViewPager mViewPager;
@@ -100,7 +101,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                mActionBar.setSelectedNavigationItem(position);
+                if (tabChecker != 0) {
+                    mActionBar.setSelectedNavigationItem(position);
+                }
+                tabChecker = 1;
             }
         });
 
@@ -194,8 +198,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 //        checklist = new Checklist("ref id2", FirebaseController.getTimestamp(), "test 2", null);
 //        mChecklistsArray.add(mChecklistsArray.size(), checklist);
 
-
-
+        
 //        onChecklistClicked(0);
 
         Log.w(TAG, " - onResume");
@@ -264,18 +267,28 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+        Log.w(TAG, "onTabSelected");
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
+        tabChecker = 0;
         mViewPager.setCurrentItem(tab.getPosition());
     }
 
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
+
     }
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        makeToast("tab is reselected");
+        //if(tabChecker == 0){
+        //    makeToast("This is the same tab");
+       // }
+       // tabChecker = 1;
+        Log.w(TAG, "onTabReselected: "+tab.getPosition());
+
+        AlertDialogs.makeCloseChecklistDialog();
+
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
