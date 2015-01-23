@@ -222,10 +222,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+
 
         return super.onOptionsItemSelected(item);
     }
@@ -248,7 +245,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         Log.w(TAG, "onTabReselected");
-        AlertDialogs.makeCloseChecklistDialog(tab.getPosition());
+        AlertDialogs.makeCloseChecklistDialog(tab.getPosition() -1);
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -262,6 +259,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // remove credentials from sharedPreferences
         Log.e(TAG, "Username: " + SharedPreferencesController.simpleDeletePersistentString(Globals.USERNAME));
         Log.e(TAG, "Password: " + SharedPreferencesController.simpleDeletePersistentString(Globals.PASSWORD));
+        new Firebase(Globals.FIREBASE_DB_ROOT_URL).unauth();
         // Start ActivityAuthenticate and close ActivityLoggedIn
         Intent startIntent = new Intent(this, ActivityAuthenticate.class);
         startActivity(startIntent);
@@ -286,6 +284,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.w(TAG,"onChecklistClicked");
         // get the checklist from mChecklistsArray
         Checklist checklist = mChecklistsArray.get(mPosition);
+        Log.e(TAG, "ref_id" + checklist.getRef_id());
         // see if there is a corresponding FragmentItems for this in mFragmentItems
         if (mFragmentItems.get(checklist.getRef_id()) != null){
             Log.w(TAG,"fragment exists - not null");
@@ -294,7 +293,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         }else{
             Log.w(TAG,"fragment did not exist - null");
             // if NOT, initialize a new FragmentItems with checklist
-            FragmentItems fragmentItems = FragmentItems.newInstance(checklist.getName(),checklist.getRef_id());
+            FragmentItems fragmentItems = FragmentItems.newInstance(checklist.getName(), checklist.getRef_id());
             // add it to mFragmentItems
             mFragmentItems.put(checklist.getRef_id(), fragmentItems);
             // Inform ViewPager that there is a new page added by invoking mSectionPageAdapter.notifyFragmentAdded()
@@ -307,10 +306,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     // Functions invoked by dialog //////////////////////////////////////////////////////////
 
     public void closeChecklist(int index) {
-        Checklist checklist = mChecklistsArray.get(index);
-        Log.e(TAG, checklist.getRef_id());
-        Log.e(TAG,mChecklistsArray.remove(index).getRef_id());//todo has bug, won't remove
-        mFragmentItems.remove(checklist.getRef_id());
+//        Checklist checklist = mChecklistsArray.get(index);
+        Link link = mUserChecklistsArray.get(index);
+  //      Log.e(TAG, "Checklist object gave: " + checklist.getRef_id());
+        Log.e(TAG, "Link object gave: " + link.getReference());
+
+        Log.e(TAG,mChecklistsArray.remove(index).getRef_id());//todo has bug, won't remove (i know why now: the key must be reference not ref_id)
+        Log.e(TAG,mUserChecklistsArray.remove(index).getReference());//todo has bug, won't remove (the key here is reference)
+
+    //    mFragmentItems.remove(checklist.getRef_id());
+        mFragmentItems.remove(link.getReference());
         mSectionsPagerAdapter.notifyFragmentRemoved();
         Log.w(TAG, "fragments remaining in array: " + mFragmentItems.size());
     }
@@ -360,14 +365,19 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Log.w(TAG, "getItem: " + position);
             if (position != 0) {
                 position--;
+                //todo
                 Checklist checklist = mChecklistsArray.get(position);
                 String checklist_ref_id = checklist.getRef_id();
+
+                Link link = mUserChecklistsArray.get(position);
+                String checklist_ref_id_2 = link.getReference();
+
                 //see if fragment already exists in mFragmentItems
-                FragmentItems fragmentItems = mFragmentItems.get(checklist_ref_id);
+                FragmentItems fragmentItems = mFragmentItems.get(checklist_ref_id_2);
                 if(fragmentItems == null){
                     String checklistName = checklist.getName();
-                    fragmentItems = FragmentItems.newInstance(checklistName, checklist_ref_id);
-                    mFragmentItems.put(checklist_ref_id, fragmentItems);
+                    fragmentItems = FragmentItems.newInstance(checklistName, checklist_ref_id_2);
+                    mFragmentItems.put(checklist_ref_id_2, fragmentItems);
                 }
                 return fragmentItems;
             }else{
@@ -444,12 +454,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 Log.d(TAG, "Child type: " + type);
             }
 
-            // Create new ChatMessage-object
             Link link = new Link(ref_id, owner, date_added, type, reference, checklistName);
 
             if (!getUserChecklistsMap().containsKey(reference)) {
                 getUserChecklistsMap().put(reference, link);
-                //mListViewMessages.add(newChatMessage.getMessage());
                 getUserChecklistsArray().add(link);
                 notifyPagerAdapter();
             }

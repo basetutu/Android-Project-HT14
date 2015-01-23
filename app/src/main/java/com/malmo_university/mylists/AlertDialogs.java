@@ -2,6 +2,7 @@ package com.malmo_university.mylists;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 public class AlertDialogs {
     private static MainActivity mParentActivity;
     private static LayoutInflater mLayoutInflater;
+    private static final String TAG = "AlertDialogs";
 
     protected static void init(MainActivity context, LayoutInflater layoutInflater){
         mParentActivity = context;
@@ -20,7 +22,7 @@ public class AlertDialogs {
     }
 
     protected static void makeCloseChecklistDialog(final int index){
-        if (index != 0){
+        if (index != -1){
             if (checkForNull()) {
                 final AlertDialog.Builder newDialogBuilder = new AlertDialog.Builder(mParentActivity);
                 newDialogBuilder.setTitle("Do you wish to close this checklist?");
@@ -72,6 +74,7 @@ public class AlertDialogs {
     }
 
     protected static void makeNewItemDialog(final String checklist_ref_id){
+        Log.w(TAG,"makeNewItemDialog - checklist_ref_id: " + checklist_ref_id);
         if(checkForNull()) {
             final AlertDialog.Builder newDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newDialogBuilder.setTitle("Create a new item");
