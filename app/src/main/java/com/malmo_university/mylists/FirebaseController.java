@@ -42,7 +42,7 @@ public class FirebaseController {
     private static final String VALUES = "VALUES";
 
     // Standard child names of a user
-    private static final String CHECKLISTS_REF = "CHECKLISTS_REF";
+    protected static final String CHECKLISTS_REF = "CHECKLISTS_REF";
     private static final String CONTACTS_REF = "CONTACTS_REF";
     private static final String PROFILE = "PROFILE";
     private static final String AWAITING_ACCEPTANCE_REF = "AWAITING_ACCEPTANCE_REF";
@@ -129,7 +129,7 @@ public class FirebaseController {
         userEmail = userEmail.toLowerCase();
         Link link = new Link(Algorithms.transformEmailToKey(userEmail), getCurrentUser(),
                 getTimestamp(), LINK_TYPE_CONTACT,
-                makeUserPath(makeUserPath(Algorithms.transformEmailToKey(userEmail))));
+                makeUserPath(makeUserPath(Algorithms.transformEmailToKey(userEmail))), userEmail);
         mFirebaseCURRENTUSER.child(CONTACTS_REF).child(Algorithms.transformEmailToKey(userEmail)).setValue(link);
     }
 
@@ -155,7 +155,7 @@ public class FirebaseController {
 
         // add the checklist to the current logged in users references of checklists
         String link_ref_id = mFirebaseCURRENTUSER.child(CHECKLISTS_REF).push().getKey();
-        Link link = new Link(link_ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST, checklist_ref_id);
+        Link link = new Link(link_ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST, checklist_ref_id, checklistName);
         mFirebaseCURRENTUSER.child(CHECKLISTS_REF).child(link_ref_id).setValue(link);
 
         // Add this user to the checklist's list of users who has a reference to it
@@ -164,11 +164,11 @@ public class FirebaseController {
 
     }
 
-    protected static void shareChecklist(String toUserEmail, String checklist_ref_id){
+    protected static void shareChecklist(String toUserEmail, String checklistName, String checklist_ref_id){
         toUserEmail = toUserEmail.toLowerCase();
         String ref_id = mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).push().getKey();
         Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
-                makeChecklistPath(checklist_ref_id));
+                checklist_ref_id, checklistName);
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
     }
 

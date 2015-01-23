@@ -7,9 +7,9 @@ import java.util.HashMap;
  * Created by Saeed on 18-01-15.
  */
 public class Checklist {
-    protected final String REF_ID = "REF_ID";
-    protected final String NAME = "NAME";
-    protected final String CREATION_DATE = "CREATION_DATE";
+    protected static final String REF_ID = "REF_ID";
+    protected static final String NAME = "NAME";
+    protected static final String CREATION_DATE = "CREATION_DATE";
 
     String ref_id;
     String creation_date;

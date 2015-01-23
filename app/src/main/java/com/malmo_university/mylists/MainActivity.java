@@ -122,12 +122,12 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         if (mUserChecklistsArray == null) {
             // USER-RELATED DATA
             // User Checklists
-            ArrayList<Link> mUserChecklists = new ArrayList<Link>();
-            HashMap<String, Link> mUserChecklistsMap = new HashMap<String, Link>();
+            mUserChecklistsArray = new ArrayList<Link>();
+            mUserChecklistsMap = new HashMap<String, Link>();
             // User Awaiting acceptance
-            ArrayList<Link> mUserAwaiting = new ArrayList<Link>();
+            mUserAwaitingArray = new ArrayList<Link>();
             // User Contacts
-            ArrayList<Contact> mUserContacts = new ArrayList<Contact>();
+            mUserContactsArray = new ArrayList<Contact>();
         }
 
 
@@ -136,35 +136,29 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         Log.w(TAG,"0");
 
-        Log.w(TAG,"1");
-
         FirebaseController.createUser("smg@gmail.com", "Saeed Ghasemi", "0046763150074");
         FirebaseController.createUser("smg2006@gmail.com", "Tom Andersen", "0763212445");
-
-        Log.w(TAG,"2");
+        Log.w(TAG,"1");
 
         FirebaseController.createChecklist("shopping list");
         FirebaseController.createChecklist("remember these");
-
-        Log.w(TAG,"3");
+        Log.w(TAG,"2");
 
         FirebaseController.addContactToUserList("smg2006@gmail.com");
+        Log.w(TAG,"3");
 
+        FirebaseController.shareChecklist("smg2006@gmail.com","checklistName","ref_id shopping list");
         Log.w(TAG,"4");
 
-        FirebaseController.shareChecklist("smg2006@gmail.com","shopping list");
-
-        Log.w(TAG,"5");
-
         FirebaseController.addItemToChecklist("shopping list", "title", "note");
+        Log.w(TAG,"5");
     }
 
-    protected void notifyAdapter(){
+    protected void notifyPagerAdapter(){
         mSectionsPagerAdapter.notifyDataSetChanged();
     }
 
     ///////////////////////////////////////////////////////////////////////////
-
     protected ArrayList<Link> getUserChecklistsArray(){
         return mUserChecklistsArray;
     }
@@ -178,6 +172,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         return mUserContactsArray;
     }
     ///////////////////////////////////////////////////////////////////////////
+    // Get the checklists that where previously received
+    public ArrayList<Checklist> getChecklistsArray() {
+        return mChecklistsArray;
+    }
+    // Get the checklists that where previously received
+    public HashMap<String, Checklist> getChecklistsMap() {
+        return mChecklistsMap;
+    }
+    //////////////////////////////////////////////////////////////////////////////
 
     @Override
     protected void onResume() {
@@ -186,14 +189,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         recreateTabs();
 
         // TEST
-        Checklist checklist = new Checklist("ref id", FirebaseController.getTimestamp(), "test", null);
-        mChecklistsArray.add(mChecklistsArray.size(), checklist);
-        checklist = new Checklist("ref id2", FirebaseController.getTimestamp(), "test 2", null);
-        mChecklistsArray.add(mChecklistsArray.size(), checklist);
+//        Checklist checklist = new Checklist("ref id", FirebaseController.getTimestamp(), "test", null);
+//        mChecklistsArray.add(mChecklistsArray.size(), checklist);
+//        checklist = new Checklist("ref id2", FirebaseController.getTimestamp(), "test 2", null);
+//        mChecklistsArray.add(mChecklistsArray.size(), checklist);
 
 
 
-        onChecklistClicked(0);
+//        onChecklistClicked(0);
 
         Log.w(TAG, " - onResume");
     }
@@ -291,17 +294,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         startActivity(startIntent);
         finish();
     }
-
-    // Get the checklists that where previously received
-    public ArrayList<Checklist> getChecklistsArray() {
-        return mChecklistsArray;
-    }
-
-    // Get the checklists that where previously received
-    public HashMap<String, Checklist> getChecklistsMap() {
-        return mChecklistsMap;
-    }
-
 
     @Override
     public void onBackPressed() {
@@ -433,6 +425,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             String ref_id = String.valueOf(dataMap.get("ref_id"));
             String reference = String.valueOf(dataMap.get("reference"));
             String type = String.valueOf(dataMap.get("type"));
+            String checklistName = String.valueOf(dataMap.get("name"));
+
             // DEBUG
             if (Globals.DEBUG_results) {
                 Log.d(TAG, "Child creation_date: " + date_added);
@@ -443,13 +437,13 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             }
 
             // Create new ChatMessage-object
-            Link link = new Link(ref_id, owner, date_added, type, reference);
+            Link link = new Link(ref_id, owner, date_added, type, reference, checklistName);
 
             if (!getUserChecklistsMap().containsKey(reference)) {
                 getUserChecklistsMap().put(reference, link);
                 //mListViewMessages.add(newChatMessage.getMessage());
                 getUserChecklistsArray().add(link);
-                notifyAdapter();
+                notifyPagerAdapter();
             }
         }
 
