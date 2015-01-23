@@ -22,7 +22,7 @@ import com.firebase.client.Firebase;
 public class FragmentLogin extends Fragment {
     public static final String TAG = "FragmentLogin";
     //Variables for the broadcast receiver of this class
-    protected static final String RECEIVER_ACTION = "com.malmo_university.groupwork.groupwork.FragmentLogin";
+    protected static final String RECEIVER_ACTION = "com.malmo_university.mylists.FragmentLogin";
 
     private EditText etUsernameField;
     private EditText etPasswordField;
@@ -36,9 +36,6 @@ public class FragmentLogin extends Fragment {
         public void onReceive(Context context, Intent intent) {
             int message = intent.getExtras().getInt("message");
             if (message == Globals.MESSAGE_AUTHENTICATED) {
-                Intent startIntent = new Intent(mParentActivity, ActivityLoggedIn.class);
-                startActivity(startIntent);
-
                 if (etUsernameField.getText().toString().length() != 0) {
                     // Save the username that is just authenticated into SharedPreferences
                     SharedPreferencesController.simpleWritePersistentString(
@@ -48,6 +45,9 @@ public class FragmentLogin extends Fragment {
                             Globals.PASSWORD,
                             etPasswordField.getText().toString());
                 }
+                Intent startIntent = new Intent(mParentActivity, MainActivity.class);
+                startActivity(startIntent);
+
                 mParentActivity.finish();
             } else if (message == Globals.MESSAGE_NOT_AUTHENTICATED) {
                 Log.d(TAG, "NOT AUTHENTICATED !!!");
@@ -79,6 +79,8 @@ public class FragmentLogin extends Fragment {
         Log.w(TAG, "onCreate");
 
         mParentActivity = (ActivityAuthenticate) getActivity();
+
+        Firebase.setAndroidContext(mParentActivity);
 
         Bundle args = getArguments();
         mFirebase = new Firebase(args.getString("firebaseRootRef"));
@@ -160,11 +162,10 @@ public class FragmentLogin extends Fragment {
         Log.w(TAG, "User: " + user);
         Log.w(TAG, "Pass: " + pass);
         if (user != null && pass != null){
+            btnLogin.setEnabled(false);
             FirebaseController.login(mParentActivity,mFirebase, user, pass, RECEIVER_ACTION,
                     Globals.MESSAGE_AUTHENTICATED, Globals.MESSAGE_NOT_AUTHENTICATED);
-            btnLogin.setEnabled(false);
         }
-
 
         Log.w(TAG, " - onResume");
     }

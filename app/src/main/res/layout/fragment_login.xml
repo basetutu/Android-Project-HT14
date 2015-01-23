@@ -1,14 +1,11 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="0dp"
-    tools:context=".Assignment1$PlaceholderFragment">
+    android:padding="0dp">
 
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -30,15 +27,13 @@
             android:id="@+id/et_user"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/et_user_hint"
-            android:padding="@dimen/activity_std_margin" />
+            android:hint="@string/et_user_hint" />
 
         <EditText
             android:id="@+id/et_pass"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/et_pass_hint"
-            android:padding="@dimen/activity_std_margin"
             android:password="true" />
 
         <Button
@@ -75,6 +70,5 @@
 
 
 </LinearLayout>
-
 
 </ScrollView>

@@ -1,0 +1,18 @@
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.saeed.assignment1.ActivityLoggedIn">
+
+    <item
+        android:id="@+id/menu_item_login_close"
+        android:title="@string/menu_close"
+        android:orderInCategory="98"
+        android:showAsAction="never" />
+    <item
+        android:id="@+id/menu_item_login_exit"
+        android:title="@string/menu_exit"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
+
+
+</menu>

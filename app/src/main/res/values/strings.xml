@@ -2,10 +2,56 @@
 <resources>
 
     <string name="app_name">My lists</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section3">Section 3</string>
+    <string name="title_section1">My lists</string>
+    <string name="title_section2">Item 1</string>
+    <string name="title_section3">Next item</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <!--<string name="action_settings">Settings</string>-->
+    <string name="app_subtitle">Structured collaboration</string>
+    <string name="title_chat_list">My conversations</string>
+    <string name="menu_item_settings">Settings</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_close">Close</string>
+    <string name="tv_login">Type in your credentials here:</string>
+    <string name="tv_register">If you haven\'t yet registered, you can create one here</string>
+    <string name="et_user_hint">Username</string>
+    <string name="et_pass_hint">Password</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_reg">Register new user</string>
+    <string name="btn_about">About this app</string>
+    <string name="btn_back">Go back</string>
+    <string name="btn_exit">Exit</string>
+    <string name="about_text">This is an app made for the course: Application Development for
+        Android. The app allows for creating, storing and sharing of your own custom made lists.
+        It primarily consists of one activity for login and another for viewing lists and its
+        contents. </string>
+    <string name="about_developer">Developers:</string>
+    <string name="about_info">App info:</string>
+    <string name="about_developer_name">Saeed Mir Ghasemi and Jonathan Bjarnason</string>
+    <string name="settings_msg">Settings selected but currently not available</string>
+    <string name="register_user_hint">Type your desired username</string>
+    <string name="register_pass_hint">Type your desired pass</string>
+    <string name="register_pass_hint2">Repeat your password</string>
+    <string name="registration_field">Register new user:</string>
+    <string name="register">Submit new user</string>
+    <string name="login_success">You have been logged in</string>
+    <string name="registration_success">You have been successfully registered. Attempting to
+        login...</string>
+    <string name="Group">Group: </string>
+    <string name="about_version">Version 0.1</string>
+    <string name="menu_exit">Exit application</string>
+    <string name="menu_item_addNewGroup">Add new group</string>
+    <string name="menu_item_removeSelectedGroup">Remove selected group</string>
+    <string name="menu_item_add_item">Add item</string>
+    <string name="menu_checklists_add_checklist">Add checklist</string>
+    <string name="dialog_std_message">Type a name for the new group</string>
+    <string name="dialog_group_exists_message">That group already existed. Type a different name for
+        the group</string>
+    <string name="toast_group_already_exists">"That group already existed"</string>
+    <string name="title_activity_dialog_activity__item">DialogActivity_Item</string>
+    <string name="title_activity_contacts">ContactsActivity</string>
+    <string name="initial_item_note">This is a note. Provides additional information about the item.
+        Bla bla bla bla bla</string>
+
 
 </resources>
