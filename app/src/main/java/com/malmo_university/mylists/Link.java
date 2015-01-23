@@ -9,20 +9,31 @@ public class Link {
     String ref_id;
     // The responsible user that created the link
     String owner;
-    // The date and time this link was added
-    String date_added;
+    // The date and time this link was created
+    String creation_date;
     // what is this referring to
     String type;
     // A Firebase reference URL
     // (This must be a complete URL from the firebase root till the point of reference)
     String reference;
+    // Name of the entry that is being linked to, for listing purposes
+    private String name;
 
-    public Link(String ref_id, String owner, String date_added, String type, String reference) {
+    public Link(String ref_id, String owner, String creation_date, String type, String reference, String name) {
         this.ref_id = ref_id;
-        this.date_added = date_added;
+        this.creation_date = creation_date;
         this.type = type;
         this.reference = reference;
         this.owner = owner;
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getRef_id() {
@@ -41,12 +52,12 @@ public class Link {
         this.owner = owner;
     }
 
-    public String getDate_added() {
-        return date_added;
+    public String getCreation_date() {
+        return creation_date;
     }
 
-    public void setDate_added(String date_added) {
-        this.date_added = date_added;
+    public void setCreation_date(String creation_date) {
+        this.creation_date = creation_date;
     }
 
     public String getType() {

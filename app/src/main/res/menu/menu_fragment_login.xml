@@ -5,12 +5,12 @@
 
     <item
         android:id="@+id/menu_item_login_close"
-        android:title="@string/menu_item_close"
+        android:title="@string/menu_close"
         android:orderInCategory="98"
         android:showAsAction="never" />
     <item
         android:id="@+id/menu_item_login_exit"
-        android:title="@string/menu_item_exit"
+        android:title="@string/menu_exit"
         android:orderInCategory="100"
         android:showAsAction="never" />
 

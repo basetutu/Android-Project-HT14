@@ -22,7 +22,7 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:paddingBottom="0dp"
-            android:text="tedsdsdsdsdssdstsdsdsdsdsdsdsdsds"
+            android:text="Item Title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:lines="2"
@@ -34,12 +34,12 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:paddingBottom="8dp"
-            android:text="testsdsdsdsdsdsdsdsdsdsdsdssdsdsssdsdsdsdsdsdsd"
+            android:text="Item Note"
             android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="40"
-            android:textSize="20dp"/>
+            android:textSize="15dp"/>
     </LinearLayout>
     <ImageView
         android:id="@+id/row_item_check"

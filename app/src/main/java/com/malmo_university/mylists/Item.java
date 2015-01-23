@@ -26,6 +26,10 @@ public class Item {
         this.checklist_ref_id = checklist_ref_id;
     }
 
+    public void toggleChecked(){
+        this.checked = !this.checked;
+    }
+
     public String getChecklist_ref_id() {
         return checklist_ref_id;
     }

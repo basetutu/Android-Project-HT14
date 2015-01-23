@@ -42,7 +42,7 @@ public class FirebaseController {
     private static final String VALUES = "VALUES";
 
     // Standard child names of a user
-    private static final String CHECKLISTS_REF = "CHECKLISTS_REF";
+    protected static final String CHECKLISTS_REF = "CHECKLISTS_REF";
     private static final String CONTACTS_REF = "CONTACTS_REF";
     private static final String PROFILE = "PROFILE";
     private static final String AWAITING_ACCEPTANCE_REF = "AWAITING_ACCEPTANCE_REF";
@@ -70,6 +70,21 @@ public class FirebaseController {
     private static Firebase mFirebaseCHECKLISTS;
     private static Firebase mFirebaseCURRENTUSER;
 
+
+    // Getters & Setters /////////////////////////////////
+
+    public static Firebase getmFirebaseUSERS() {
+        return mFirebaseUSERS;
+    }
+
+    public static Firebase getmFirebaseCHECKLISTS() {
+        return mFirebaseCHECKLISTS;
+    }
+
+    public static Firebase getmFirebaseCURRENTUSER() {
+        return mFirebaseCURRENTUSER;
+    }
+
     // init /////////////////////////////////////////////////////////////////////////////////
 
     protected static void init(MainActivity context, String currentUserEmail){
@@ -88,6 +103,9 @@ public class FirebaseController {
     }
     protected static String makeUserPath(String userEmail){
         return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + Algorithms.transformEmailToKey(userEmail);
+    }
+    protected static String makeItemsPath(String checklist_ref_id){
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklist_ref_id + "/" + ITEMS;
     }
 
     // Project functions ///////////////////////////////////////////////////////////////////
@@ -129,7 +147,7 @@ public class FirebaseController {
         userEmail = userEmail.toLowerCase();
         Link link = new Link(Algorithms.transformEmailToKey(userEmail), getCurrentUser(),
                 getTimestamp(), LINK_TYPE_CONTACT,
-                makeUserPath(makeUserPath(Algorithms.transformEmailToKey(userEmail))));
+                makeUserPath(makeUserPath(Algorithms.transformEmailToKey(userEmail))), userEmail);
         mFirebaseCURRENTUSER.child(CONTACTS_REF).child(Algorithms.transformEmailToKey(userEmail)).setValue(link);
     }
 
@@ -155,20 +173,22 @@ public class FirebaseController {
 
         // add the checklist to the current logged in users references of checklists
         String link_ref_id = mFirebaseCURRENTUSER.child(CHECKLISTS_REF).push().getKey();
-        Link link = new Link(link_ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST, checklist_ref_id);
+        Link link = new Link(link_ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST, checklist_ref_id, checklistName);
         mFirebaseCURRENTUSER.child(CHECKLISTS_REF).child(link_ref_id).setValue(link);
 
         // Add this user to the checklist's list of users who has a reference to it
         mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child(getCurrentUserKey()).setValue(getCurrentUser());
-        mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child("alo").setValue(getCurrentUser());
-
     }
 
-    protected static void shareChecklist(String toUserEmail, String checklist_ref_id){
+    protected static void renameChecklist(String checklist_ref_id, String newName){
+        mFirebaseCHECKLISTS.child(checklist_ref_id).child(VALUES).child(NAME).setValue(newName);
+    }
+
+    protected static void shareChecklist(String toUserEmail, String checklistName, String checklist_ref_id){
         toUserEmail = toUserEmail.toLowerCase();
         String ref_id = mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).push().getKey();
         Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
-                makeChecklistPath(checklist_ref_id));
+                checklist_ref_id, checklistName);
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
     }
 
@@ -207,15 +227,15 @@ public class FirebaseController {
         mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
     }
 
-    protected static void checkItemOnChecklist(boolean state, Item item){
-        item.checked = state;
-        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
+    protected static void checkItemOnChecklist(String checklist_ref_id, String item_ref_id, boolean state){
+        mFirebaseCHECKLISTS.child(checklist_ref_id).child(ITEMS).child(item_ref_id).child("checked").setValue(state);
     }
 
     // todo not tested
     protected static void removeItemFromChecklist(Item item){
         mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
+
 
     // Atomic functions ////////////////////////////////////////////////////////////////////
 

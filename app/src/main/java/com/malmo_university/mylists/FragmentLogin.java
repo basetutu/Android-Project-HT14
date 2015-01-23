@@ -80,6 +80,8 @@ public class FragmentLogin extends Fragment {
 
         mParentActivity = (ActivityAuthenticate) getActivity();
 
+        Firebase.setAndroidContext(mParentActivity);
+
         Bundle args = getArguments();
         mFirebase = new Firebase(args.getString("firebaseRootRef"));
 
