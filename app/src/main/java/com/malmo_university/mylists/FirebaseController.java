@@ -104,6 +104,9 @@ public class FirebaseController {
     protected static String makeUserPath(String userEmail){
         return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + Algorithms.transformEmailToKey(userEmail);
     }
+    protected static String makeItemsPath(String checklist_ref_id){
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklist_ref_id + "/" + ITEMS;
+    }
 
     // Project functions ///////////////////////////////////////////////////////////////////
 

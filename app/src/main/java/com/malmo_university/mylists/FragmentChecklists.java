@@ -112,24 +112,24 @@ public class FragmentChecklists extends Fragment {
 
         // TEST SECTION
 
-        Log.w(TAG,"0");
-
-        FirebaseController.createUser("smg@gmail.com", "Saeed Ghasemi", "0046763150074");
-        FirebaseController.createUser("smg2006@gmail.com", "Tom Andersen", "0763212445");
-        Log.w(TAG,"1");
-
-        FirebaseController.createChecklist("shopping list");
-        FirebaseController.createChecklist("remember these");
-        Log.w(TAG,"2");
-
-        FirebaseController.addContactToUserList("smg2006@gmail.com");
-        Log.w(TAG,"3");
-
-        FirebaseController.shareChecklist("smg2006@gmail.com","checklistName","ref_id shopping list");
-        Log.w(TAG,"4");
-
-        FirebaseController.addItemToChecklist("shopping list", "title", "note");
-        Log.w(TAG,"5");
+//        Log.w(TAG,"0");
+//
+//        FirebaseController.createUser("smg@gmail.com", "Saeed Ghasemi", "0046763150074");
+//        FirebaseController.createUser("smg2006@gmail.com", "Tom Andersen", "0763212445");
+//        Log.w(TAG,"1");
+//
+//        FirebaseController.createChecklist("shopping list");
+//        FirebaseController.createChecklist("remember these");
+//        Log.w(TAG,"2");
+//
+//        FirebaseController.addContactToUserList("smg2006@gmail.com");
+//        Log.w(TAG,"3");
+//
+//        FirebaseController.shareChecklist("smg2006@gmail.com","checklistName","ref_id shopping list");
+//        Log.w(TAG,"4");
+//
+//        FirebaseController.addItemToChecklist("shopping list", "title", "note");
+//        Log.w(TAG,"5");
 
     }
 
