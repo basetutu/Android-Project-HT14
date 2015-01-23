@@ -83,7 +83,7 @@ public class FragmentItems extends Fragment{
 
         Bundle args = getArguments();
         mChecklistName = args.getString(CHECKLIST_NAME);
-        mFirebaseChecklist = new Firebase(args.getString(FRAGMENT_REF_ID));
+        mFirebaseChecklist = new Firebase(FirebaseController.makeChecklistPath(args.getString(FRAGMENT_REF_ID)));
 
 
         // Create the Arraylist that will store our group-names from the list
@@ -198,25 +198,14 @@ public class FragmentItems extends Fragment{
             if (Globals.DEBUG_results) {
                 Log.w(TAG, "getView");
             }
-
             ViewHolder viewHolder;
             Item tempValues;
-            boolean writeToRight = false;
 
             // Our listview uses two views for its rows depending on who the sender is
             if(listItems.size() > 0) {
-                /***** Get each ChatMessage object from Arraylist ********/
                 tempValues = listItems.get(position);
-                // this will indicate which view to use
-//            writeToRight = (tempValues.getFrom().equals(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME)));
-                //writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
             }else{
                 tempValues = null;
-                writeToRight = false;
-            }
-
-            if (Globals.DEBUG_results) {
-                Log.w(TAG, "writeToRight= " + writeToRight);
             }
 
             // If no recycled convertView has been returned, then inflate a new view and place a
@@ -238,15 +227,20 @@ public class FragmentItems extends Fragment{
 
             // Now that we have a viewholder, we can place new data inside its views
             if(tempValues == null){
-                viewHolder.title.setText("Empty item title");
-                viewHolder.note.setText("Empty item note");
+                viewHolder.title.setText("Empty checklist...");
+                viewHolder.note.setText("");
                 viewHolder.check.setVisibility(View.INVISIBLE);
             } else {
                 /************  Set Model values     from Holder elements ***********/
                 viewHolder.title.setText(tempValues.getTitle());
                 viewHolder.note.setText(tempValues.getNote());
+                if (tempValues.getChecked()){
+                    viewHolder.check.setVisibility(View.VISIBLE);
+                }else {
+                    viewHolder.check.setVisibility(View.INVISIBLE);
+                }
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
-                vi.setOnClickListener(new OnItemClickListener( position ));
+                vi.setOnLongClickListener(onItemLongClickListener);
             }
 
             // Set weather or not the last item has been shown
@@ -263,19 +257,14 @@ public class FragmentItems extends Fragment{
             return vi;
         }
 
-        /********* Called when Item click in ListView ************/
-        private class OnItemClickListener implements View.OnClickListener {
-            private int mPosition;
-
-            public OnItemClickListener(int position){
-                mPosition = position;
-            }
+        // One listener to rule them all
+        private View.OnLongClickListener onItemLongClickListener = new View.OnLongClickListener(){
             @Override
-            public void onClick(View arg0) {
-                /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
-                onChecklistItemClicked(mPosition);
+            public boolean onLongClick(View v) {
+                onChecklistItemClicked(mListView.getPositionForView(v));
+                return true;
             }
-        }
+        };
 
         /********* Create a holder Class to contain inflated xml file elements *********/
         public class ViewHolder{
@@ -289,6 +278,7 @@ public class FragmentItems extends Fragment{
     private void onChecklistItemClicked(int mPosition) {
         //todo
         Log.w(TAG,"onChecklistItemClicked");
+        // start dialog for long clicking an item in a checklist    
     }
 
 

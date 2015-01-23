@@ -83,32 +83,31 @@ public class FirebaseController {
 
     // Help functions
 
-    protected static String makeChecklistPath(String checklistName){
-        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklistName;
+    protected static String makeChecklistPath(String checklist_ref_id){
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklist_ref_id;
     }
     protected static String makeUserPath(String userEmail){
-        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + userEmail;
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + Algorithms.transformEmailToKey(userEmail);
     }
 
     // Project functions ///////////////////////////////////////////////////////////////////
 
-
-    ///////////////////////////////////////////////////////////////////////////////
-
-    protected static void createUser(String userEmail){
+    protected static void createUser(String userEmail, String full_name, String tlf){
         HashMap<String,String> values = new HashMap<String, String>();
 
         userEmail = userEmail.toLowerCase();
 
+        // Create user account
         values.put(USERNAME, userEmail);
         values.put(CREATION_DATE, getTimestamp());
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(VALUES).setValue(values);
 
         values.clear();
 
+        // Create profile
         values.put(EMAIL, userEmail);
-        values.put(NAME, "");
-        values.put(TLF, "");
+        values.put(NAME, full_name);
+        values.put(TLF, tlf);
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(PROFILE).setValue(values);
     }
 
@@ -198,8 +197,8 @@ public class FirebaseController {
         String ref_id = mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).push().getKey();
         Item item = new Item(ref_id, checklist_id, getCurrentUser(), getTimestamp(), 0, title, note, false);
         mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).child(ref_id).setValue(item);
-        ThreadController.delay(5000);
-        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
+        //todo test removing
+        //mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
 
     protected static void editItemOnChecklist(String title, String note, Item item){

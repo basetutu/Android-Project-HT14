@@ -13,8 +13,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.FirebaseError;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -98,7 +103,7 @@ public class FragmentChecklists extends Fragment {
     public void onResume() {
         super.onResume();
         Log.w(TAG,"onResume");
-
+/*
         HashMap<String,String> values = new HashMap<String, String>();
         values.put("NAME","hallo");
         values.put("Creating Date", FirebaseController.getTimestamp());
@@ -109,7 +114,7 @@ public class FragmentChecklists extends Fragment {
         mChecklistsArray.add(mChecklistsArray.size(),a);
         mChecklistsArray.add(mChecklistsArray.size(),a);
         mListViewAdapter.notifyDataSetChanged();
-
+*/
 
     }
 
@@ -207,44 +212,104 @@ public class FragmentChecklists extends Fragment {
                 /************  Set Model values     from Holder elements ***********/
                 viewHolder.title.setText(tempValues.getName());
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
-                vi.setOnClickListener(new OnItemClickListener( position ));
+                vi.setOnClickListener(onItemClickListener);
             }
             return vi;
         }
 
-        /********* Called when Item click in ListView ************/
-        private class OnItemClickListener implements View.OnClickListener {
-            private int mPosition;
-
-            public OnItemClickListener(int position){
-                mPosition = position;
-            }
+        // One listener to rule them all
+        private View.OnClickListener onItemClickListener = new View.OnClickListener(){
             @Override
-            public void onClick(View arg0) {
-                /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
-                onChecklistItemClicked(mPosition);
+            public void onClick(View v) {
+                mParentActivity.onChecklistClicked(mListView.getPositionForView(v));
             }
-        }
+        };
 
         /********* Create a holder Class to contain inflated xml file elements *********/
         public class ViewHolder{
             public TextView title;
             public ImageView check;
         }
-
     }
 
-    private void onChecklistItemClicked(int mPosition) {
-        Log.w(TAG,"onChecklistItemClicked");
+    // Listeners //////////////////////////////////////////////////////////////////////////
 
-        //todo
-        // get the checklist
-        // see if the corresponding fragment is already open
-        // if it is, select the tab
-        // if NOT, initialize a new FragmentItems
-        // add it to the mChecklistsArray and mChecklistsMap
-        // invoke mSectionPageAdapter.pageAdded()
-        // select the new tab
+    private ChildEventListener mCHECKLISTS_REF_Listener = new ChildEventListener() {
+        private final String TAG = "mUserChecklistsListener";
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            if (Globals.DEBUG_invocation) {
+                Log.d(TAG, "onChildAdded");
+            }
+            // We do this only to be able to divide the string that we receive into variable
+            // like "id" and "from".
+            Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
+            // Extract data
+            String date_added = String.valueOf(dataMap.get("creation_date"));
+            String owner = String.valueOf(dataMap.get("owner"));
+            String ref_id = String.valueOf(dataMap.get("ref_id"));
+            String reference = String.valueOf(dataMap.get("reference"));
+            String type = String.valueOf(dataMap.get("type"));
+            // DEBUG
+            if (Globals.DEBUG_results) {
+                Log.d(TAG, "Child creation_date: " + date_added);
+                Log.d(TAG, "Child owner: " + owner);
+                Log.d(TAG, "Child ref_id: " + ref_id);
+                Log.d(TAG, "Child reference: " + reference);
+                Log.d(TAG, "Child type: " + type);
+            }
 
-    }
+            // Create new ChatMessage-object
+            Link link = new Link(ref_id, owner, date_added, type, reference);
+
+            if (!mParentActivity.getUserChecklistsMap().containsKey(reference)) {
+                mParentActivity.getUserChecklistsMap().put(reference, link);
+                //mListViewMessages.add(newChatMessage.getMessage());
+                mParentActivity.getUserChecklistsArray().add(link);
+                mParentActivity.notifyAdapter();
+            }
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildChanged");
+            mParentActivity.makeToast("onChildChanged");
+            //not needed
+            // DEBUG_invocation
+            if (Globals.DEBUG_invocation) {
+                Log.d(TAG, String.valueOf(dataSnapshot.getValue()));
+            }
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildRemoved");
+            mParentActivity.makeToast("onChildRemoved");
+            //not needed
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildMoved");
+            mParentActivity.makeToast("onChildMoved");
+            // not needed
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+            if (Globals.DEBUG_invocation)
+                Log.e(TAG, "onCancelled");
+            mParentActivity.makeToast("onCancelled - ERROR");
+            // ValueEventListener defines a onCancelled method (lines 12 - 15) that will be
+            // called if the read is ever cancelled. A read would be cancelled if the client
+            // doesn't have permission to read from a Firebase location. This method will be
+            // passed a FirebaseError object indicating why the failure occurred.
+            if (Globals.DEBUG_invocation)
+                Log.e(TAG, " - ");
+        }
+    };
+
 }
