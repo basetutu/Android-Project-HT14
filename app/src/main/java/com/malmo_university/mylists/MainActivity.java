@@ -188,7 +188,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // TEST
         Checklist checklist = new Checklist("ref id", FirebaseController.getTimestamp(), "test", null);
         mChecklistsArray.add(mChecklistsArray.size(), checklist);
-
+        checklist = new Checklist("ref id2", FirebaseController.getTimestamp(), "test", null);
+        mChecklistsArray.add(mChecklistsArray.size(), checklist);
         onChecklistClicked(0);
 
         Log.w(TAG, " - onResume");
