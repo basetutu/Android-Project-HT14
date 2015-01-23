@@ -32,8 +32,9 @@ public class ActivityAuthenticate extends Activity {
 
         // instantiate several application wide controllers
         Firebase.setAndroidContext(this);
-        SharedPreferencesController.instantiate(this, Globals.SHARED_PREFERENCE_MY_LISTS);
-        MyBroadcastController.setAndroidContext(this);
+        SharedPreferencesController.init(this, Globals.SHARED_PREFERENCE_MY_LISTS);
+        MyBroadcastController.init(this);
+        AlertDialogs.init(this, getLayoutInflater());
 
         fm = getFragmentManager();
 
@@ -46,7 +47,7 @@ public class ActivityAuthenticate extends Activity {
         // actionBar.setIcon(getResources().getDrawable(R.drawable.ic_launcher_2);
         // Keep i mind that there are two overloading functions called setIcon()
         // But only one function for setBackgroundDrawable() !
-        actionBar.setIcon(R.drawable.ic_launcher);
+        actionBar.setIcon(R.drawable.android);
 
         fragment = fm.findFragmentById(R.id.container_loginActivity);
         if (fragment == null) {

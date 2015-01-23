@@ -9,43 +9,41 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.firebase.client.Firebase;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class FragmentChecklists extends Fragment {
     private static final String TAG = "FragmentChecklists";
-
     protected MainActivity mParentActivity;
 
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-    private ArrayList<Checklist> mListViewChecklists;
+    private ArrayList<Checklist> mChecklistsArray;
+    private HashMap<String, Checklist> mChecklistsMap;
     //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
     private ChecklistsAdapter mListViewAdapter;
 
     private ListView mListView;
-
-    // The group-reference of firebase
-    private Firebase mFirebaseChecklists;
 
     private boolean childListenerRegistered = false;
 
     // As default the list must scroll down lot the lowest item on the list
     private boolean mLastItemVisible = true;
 
-
-    ////
-
-
-
     ////////////////////////////////////////////////////////////////////////////////////////
 
+    // Not needed (the information is hardcoded since there is only one of its kind)
     public static FragmentChecklists newInstance() {
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "newInstance");
@@ -68,21 +66,13 @@ public class FragmentChecklists extends Fragment {
 
         mParentActivity = (MainActivity)getActivity();
 
-        mListViewChecklists = mParentActivity.getChecklists();
-
-
-//        mFirebaseChecklists = new Firebase(Globals.FIREBASE_DB_ROOT_URL).child(FirebaseController.);
-
-
-
-        // Create the Arraylist that will store our group-names from the list
-        mListViewChecklists = new ArrayList<Checklist>(50);
+        // fetch the cached data from the activity
+        mChecklistsArray = mParentActivity.getChecklistsArray();
+        mChecklistsMap = mParentActivity.getChecklistsMap();
 
         mListViewAdapter = new ChecklistsAdapter(mParentActivity,
-                mListViewChecklists,
-                getResources(),
-                this);
-
+                mChecklistsArray,
+                getResources());
         mListViewAdapter.notifyDataSetChanged();
 
         if (!childListenerRegistered) {
@@ -97,63 +87,73 @@ public class FragmentChecklists extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.w("fsdf", "onCreateView");
+        Log.w(TAG, "onCreateView");
 
-        View rootView = inflater.inflate(R.layout.fragment_checklists, container, false);
-        mListView = (ListView) rootView.findViewById(R.id.listview_checklists);
+        View rootView = inflater.inflate(R.layout.fragment_listview, container, false);
+        mListView = (ListView) rootView.findViewById(R.id.listview);
         mListView.setDivider(null);
         mListView.setDividerHeight(0);
 
         mListView.setAdapter(mListViewAdapter);
 
-
-
-
-
         return rootView;
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.w("fsdf","onPause");
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        Log.w("fsdf","onResume");
+        Log.w(TAG,"onResume");
+/*
+        HashMap<String,String> values = new HashMap<String, String>();
+        values.put("NAME","hallo");
+        values.put("Creating Date", FirebaseController.getTimestamp());
+        Checklist a = new Checklist("dasda",FirebaseController.getTimestamp(),
+                "my checklist", values);
+        mChecklistsArray.add(mChecklistsArray.size(),a);
+        mChecklistsArray.add(mChecklistsArray.size(),a);
+        mChecklistsArray.add(mChecklistsArray.size(),a);
+        mChecklistsArray.add(mChecklistsArray.size(),a);
+        mListViewAdapter.notifyDataSetChanged();
+*/
+
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.w(TAG,"onPause");
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        Log.w("fsdf","onStop");
+        Log.w(TAG,"onStop");
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.w("fsdf","onDestroy");
+        Log.w(TAG,"onDestroy");
     }
 
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
     private class ChecklistsAdapter extends BaseAdapter {
+        private final String TAG = "ChecklistsAdapter";
 
         private final ArrayList<Checklist> listItems;
         private final Resources resources;
-        private final FragmentChecklists mFragmentChatRef;
+        //private final FragmentChecklists mFragmentChatRef;
         private final LayoutInflater inflater;
 
         /*************  CustomAdapter Constructor *****************/
-        public ChecklistsAdapter(MainActivity context, ArrayList listItems, Resources resLocal, FragmentChecklists ref) {
+        public ChecklistsAdapter(MainActivity context, ArrayList listItems, Resources resLocal) {
             /********** Take passed values **********/
             mParentActivity = context;
             this.listItems = listItems;
             resources = resLocal;
-            mFragmentChatRef = ref;
+            //mFragmentChatRef = ref;
             /***********  Layout inflater to call external xml layout () ***********/
             inflater = ( LayoutInflater ) mParentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -174,24 +174,18 @@ public class FragmentChecklists extends Fragment {
 
         @Override
         public View getView(int position, View vi, ViewGroup parent) {
+            //mListView.smoothScrollToPosition(0);
+            if (Globals.DEBUG_results) {
+                Log.w(TAG, "getView");
+            }
             ViewHolder viewHolder;
             Checklist tempValues;
-            boolean writeToRight = false;
 
             // Our listview uses two views for its rows depending on who the sender is
             if(listItems.size() > 0) {
-                /***** Get each ChatMessage object from Arraylist ********/
-                tempValues = (Checklist) listItems.get(position);
-                // this will indicate which view to use
-//            writeToRight = (tempValues.getFrom().equals(SharedPreferencesController.simpleReadPersistentString(Globals.USERNAME)));
-                //writeToRight = (tempValues.getFrom().equals(FirebaseController.getCurrentUser()));
+                tempValues = listItems.get(position);
             }else{
                 tempValues = null;
-                writeToRight = false;
-            }
-
-            if (Globals.DEBUG_results) {
-                Log.w(TAG, "writeToRight= " + writeToRight);
             }
 
             // If no recycled convertView has been returned, then inflate a new view and place a
@@ -199,117 +193,123 @@ public class FragmentChecklists extends Fragment {
             // Otherwise reuse convertView by getting its ViewHolder.
             if(vi == null){
                 viewHolder = new ViewHolder();
-                /****** Inflate tabitem.xml file for each row ( Defined below ) *******/
-                if (writeToRight){
-                    vi = inflater.inflate(R.layout.listview_item_chat_right, null);
-                    /****** View Holder Object to contain tabitem.xml file elements ******/
-                    viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
-                    viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_right_message);
-                    viewHolder.writeToRight = true;
-                }else {
-                    vi = inflater.inflate(R.layout.listview_item_chat_left, null);
-                    /****** View Holder Object to contain tabitem.xml file elements ******/
-                    viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_left_from);
-                    viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_left_message);
-                    viewHolder.writeToRight = false;
-                }
+                vi = inflater.inflate(R.layout.row_checklist, null);
+                /****** View Holder Object to contain tabitem.xml file elements ******/
+                viewHolder.title = (TextView) vi.findViewById(R.id.row_checklist_title);
+                viewHolder.check = (ImageView) vi.findViewById(R.id.row_checklist_check);
                 /************  Set viewHolder with LayoutInflater ************/
                 vi.setTag( viewHolder );
             } else {
-                // Identify the view that is received to see if it can be used or a new must be inflated
-                if (((ViewHolder)vi.getTag()).writeToRight == writeToRight) {
-                    if (Globals.DEBUG_results){
-                        Log.i(TAG, "======== Correct view orientation ========");
-                    }
-                    // Fetch the ViewHolder and reuse the vi
-                    viewHolder = (ViewHolder) vi.getTag();
-                }else{
-                    if (Globals.DEBUG_results) {
-                        Log.i(TAG, "======== Incorrect view orientation ========");
-                    }
-                    // Do not reuse the vi, but reuse the contained ViewHolder
-                    viewHolder = (ViewHolder) vi.getTag();
-
-                    if (writeToRight){
-                        vi = inflater.inflate(R.layout.listview_item_chat_right, null);
-                        /****** View Holder Object to contain tabitem.xml file elements ******/
-                        viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_right_from);
-                        viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_right_message);
-                        viewHolder.writeToRight = true;
-                    }else {
-                        vi = inflater.inflate(R.layout.listview_item_chat_left, null);
-                        /****** View Holder Object to contain tabitem.xml file elements ******/
-                        viewHolder.from    = (TextView) vi.findViewById(R.id.listview_view_left_from);
-                        viewHolder.message = (TextView) vi.findViewById(R.id.listview_view_left_message);
-                        viewHolder.writeToRight = false;
-                    }
-
-                    /************  Set viewHolder with LayoutInflater ************/
-                    vi.setTag( viewHolder );
-                }
+                // Fetch the ViewHolder and reuse the vi
+                viewHolder = (ViewHolder) vi.getTag();
             }
 
             // Now that we have a viewholder, we can place new data inside its views
             if(tempValues == null){
-                viewHolder.from.setText("");
-                viewHolder.message.setText("Be the first to post a message in this group...");
+                viewHolder.title.setText("Empty checklist");
+                viewHolder.check.setVisibility(View.INVISIBLE);
             } else {
                 /************  Set Model values     from Holder elements ***********/
-                //if(tempValues.getFrom().equals(FirebaseController.getCurrentUser())){
-                    viewHolder.from.setText("You");
-                    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.blue_light));
-                //}else {
-                //    //viewHolder.from.setText(tempValues.getFrom());
-                //    viewHolder.message.setTextColor(mParentActivity.getResources().getColor(R.color.orange));
-                //}
-                //viewHolder.message.setText(tempValues.getMessage());
-
+                viewHolder.title.setText(tempValues.getName());
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
-                vi.setOnClickListener(new OnItemClickListener( position ));
+                vi.setOnClickListener(onItemClickListener);
             }
-            // Set weather or not the last item has been shown
-            if (position >= listItems.size() -2){
-                if (Globals.DEBUG_results)
-                    Log.w(TAG, "last item is visible");
-                mFragmentChatRef.setLastItemVisible(true);
-            }else {
-                if (Globals.DEBUG_results)
-                    Log.w(TAG, "last item is NOT visible");
-                mFragmentChatRef.setLastItemVisible(false);
-            }
-
             return vi;
         }
 
-        /********* Called when Item click in ListView ************/
-        private class OnItemClickListener implements View.OnClickListener {
-            private int mPosition;
-
-            public OnItemClickListener(int position){
-                mPosition = position;
-            }
+        // One listener to rule them all
+        private View.OnClickListener onItemClickListener = new View.OnClickListener(){
             @Override
-            public void onClick(View arg0) {
-                /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
-                onChecklistItemClicked(mPosition);
+            public void onClick(View v) {
+                mParentActivity.onChecklistClicked(mListView.getPositionForView(v));
             }
-        }
+        };
 
         /********* Create a holder Class to contain inflated xml file elements *********/
         public class ViewHolder{
-            public TextView from;
-            public TextView message;
-            public boolean writeToRight;
+            public TextView title;
+            public ImageView check;
+        }
+    }
+
+    // Listeners //////////////////////////////////////////////////////////////////////////
+
+    private ChildEventListener mCHECKLISTS_REF_Listener = new ChildEventListener() {
+        private final String TAG = "mUserChecklistsListener";
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            if (Globals.DEBUG_invocation) {
+                Log.d(TAG, "onChildAdded");
+            }
+            // We do this only to be able to divide the string that we receive into variable
+            // like "id" and "from".
+            Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
+            // Extract data
+            String date_added = String.valueOf(dataMap.get("creation_date"));
+            String owner = String.valueOf(dataMap.get("owner"));
+            String ref_id = String.valueOf(dataMap.get("ref_id"));
+            String reference = String.valueOf(dataMap.get("reference"));
+            String type = String.valueOf(dataMap.get("type"));
+            // DEBUG
+            if (Globals.DEBUG_results) {
+                Log.d(TAG, "Child creation_date: " + date_added);
+                Log.d(TAG, "Child owner: " + owner);
+                Log.d(TAG, "Child ref_id: " + ref_id);
+                Log.d(TAG, "Child reference: " + reference);
+                Log.d(TAG, "Child type: " + type);
+            }
+
+            // Create new ChatMessage-object
+            Link link = new Link(ref_id, owner, date_added, type, reference);
+
+            if (!mParentActivity.getUserChecklistsMap().containsKey(reference)) {
+                mParentActivity.getUserChecklistsMap().put(reference, link);
+                //mListViewMessages.add(newChatMessage.getMessage());
+                mParentActivity.getUserChecklistsArray().add(link);
+                mParentActivity.notifyAdapter();
+            }
         }
 
-    }
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildChanged");
+            mParentActivity.makeToast("onChildChanged");
+            //not needed
+            // DEBUG_invocation
+            if (Globals.DEBUG_invocation) {
+                Log.d(TAG, String.valueOf(dataSnapshot.getValue()));
+            }
+        }
 
-    private void onChecklistItemClicked(int mPosition) {
-        //todo
-    }
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildRemoved");
+            mParentActivity.makeToast("onChildRemoved");
+            //not needed
+        }
 
-    protected void setLastItemVisible(boolean state){
-        mLastItemVisible = state;
-    }
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+            if (Globals.DEBUG_invocation)
+                Log.d(TAG, "onChildMoved");
+            mParentActivity.makeToast("onChildMoved");
+            // not needed
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+            if (Globals.DEBUG_invocation)
+                Log.e(TAG, "onCancelled");
+            mParentActivity.makeToast("onCancelled - ERROR");
+            // ValueEventListener defines a onCancelled method (lines 12 - 15) that will be
+            // called if the read is ever cancelled. A read would be cancelled if the client
+            // doesn't have permission to read from a Firebase location. This method will be
+            // passed a FirebaseError object indicating why the failure occurred.
+            if (Globals.DEBUG_invocation)
+                Log.e(TAG, " - ");
+        }
+    };
 
 }

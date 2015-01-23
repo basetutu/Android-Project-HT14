@@ -13,7 +13,7 @@ public class SharedPreferencesController {
     private static String mFilename;
     private static SharedPreferences mPrefs;
 
-    public static void instantiate(Context context, String filename){
+    public static void init(Context context, String filename){
         mAppContext = context.getApplicationContext();
         mFilename = filename;
         mPrefs = mAppContext.getSharedPreferences(mFilename, 0);

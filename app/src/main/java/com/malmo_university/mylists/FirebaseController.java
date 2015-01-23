@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
@@ -61,6 +60,7 @@ public class FirebaseController {
     private static final String TLF = "TLF";
 
     private static String currentUser;
+    private static MainActivity mParentActivity;
 
     // The values of the type attribute in the Link-class
     // It's simply indicating what the Link is linking to
@@ -70,49 +70,44 @@ public class FirebaseController {
     private static Firebase mFirebaseCHECKLISTS;
     private static Firebase mFirebaseCURRENTUSER;
 
-    // DATA COLLECTIONS /////////////////////////////////////////////////////////////////////
-
-    HashMap<String, Checklist> mChecklists = new HashMap<String, Checklist>();
-    HashMap<String, Contact> mContacts = new HashMap<String, Contact>();
-
     // init /////////////////////////////////////////////////////////////////////////////////
 
-    protected static void init(String currentUserEmail){
+    protected static void init(MainActivity context, String currentUserEmail){
         mFirebase = new Firebase(Globals.FIREBASE_DB_ROOT_URL);
         mFirebaseUSERS = mFirebase.child(DB_USERS);
         mFirebaseCHECKLISTS = mFirebase.child(DB_CHECKLISTS);
         setCurrentUser(currentUserEmail);
-        mFirebaseCURRENTUSER = mFirebaseUSERS.child(getCurrentUser());
+        mFirebaseCURRENTUSER = mFirebaseUSERS.child(getCurrentUserKey());
+        mParentActivity = context;
     }
 
     // Help functions
 
-    protected static String makeChecklistPath(String checklistName){
-        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklistName;
+    protected static String makeChecklistPath(String checklist_ref_id){
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklist_ref_id;
     }
     protected static String makeUserPath(String userEmail){
-        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + userEmail;
+        return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + Algorithms.transformEmailToKey(userEmail);
     }
 
     // Project functions ///////////////////////////////////////////////////////////////////
 
-
-    ///////////////////////////////////////////////////////////////////////////////
-
-    protected static void createUser(String userEmail){
+    protected static void createUser(String userEmail, String full_name, String tlf){
         HashMap<String,String> values = new HashMap<String, String>();
 
         userEmail = userEmail.toLowerCase();
 
+        // Create user account
         values.put(USERNAME, userEmail);
         values.put(CREATION_DATE, getTimestamp());
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(VALUES).setValue(values);
 
         values.clear();
 
+        // Create profile
         values.put(EMAIL, userEmail);
-        values.put(NAME, "");
-        values.put(TLF, "");
+        values.put(NAME, full_name);
+        values.put(TLF, tlf);
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(PROFILE).setValue(values);
     }
 
@@ -164,14 +159,16 @@ public class FirebaseController {
         mFirebaseCURRENTUSER.child(CHECKLISTS_REF).child(link_ref_id).setValue(link);
 
         // Add this user to the checklist's list of users who has a reference to it
-        mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child(getCurrentUser()).setValue(getCurrentUser());
+        mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child(getCurrentUserKey()).setValue(getCurrentUser());
+        mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child("alo").setValue(getCurrentUser());
+
     }
 
-    protected static void shareChecklist(String toUserEmail, String checklistName){
+    protected static void shareChecklist(String toUserEmail, String checklist_ref_id){
         toUserEmail = toUserEmail.toLowerCase();
         String ref_id = mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).push().getKey();
         Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
-                makeChecklistPath(checklistName.toUpperCase()));
+                makeChecklistPath(checklist_ref_id));
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
     }
 
@@ -189,9 +186,9 @@ public class FirebaseController {
         // then delete the checklist, otherwise remove this user from list
 
         // Remove the checklist entirely
-//        mFirebaseCHECKLISTS.child(checklist_id).removeValue();
+//        mFirebaseCHECKLISTS.child(checklist_ref_id).removeValue();
         // delete this user from the checklist's list of users with reference to it
-//        mFirebaseCHECKLISTS.child(checklist_id).child(USERS_REF).child(getCurrentUser()).removeValue();
+//        mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child(getCurrentUserKey()).removeValue();
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -200,31 +197,25 @@ public class FirebaseController {
         String ref_id = mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).push().getKey();
         Item item = new Item(ref_id, checklist_id, getCurrentUser(), getTimestamp(), 0, title, note, false);
         mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).child(ref_id).setValue(item);
-        ThreadController.delay(5000);
-        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).removeValue();
+        //todo test removing
+        //mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
 
     protected static void editItemOnChecklist(String title, String note, Item item){
         item.setTitle(title);
         item.setNote(note);
-        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).setValue(item);
+        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
     }
 
     protected static void checkItemOnChecklist(boolean state, Item item){
-        item.state = state;
-        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).setValue(item);
+        item.checked = state;
+        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
     }
 
     // todo not tested
     protected static void removeItemFromChecklist(Item item){
-        mFirebaseCHECKLISTS.child(item.checklist_id).child(item.ref_id).removeValue();
+        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
-
-    ////////////////////////////////////////////////////////////////////7
-
-
-
-
 
     // Atomic functions ////////////////////////////////////////////////////////////////////
 
@@ -293,6 +284,9 @@ public class FirebaseController {
         return currentUser;
     }
 
+    protected static String getCurrentUserKey(){
+        return Algorithms.transformEmailToKey(currentUser);
+    }
 
     // AUTHENTICATION ///////////////////////////////////////////////////////////////////////
 
@@ -427,36 +421,6 @@ public class FirebaseController {
             Log.w(TAG," - createNewUser");
     }
 
-    // LISTENERS ///////////////////////////////////////////////////////////////////////////
-
-    protected class ChildEventListenerChecklists implements ChildEventListener {
-
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(FirebaseError firebaseError) {
-
-        }
-    }
-
     // Listener registrations (for reading data) ////////////////////////////////////////////
 
     protected static void registerChildListener(Firebase location, ChildEventListener listener) {
@@ -474,6 +438,8 @@ public class FirebaseController {
     protected static void unregisterValueListener(Firebase location, ValueEventListener listener) {
         location.removeEventListener(listener);
     }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
 
 
 }
