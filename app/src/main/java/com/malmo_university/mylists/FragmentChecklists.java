@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
@@ -115,6 +116,10 @@ public class FragmentChecklists extends Fragment {
         mChecklistsArray.add(mChecklistsArray.size(),a);
         mListViewAdapter.notifyDataSetChanged();
 */
+        Firebase firebase = new Firebase(FirebaseController.makeUserPath(FirebaseController.getCurrentUser()));
+        firebase = firebase.child(FirebaseController.CHECKLISTS_REF);
+        FirebaseController.registerChildListener(firebase,mCHECKLISTS_REF_Listener);
+
 
     }
 

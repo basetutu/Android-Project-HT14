@@ -42,7 +42,7 @@ public class FirebaseController {
     private static final String VALUES = "VALUES";
 
     // Standard child names of a user
-    private static final String CHECKLISTS_REF = "CHECKLISTS_REF";
+    protected static final String CHECKLISTS_REF = "CHECKLISTS_REF";
     private static final String CONTACTS_REF = "CONTACTS_REF";
     private static final String PROFILE = "PROFILE";
     private static final String AWAITING_ACCEPTANCE_REF = "AWAITING_ACCEPTANCE_REF";
