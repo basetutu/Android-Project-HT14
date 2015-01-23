@@ -118,7 +118,7 @@ public class FragmentChecklists extends Fragment {
 */
         Firebase firebase = new Firebase(FirebaseController.makeUserPath(FirebaseController.getCurrentUser()));
         firebase = firebase.child(FirebaseController.CHECKLISTS_REF);
-        FirebaseController.registerChildListener(firebase,mCHECKLISTS_REF_Listener);
+        FirebaseController.registerChildListener(firebase, mCHECKLISTS_REF_Listener);
 
 
     }
@@ -240,65 +240,147 @@ public class FragmentChecklists extends Fragment {
     // Listeners //////////////////////////////////////////////////////////////////////////
 
     private ChildEventListener mCHECKLISTS_REF_Listener = new ChildEventListener() {
-        private final String TAG = "mUserChecklistsListener";
+        private final String TAG = "mCHECKLISTS_REF_Listener";
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
             if (Globals.DEBUG_invocation) {
-                Log.d(TAG, "onChildAdded");
+                Log.w(TAG, "onChildAdded");
             }
             // We do this only to be able to divide the string that we receive into variable
             // like "id" and "from".
             Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
             // Extract data
-            String date_added = String.valueOf(dataMap.get("creation_date"));
+            String creation_date = String.valueOf(dataMap.get("creation_date"));
             String owner = String.valueOf(dataMap.get("owner"));
             String ref_id = String.valueOf(dataMap.get("ref_id"));
             String reference = String.valueOf(dataMap.get("reference"));
             String type = String.valueOf(dataMap.get("type"));
+            String checklistName = String.valueOf(dataMap.get("name"));
             // DEBUG
             if (Globals.DEBUG_results) {
-                Log.d(TAG, "Child creation_date: " + date_added);
-                Log.d(TAG, "Child owner: " + owner);
-                Log.d(TAG, "Child ref_id: " + ref_id);
-                Log.d(TAG, "Child reference: " + reference);
-                Log.d(TAG, "Child type: " + type);
+                Log.i(TAG, "Child creation_date: " + creation_date);
+                Log.i(TAG, "Child owner: " + owner);
+                Log.i(TAG, "Child ref_id: " + ref_id);
+                Log.i(TAG, "Child reference: " + reference);
+                Log.i(TAG, "Child type: " + type);
+                Log.i(TAG, "Child name: " + checklistName);
             }
 
-            // Create new ChatMessage-object
-            Link link = new Link(ref_id, owner, date_added, type, reference);
+            // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
 
-            if (!mParentActivity.getUserChecklistsMap().containsKey(reference)) {
-                mParentActivity.getUserChecklistsMap().put(reference, link);
-                //mListViewMessages.add(newChatMessage.getMessage());
-                mParentActivity.getUserChecklistsArray().add(link);
-                mParentActivity.notifyAdapter();
+            if (!mChecklistsMap.containsKey(reference)) {
+                Log.w(TAG, "Adding a checklist to UserChecklistsMap and UserChecklistsArray");
+
+                HashMap<String,String> values = new HashMap<String, String>();
+                values.put(Checklist.REF_ID,ref_id);
+                values.put(Checklist.CREATION_DATE,creation_date);
+                values.put(Checklist.NAME,checklistName);
+
+                Checklist checklist = new Checklist(ref_id, creation_date, checklistName, values);
+                mChecklistsArray.add(mChecklistsArray.size(), checklist);
+                mChecklistsMap.put(reference, checklist);
+
+                mListViewAdapter.notifyDataSetChanged();
+            }else{
+                Log.w(TAG,"Checklist_REF link already existed");
             }
+
+//            ThreadController.delay(10000);
+
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            if (Globals.DEBUG_invocation)
-                Log.d(TAG, "onChildChanged");
-            mParentActivity.makeToast("onChildChanged");
-            //not needed
-            // DEBUG_invocation
             if (Globals.DEBUG_invocation) {
-                Log.d(TAG, String.valueOf(dataSnapshot.getValue()));
+                Log.w(TAG, "onChildChanged");
             }
+            // We do this only to be able to divide the string that we receive into variable
+            // like "id" and "from".
+            Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
+            // Extract data
+            String creation_date = String.valueOf(dataMap.get("creation_date"));
+            String owner = String.valueOf(dataMap.get("owner"));
+            String ref_id = String.valueOf(dataMap.get("ref_id"));
+            String reference = String.valueOf(dataMap.get("reference"));
+            String type = String.valueOf(dataMap.get("type"));
+            String checklistName = String.valueOf(dataMap.get("name"));
+            // DEBUG
+            if (Globals.DEBUG_results) {
+                Log.i(TAG, "Child creation_date: " + creation_date);
+                Log.i(TAG, "Child owner: " + owner);
+                Log.i(TAG, "Child ref_id: " + ref_id);
+                Log.i(TAG, "Child reference: " + reference);
+                Log.i(TAG, "Child type: " + type);
+                Log.i(TAG, "Child name: " + checklistName);
+            }
+            // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
+
+            HashMap<String,String> values = new HashMap<String, String>();
+            values.put(Checklist.REF_ID,ref_id);
+            values.put(Checklist.CREATION_DATE,creation_date);
+            values.put(Checklist.NAME,checklistName);
+
+            // Create a new Checklist based on the changed data received
+            Checklist newChecklist = new Checklist(ref_id, creation_date, checklistName, values);
+            // place the old checklist in array
+            Checklist oldChecklist = mChecklistsArray.set(findWithinListArray(newChecklist), newChecklist);
+            // use the old chaklist to find it in map and remove it
+            mChecklistsMap.remove(oldChecklist.getRef_id());
+            // Put the updated checklist into the map
+            mChecklistsMap.put(newChecklist.getRef_id(), newChecklist);
+
+            mListViewAdapter.notifyDataSetChanged();
+
+//            ThreadController.delay(10000);
+
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-            if (Globals.DEBUG_invocation)
-                Log.d(TAG, "onChildRemoved");
-            mParentActivity.makeToast("onChildRemoved");
-            //not needed
+            if (Globals.DEBUG_invocation) {
+                Log.w(TAG, "onChildRemoved");
+            }
+            // We do this only to be able to divide the string that we receive into variable
+            // like "id" and "from".
+            Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
+            // Extract data
+            String creation_date = String.valueOf(dataMap.get("creation_date"));
+            String owner = String.valueOf(dataMap.get("owner"));
+            String ref_id = String.valueOf(dataMap.get("ref_id"));
+            String reference = String.valueOf(dataMap.get("reference"));
+            String type = String.valueOf(dataMap.get("type"));
+            String checklistName = String.valueOf(dataMap.get("name"));
+            // DEBUG
+            if (Globals.DEBUG_results) {
+                Log.i(TAG, "Child creation_date: " + creation_date);
+                Log.i(TAG, "Child owner: " + owner);
+                Log.i(TAG, "Child ref_id: " + ref_id);
+                Log.i(TAG, "Child reference: " + reference);
+                Log.i(TAG, "Child type: " + type);
+                Log.i(TAG, "Child name: " + checklistName);
+            }
+            // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
+
+            HashMap<String,String> values = new HashMap<String, String>();
+            values.put(Checklist.REF_ID,ref_id);
+            values.put(Checklist.CREATION_DATE,creation_date);
+            values.put(Checklist.NAME,checklistName);
+
+            // Create Checklist based on the changed data received
+            Checklist newChecklist = new Checklist(ref_id, creation_date, checklistName, values);
+            // place the old checklist in array
+            mChecklistsArray.remove(findWithinListArray(newChecklist));
+            // use the old checklist to find it in map and remove it
+            mChecklistsMap.remove(newChecklist.getRef_id());
+
+            mListViewAdapter.notifyDataSetChanged();
+
         }
 
         @Override
         public void onChildMoved(DataSnapshot dataSnapshot, String s) {
             if (Globals.DEBUG_invocation)
-                Log.d(TAG, "onChildMoved");
+                Log.i(TAG, "onChildMoved");
             mParentActivity.makeToast("onChildMoved");
             // not needed
         }
@@ -316,5 +398,15 @@ public class FragmentChecklists extends Fragment {
                 Log.e(TAG, " - ");
         }
     };
+
+    // returns -1 if it was not found in the array
+    protected int findWithinListArray(Checklist checklist){
+        for (int i = 0 ; i < mChecklistsArray.size() ; i++) {
+            if (mChecklistsArray.get(i).getRef_id().equals(checklist.getRef_id())){
+                return i;
+            }
+        }
+        return -1;
+    }
 
 }
