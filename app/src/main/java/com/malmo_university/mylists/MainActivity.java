@@ -81,7 +81,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // Set up the action bar.
         mActionBar = getActionBar();
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        mActionBar.setIcon(R.drawable.ic_launcher);
+        mActionBar.setIcon(R.drawable.android);
 
         fm = getFragmentManager();
         // Create the adapter that will return a fragment for each of the three
@@ -188,6 +188,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         // TEST
         Checklist checklist = new Checklist("ref id", FirebaseController.getTimestamp(), "test", null);
         mChecklistsArray.add(mChecklistsArray.size(), checklist);
+        checklist = new Checklist("ref id2", FirebaseController.getTimestamp(), "test 2", null);
+        mChecklistsArray.add(mChecklistsArray.size(), checklist);
+
+
 
         onChecklistClicked(0);
 
@@ -226,6 +230,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                             .setText(mSectionsPagerAdapter.getPageTitle(i))
                             .setTabListener(this));
         }
+        mActionBar.getTabAt(0).setIcon(getResources().getDrawable(R.drawable.lists));
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////

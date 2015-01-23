@@ -54,7 +54,7 @@
         android:layout_width="300sp"
         android:layout_height="300sp"
         android:layout_gravity="center"
-        android:background="@drawable/ic_launcher" />
+        android:background="@drawable/android" />
 
 </LinearLayout>
 </ScrollView>

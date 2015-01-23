@@ -140,9 +140,12 @@ public class FragmentItems extends Fragment{
         int order = 0;
         boolean state = false;
         Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-        "ItemTitle", "ItemNote", state);
+        "ItemTitlef fs fsdf sdf sdf sdfsdf sdf", "ItemNotes fsf sdf sfd sdfsdf sf", state);
         mItemsArray.add(mItemsArray.size(),a);
         mItemsArray.add(mItemsArray.size(),a);
+        state = false;
+        a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
+                "Itesdf sdmTitlef fs fsdf sdf sdf sdfsdf sdf", "Itef sdff mNotes fsf sdf sfd sdfsdf sf", state);
         mItemsArray.add(mItemsArray.size(),a);
         mItemsArray.add(mItemsArray.size(),a);
         mListViewAdapter.notifyDataSetChanged();
