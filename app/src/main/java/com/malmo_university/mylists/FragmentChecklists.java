@@ -104,22 +104,32 @@ public class FragmentChecklists extends Fragment {
     public void onResume() {
         super.onResume();
         Log.w(TAG,"onResume");
-/*
-        HashMap<String,String> values = new HashMap<String, String>();
-        values.put("NAME","hallo");
-        values.put("Creating Date", FirebaseController.getTimestamp());
-        Checklist a = new Checklist("dasda",FirebaseController.getTimestamp(),
-                "my checklist", values);
-        mChecklistsArray.add(mChecklistsArray.size(),a);
-        mChecklistsArray.add(mChecklistsArray.size(),a);
-        mChecklistsArray.add(mChecklistsArray.size(),a);
-        mChecklistsArray.add(mChecklistsArray.size(),a);
-        mListViewAdapter.notifyDataSetChanged();
-*/
+
+        // Register mCHECKLISTS_REF_Listener
         Firebase firebase = new Firebase(FirebaseController.makeUserPath(FirebaseController.getCurrentUser()));
         firebase = firebase.child(FirebaseController.CHECKLISTS_REF);
         FirebaseController.registerChildListener(firebase, mCHECKLISTS_REF_Listener);
 
+        // TEST SECTION
+
+        Log.w(TAG,"0");
+
+        FirebaseController.createUser("smg@gmail.com", "Saeed Ghasemi", "0046763150074");
+        FirebaseController.createUser("smg2006@gmail.com", "Tom Andersen", "0763212445");
+        Log.w(TAG,"1");
+
+        FirebaseController.createChecklist("shopping list");
+        FirebaseController.createChecklist("remember these");
+        Log.w(TAG,"2");
+
+        FirebaseController.addContactToUserList("smg2006@gmail.com");
+        Log.w(TAG,"3");
+
+        FirebaseController.shareChecklist("smg2006@gmail.com","checklistName","ref_id shopping list");
+        Log.w(TAG,"4");
+
+        FirebaseController.addItemToChecklist("shopping list", "title", "note");
+        Log.w(TAG,"5");
 
     }
 

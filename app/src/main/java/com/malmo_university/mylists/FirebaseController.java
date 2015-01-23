@@ -70,6 +70,21 @@ public class FirebaseController {
     private static Firebase mFirebaseCHECKLISTS;
     private static Firebase mFirebaseCURRENTUSER;
 
+
+    // Getters & Setters /////////////////////////////////
+
+    public static Firebase getmFirebaseUSERS() {
+        return mFirebaseUSERS;
+    }
+
+    public static Firebase getmFirebaseCHECKLISTS() {
+        return mFirebaseCHECKLISTS;
+    }
+
+    public static Firebase getmFirebaseCURRENTUSER() {
+        return mFirebaseCURRENTUSER;
+    }
+
     // init /////////////////////////////////////////////////////////////////////////////////
 
     protected static void init(MainActivity context, String currentUserEmail){
@@ -160,8 +175,10 @@ public class FirebaseController {
 
         // Add this user to the checklist's list of users who has a reference to it
         mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child(getCurrentUserKey()).setValue(getCurrentUser());
-        mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child("alo").setValue(getCurrentUser());
+    }
 
+    protected static void renameChecklist(String checklist_ref_id, String newName){
+        mFirebaseCHECKLISTS.child(checklist_ref_id).child(VALUES).child(NAME).setValue(newName);
     }
 
     protected static void shareChecklist(String toUserEmail, String checklistName, String checklist_ref_id){
@@ -207,15 +224,15 @@ public class FirebaseController {
         mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
     }
 
-    protected static void checkItemOnChecklist(boolean state, Item item){
-        item.checked = state;
-        mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).setValue(item);
+    protected static void checkItemOnChecklist(String checklist_ref_id, String item_ref_id, boolean state){
+        mFirebaseCHECKLISTS.child(checklist_ref_id).child(ITEMS).child(item_ref_id).child("checked").setValue(state);
     }
 
     // todo not tested
     protected static void removeItemFromChecklist(Item item){
         mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
+
 
     // Atomic functions ////////////////////////////////////////////////////////////////////
 

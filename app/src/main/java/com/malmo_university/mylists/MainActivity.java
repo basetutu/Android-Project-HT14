@@ -101,10 +101,9 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (tabChecker == 1) {
+                if (mActionBar.getSelectedNavigationIndex() != position) {
                     mActionBar.setSelectedNavigationItem(position);
                 }
-                tabChecker = 1;
             }
         });
 
@@ -133,29 +132,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             // User Contacts
             mUserContactsArray = new ArrayList<Contact>();
         }
-
-
-
-        // TEST SECTION
-
-        Log.w(TAG,"0");
-
-        FirebaseController.createUser("smg@gmail.com", "Saeed Ghasemi", "0046763150074");
-        FirebaseController.createUser("smg2006@gmail.com", "Tom Andersen", "0763212445");
-        Log.w(TAG,"1");
-
-        FirebaseController.createChecklist("shopping list");
-        FirebaseController.createChecklist("remember these");
-        Log.w(TAG,"2");
-
-        FirebaseController.addContactToUserList("smg2006@gmail.com");
-        Log.w(TAG,"3");
-
-        FirebaseController.shareChecklist("smg2006@gmail.com","checklistName","ref_id shopping list");
-        Log.w(TAG,"4");
-
-        FirebaseController.addItemToChecklist("shopping list", "title", "note");
-        Log.w(TAG,"5");
     }
 
     protected void notifyPagerAdapter(){
@@ -190,16 +166,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     protected void onResume() {
         super.onResume();
         Log.w(TAG, "onResume");
+
         recreateTabs();
-
-        // TEST
-//        Checklist checklist = new Checklist("ref id", FirebaseController.getTimestamp(), "test", null);
-//        mChecklistsArray.add(mChecklistsArray.size(), checklist);
-//        checklist = new Checklist("ref id2", FirebaseController.getTimestamp(), "test 2", null);
-//        mChecklistsArray.add(mChecklistsArray.size(), checklist);
-
-        
-//        onChecklistClicked(0);
 
         Log.w(TAG, " - onResume");
     }
@@ -208,7 +176,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     protected void onPause() {
         super.onDestroy();
         Log.w(TAG, "onPause");
-
 
         Log.w(TAG, " - onPause");
     }
@@ -270,7 +237,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.w(TAG, "onTabSelected");
         // When the given tab is selected, switch to the corresponding page in
         // the ViewPager.
-        tabChecker = 0;
         mViewPager.setCurrentItem(tab.getPosition());
     }
 
@@ -281,15 +247,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-        //if(tabChecker == 0){
-        //    makeToast("This is the same tab");
-       // }
-       // tabChecker = 1;
         Log.w(TAG, "onTabReselected");
-        if(tab.getPosition()!=0){
-            AlertDialogs.makeCloseChecklistDialog();
-        }
-
+        AlertDialogs.makeCloseChecklistDialog(tab.getPosition());
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -338,11 +297,38 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             FragmentItems fragmentItems = FragmentItems.newInstance(checklist.getName(),checklist.getRef_id());
             // add it to mFragmentItems
             mFragmentItems.put(checklist.getRef_id(), fragmentItems);
-            // Inform ViewPager that there is a new page added by invoking mSectionPageAdapter.fragmentAdded()
-            mSectionsPagerAdapter.fragmentAdded();
+            // Inform ViewPager that there is a new page added by invoking mSectionPageAdapter.notifyFragmentAdded()
+            mSectionsPagerAdapter.notifyFragmentAdded();
             // select the new tab/page
             mViewPager.setCurrentItem(mPosition + 1);
         }
+    }
+
+    // Functions invoked by dialog //////////////////////////////////////////////////////////
+
+    public void closeChecklist(int index) {
+        Checklist checklist = mChecklistsArray.get(index);
+        Log.e(TAG, checklist.getRef_id());
+        Log.e(TAG,mChecklistsArray.remove(index).getRef_id());//todo has bug, won't remove
+        mFragmentItems.remove(checklist.getRef_id());
+        mSectionsPagerAdapter.notifyFragmentRemoved();
+        Log.w(TAG, "fragments remaining in array: " + mFragmentItems.size());
+    }
+
+    public void newChecklist(String newChecklistName) {
+        FirebaseController.createChecklist(newChecklistName);
+    }
+
+    public void newItem(String checklist_ref_id, String title, String note) {
+        FirebaseController.addItemToChecklist(checklist_ref_id, title, note);
+    }
+
+    public void deleteChecklist(String checklist_ref_id) {
+        //todo - need listeners for getting USERS_REF
+        // see how many users have access to this checklist
+        // if it's only this user, then remove the link from this user
+        // then delete the child of this checklist from CHECKLISTS
+        //FirebaseController.
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
@@ -358,11 +344,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             super(fm);
         }
 
-        public void fragmentAdded(){
+        public void notifyFragmentAdded(){
             addPage();
             notifyDataSetChanged();
             recreateTabs();
-            //mViewPager.setAdapter(mSectionsPagerAdapter);
+        }
+        public void notifyFragmentRemoved(){
+            subtractPage();
+            notifyDataSetChanged();
+            recreateTabs();
         }
 
         @Override
@@ -389,12 +379,16 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         public int getCount() {
             // Show 3 total pages.
             return pageCount;
+//            return mChecklistsArray.size(); todo - a better solution
         }
         public void setPageCount(int pageCount) {
             this.pageCount = pageCount;
         }
         public void addPage() {
             this.pageCount++;
+        }
+        public void subtractPage() {
+            this.pageCount--;
         }
 
         @Override

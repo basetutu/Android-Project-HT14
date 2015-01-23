@@ -39,7 +39,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="40"
-            android:textSize="20dp"/>
+            android:textSize="15dp"/>
     </LinearLayout>
     <ImageView
         android:id="@+id/row_item_check"

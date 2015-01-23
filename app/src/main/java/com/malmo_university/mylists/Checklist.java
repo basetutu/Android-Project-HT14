@@ -27,6 +27,12 @@ public class Checklist {
         this.creation_date = creation_date;
         this.name = name;
         this.values = values;
+        if (mItems == null) {
+            mItems = new ArrayList<Item>();
+        }
+        if (users == null) {
+            users = new ArrayList<String>();
+        }
     }
 
     public String getRef_id() {
@@ -69,11 +75,11 @@ public class Checklist {
         this.users = users;
     }
 
-    public ArrayList<Item> getmItems() {
+    public ArrayList<Item> getItems() {
         return mItems;
     }
 
-    public void setmItems(ArrayList<Item> mItems) {
+    public void setItems(ArrayList<Item> mItems) {
         this.mItems = mItems;
     }
 }
