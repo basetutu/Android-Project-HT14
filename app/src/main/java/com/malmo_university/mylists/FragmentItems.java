@@ -150,21 +150,21 @@ public class FragmentItems extends Fragment{
         FirebaseController.registerChildListener(firebase, mITEMS_Listener);
 
 
-//        HashMap<String,String> values = new HashMap<String, String>();
-//        values.put("NAME","hallo");
-//        values.put("Creating Date", FirebaseController.getTimestamp());
-//        int order = 0;
-//        boolean state = false;
-//        Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-//        "ItemTitle", "ItemNote", state);
-//        mItemsArray.add(mItemsArray.size(),a);
-//        mItemsArray.add(mItemsArray.size(),a);
-//        state = false;
-//        a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-//                "Itesdf sdmTitlef fs fsdf sdf sdf sdfsdf sdf", "Itef sdff mNotes fsf sdf sfd sdfsdf sf", state);
-//        mItemsArray.add(mItemsArray.size(),a);
-//        mItemsArray.add(mItemsArray.size(),a);
-//        mListViewAdapter.notifyDataSetChanged();
+        HashMap<String,String> values = new HashMap<String, String>();
+        values.put("NAME","hallo");
+        values.put("Creating Date", FirebaseController.getTimestamp());
+        int order = 0;
+        boolean state = false;
+        Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
+        "ItemTitle", "ItemNote", state);
+        mItemsArray.add(mItemsArray.size(),a);
+        mItemsArray.add(mItemsArray.size(),a);
+        state = true;
+        a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
+                "Itesdf sdmTitlef fs fsdf sdf sdf sdfsdf sdf", "Itef sdff mNotes fsf sdf sfd sdfsdf sf", state);
+        mItemsArray.add(mItemsArray.size(),a);
+        mItemsArray.add(mItemsArray.size(),a);
+        mListViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -462,6 +462,7 @@ public class FragmentItems extends Fragment{
 
                 Checklist checklist = mParentActivity.getChecklistsMap().get(checklist_ref_id);
                 checklist.getItems().add(checklist.getItems().size(), item);
+                mItemsArray.add(mItemsArray.size(), item);
 
                 mListViewAdapter.notifyDataSetChanged();
             }else{
