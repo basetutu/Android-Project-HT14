@@ -212,31 +212,24 @@ public class FragmentChecklists extends Fragment {
                 /************  Set Model values     from Holder elements ***********/
                 viewHolder.title.setText(tempValues.getName());
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
-                vi.setOnClickListener(new OnItemClickListener( position ));
+                vi.setOnClickListener(onItemClickListener);
             }
             return vi;
         }
 
-        /********* Called when Item click in ListView ************/
-        private class OnItemClickListener implements View.OnClickListener {
-            private int mPosition;
-
-            public OnItemClickListener(int position){
-                mPosition = position;
-            }
+        // One listener to rule them all
+        private View.OnClickListener onItemClickListener = new View.OnClickListener(){
             @Override
-            public void onClick(View arg0) {
-                /****  Call  onItemClick Method inside CustomListViewAndroidExample Class ( See Below )****/
-                mParentActivity.onChecklistItemClicked(mPosition);
+            public void onClick(View v) {
+                mParentActivity.onChecklistClicked(mListView.getPositionForView(v));
             }
-        }
+        };
 
         /********* Create a holder Class to contain inflated xml file elements *********/
         public class ViewHolder{
             public TextView title;
             public ImageView check;
         }
-
     }
 
     // Listeners //////////////////////////////////////////////////////////////////////////

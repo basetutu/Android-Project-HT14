@@ -21,7 +21,6 @@ import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
@@ -137,8 +136,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         Log.w(TAG,"1");
 
-        FirebaseController.createUser("smg@gmail.com");
-        FirebaseController.createUser("smg2006@gmail.com");
+        FirebaseController.createUser("smg@gmail.com", "Saeed Ghasemi", "0046763150074");
+        FirebaseController.createUser("smg2006@gmail.com", "Tom Andersen", "0763212445");
 
         Log.w(TAG,"2");
 
@@ -188,9 +187,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Checklist checklist = new Checklist("ref id", FirebaseController.getTimestamp(), "test", null);
         mChecklistsArray.add(mChecklistsArray.size(), checklist);
 
-        ThreadController.delay(5000);
-
-        onChecklistItemClicked(0);
+        onChecklistClicked(0);
 
         Log.w(TAG, " - onResume");
     }
@@ -313,17 +310,17 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Log.w(TAG, " - onBackPressed");
     }
 
-    protected void onChecklistItemClicked(int mPosition) {
-        Log.w(TAG,"onChecklistItemClicked");
-
-        //todo
+    protected void onChecklistClicked(int mPosition) {
+        Log.w(TAG,"onChecklistClicked");
         // get the checklist from mChecklistsArray
         Checklist checklist = mChecklistsArray.get(mPosition);
         // see if there is a corresponding FragmentItems for this in mFragmentItems
         if (mFragmentItems.get(checklist.getRef_id()) != null){
+            Log.w(TAG,"fragment exists - not null");
             // if it is there must be a page for it too, select the page
-            mViewPager.setCurrentItem(mPosition);
+            mViewPager.setCurrentItem(mPosition + 1);
         }else{
+            Log.w(TAG,"fragment did not exist - null");
             // if NOT, initialize a new FragmentItems with checklist
             FragmentItems fragmentItems = FragmentItems.newInstance(checklist.getName(),checklist.getRef_id());
             // add it to mFragmentItems
@@ -331,7 +328,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             // Inform ViewPager that there is a new page added by invoking mSectionPageAdapter.fragmentAdded()
             mSectionsPagerAdapter.fragmentAdded();
             // select the new tab/page
-            mViewPager.setCurrentItem(mPosition);
+            mViewPager.setCurrentItem(mPosition + 1);
         }
     }
 
