@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
@@ -218,12 +217,6 @@ public class FirebaseController {
         mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
 
-    ////////////////////////////////////////////////////////////////////7
-
-
-
-
-
     // Atomic functions ////////////////////////////////////////////////////////////////////
 
     protected static String getTimestamp() {
@@ -294,8 +287,6 @@ public class FirebaseController {
     protected static String getCurrentUserKey(){
         return Algorithms.transformEmailToKey(currentUser);
     }
-
-
 
     // AUTHENTICATION ///////////////////////////////////////////////////////////////////////
 
@@ -430,36 +421,6 @@ public class FirebaseController {
             Log.w(TAG," - createNewUser");
     }
 
-    // LISTENERS ///////////////////////////////////////////////////////////////////////////
-
-    protected class ChildEventListenerChecklists implements ChildEventListener {
-
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(FirebaseError firebaseError) {
-
-        }
-    }
-
     // Listener registrations (for reading data) ////////////////////////////////////////////
 
     protected static void registerChildListener(Firebase location, ChildEventListener listener) {
@@ -479,68 +440,6 @@ public class FirebaseController {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
-
-
-    // MOVE TO FragmentItems // todo
-
-    private ChildEventListener mITEMS_Listener = new ChildEventListener() {
-
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(FirebaseError firebaseError) {
-
-        }
-    };
-    private ChildEventListener mUSERS_REF_Listener = new ChildEventListener() {
-
-        @Override
-        public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-        }
-
-        @Override
-        public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-        }
-
-        @Override
-        public void onCancelled(FirebaseError firebaseError) {
-
-        }
-    };
-
-
-
-
 
 
 }
