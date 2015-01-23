@@ -20,6 +20,7 @@ import com.firebase.client.FirebaseError;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Saeed on 21-01-2015.
@@ -243,16 +244,25 @@ public class FragmentItems extends Fragment{
                     viewHolder.check.setVisibility(View.INVISIBLE);
                 }
                 /******** Set Item Click Listener for LayoutInflater for each row *******/
+                vi.setOnClickListener(onItemClickListener);
                 vi.setOnLongClickListener(onItemLongClickListener);
             }
             return vi;
         }
 
         // One listener to rule them all
+        private View.OnClickListener onItemClickListener = new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                onChecklistItemClicked(mListView.getPositionForView(v));
+            }
+        };
+
+        // One listener to rule them all
         private View.OnLongClickListener onItemLongClickListener = new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View v) {
-                onChecklistItemClicked(mListView.getPositionForView(v));
+                onChecklistItemLongClicked(mListView.getPositionForView(v));
                 return true;
             }
         };
@@ -266,10 +276,20 @@ public class FragmentItems extends Fragment{
 
     }
 
-    private void onChecklistItemClicked(int mPosition) {
-        //todo
+    private void onChecklistItemClicked(int positionForView) {
         Log.w(TAG,"onChecklistItemClicked");
-        // start dialog for long clicking an item in a checklist    
+        Item item = mParentActivity.getChecklistsMap().get(mChecklistName).getItems().get(positionForView);
+        boolean checked = item.getChecked();
+        String checklist_ref_id = item.getChecklist_ref_id();
+        String item_ref_id = item.getRef_id();
+        // Needs items
+        FirebaseController.checkItemOnChecklist(checklist_ref_id, item_ref_id, !checked);
+    }
+
+    private void onChecklistItemLongClicked(int mPosition) {
+        Log.w(TAG,"onChecklistItemLongClicked");
+        // start dialog for long clicking an item in a checklist
+        AlertDialogs.makeLongPressItemDialog();
     }
 
 
@@ -342,7 +362,51 @@ public class FragmentItems extends Fragment{
 
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            if (Globals.DEBUG_invocation) {
+                Log.w(TAG, "onChildAdded");
+            }
+            // We do this only to be able to divide the string that we receive into variable
+            // like "id" and "from".
+            Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
+            // Extract data
+            String creation_date = String.valueOf(dataMap.get("creation_date"));
+            String owner = String.valueOf(dataMap.get("owner"));
+            String ref_id = String.valueOf(dataMap.get("ref_id"));
+            String reference = String.valueOf(dataMap.get("reference"));
+            String type = String.valueOf(dataMap.get("type"));
+            String checklistName = String.valueOf(dataMap.get("name"));
+            // DEBUG
+            if (Globals.DEBUG_results) {
+                Log.i(TAG, "Child creation_date: " + creation_date);
+                Log.i(TAG, "Child owner: " + owner);
+                Log.i(TAG, "Child ref_id: " + ref_id);
+                Log.i(TAG, "Child reference: " + reference);
+                Log.i(TAG, "Child type: " + type);
+                Log.i(TAG, "Child name: " + checklistName);
+            }
 
+            ThreadController.delay(5000);
+
+            // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
+
+//            if (!mChecklistsMap.containsKey(reference)) {
+//                Log.w(TAG, "Adding a checklist to UserChecklistsMap and UserChecklistsArray");
+//
+//                HashMap<String,String> values = new HashMap<String, String>();
+//                values.put(Checklist.REF_ID,ref_id);
+//                values.put(Checklist.CREATION_DATE,creation_date);
+//                values.put(Checklist.NAME,checklistName);
+//
+//                Checklist checklist = new Checklist(ref_id, creation_date, checklistName, values);
+//                mChecklistsArray.add(mChecklistsArray.size(), checklist);
+//                mChecklistsMap.put(reference, checklist);
+//
+//                mListViewAdapter.notifyDataSetChanged();
+//            }else{
+//                Log.w(TAG,"Checklist_REF link already existed");
+//            }
+
+//            ThreadController.delay(10000);
         }
 
         @Override
