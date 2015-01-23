@@ -45,6 +45,8 @@ public class FragmentItems extends Fragment{
 
     // The name of the checklist to operate in
     private String mChecklistName;
+    // The ref_id of the checklist
+    private String mChecklist_ref_id;
     // The checklist-reference of firebase
     private Firebase mFirebaseChecklist;
 
@@ -84,6 +86,7 @@ public class FragmentItems extends Fragment{
 
         Bundle args = getArguments();
         mChecklistName = args.getString(CHECKLIST_NAME);
+        mChecklist_ref_id = args.getString(FRAGMENT_REF_ID);
         mFirebaseChecklist = new Firebase(FirebaseController.makeChecklistPath(args.getString(FRAGMENT_REF_ID)));
 
 
@@ -135,21 +138,26 @@ public class FragmentItems extends Fragment{
         super.onResume();
         Log.w(TAG,"onResume");
 
-        HashMap<String,String> values = new HashMap<String, String>();
-        values.put("NAME","hallo");
-        values.put("Creating Date", FirebaseController.getTimestamp());
-        int order = 0;
-        boolean state = false;
-        Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-        "ItemTitle", "ItemNote", state);
-        mItemsArray.add(mItemsArray.size(),a);
-        mItemsArray.add(mItemsArray.size(),a);
-        state = false;
-        a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-                "Itesdf sdmTitlef fs fsdf sdf sdf sdfsdf sdf", "Itef sdff mNotes fsf sdf sfd sdfsdf sf", state);
-        mItemsArray.add(mItemsArray.size(),a);
-        mItemsArray.add(mItemsArray.size(),a);
-        mListViewAdapter.notifyDataSetChanged();
+        // Register mITEMS_Listener
+        Firebase firebase = new Firebase(FirebaseController.makeItemsPath(mChecklist_ref_id));
+        FirebaseController.registerChildListener(firebase, mITEMS_Listener);
+
+
+//        HashMap<String,String> values = new HashMap<String, String>();
+//        values.put("NAME","hallo");
+//        values.put("Creating Date", FirebaseController.getTimestamp());
+//        int order = 0;
+//        boolean state = false;
+//        Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
+//        "ItemTitle", "ItemNote", state);
+//        mItemsArray.add(mItemsArray.size(),a);
+//        mItemsArray.add(mItemsArray.size(),a);
+//        state = false;
+//        a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
+//                "Itesdf sdmTitlef fs fsdf sdf sdf sdfsdf sdf", "Itef sdff mNotes fsf sdf sfd sdfsdf sf", state);
+//        mItemsArray.add(mItemsArray.size(),a);
+//        mItemsArray.add(mItemsArray.size(),a);
+//        mListViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -369,44 +377,43 @@ public class FragmentItems extends Fragment{
             // like "id" and "from".
             Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
             // Extract data
+            String checked = String.valueOf(dataMap.get("checked"));
+            String checklist_ref_id = String.valueOf(dataMap.get("checklist_ref_id"));
             String creation_date = String.valueOf(dataMap.get("creation_date"));
-            String owner = String.valueOf(dataMap.get("owner"));
+            String lastModifiedBy = String.valueOf(dataMap.get("lastModifiedBy"));
+            String note = String.valueOf(dataMap.get("note"));
+            String order = String.valueOf(dataMap.get("order"));
             String ref_id = String.valueOf(dataMap.get("ref_id"));
-            String reference = String.valueOf(dataMap.get("reference"));
-            String type = String.valueOf(dataMap.get("type"));
-            String checklistName = String.valueOf(dataMap.get("name"));
+            String title = String.valueOf(dataMap.get("title"));
             // DEBUG
             if (Globals.DEBUG_results) {
+                Log.i(TAG, "Child checked: " + checked);
+                Log.i(TAG, "Child checklist_ref_id: " + checklist_ref_id);
                 Log.i(TAG, "Child creation_date: " + creation_date);
-                Log.i(TAG, "Child owner: " + owner);
+                Log.i(TAG, "Child lastModifiedBy: " + lastModifiedBy);
+                Log.i(TAG, "Child note: " + note);
+                Log.i(TAG, "Child order: " + order);
                 Log.i(TAG, "Child ref_id: " + ref_id);
-                Log.i(TAG, "Child reference: " + reference);
-                Log.i(TAG, "Child type: " + type);
-                Log.i(TAG, "Child name: " + checklistName);
+                Log.i(TAG, "Child title: " + title);
+            }
+
+            ThreadController.delay(1000);
+
+
+
+            if (!mParentActivity.getChecklistsMap().containsKey(checklist_ref_id)) {
+//todo
+                Item item = new Item(ref_id, checklist_ref_id, lastModifiedBy, creation_date, 0, title, note, checked.equals("true"));
+
+                Checklist checklist = mParentActivity.getChecklistsMap().get(checklist_ref_id);
+                checklist.getItems().add(checklist.getItems().size(), item);
+
+                mListViewAdapter.notifyDataSetChanged();
+            }else{
+                Log.w(TAG,"Checklist_REF link already existed");
             }
 
             ThreadController.delay(5000);
-
-            // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
-
-//            if (!mChecklistsMap.containsKey(reference)) {
-//                Log.w(TAG, "Adding a checklist to UserChecklistsMap and UserChecklistsArray");
-//
-//                HashMap<String,String> values = new HashMap<String, String>();
-//                values.put(Checklist.REF_ID,ref_id);
-//                values.put(Checklist.CREATION_DATE,creation_date);
-//                values.put(Checklist.NAME,checklistName);
-//
-//                Checklist checklist = new Checklist(ref_id, creation_date, checklistName, values);
-//                mChecklistsArray.add(mChecklistsArray.size(), checklist);
-//                mChecklistsMap.put(reference, checklist);
-//
-//                mListViewAdapter.notifyDataSetChanged();
-//            }else{
-//                Log.w(TAG,"Checklist_REF link already existed");
-//            }
-
-//            ThreadController.delay(10000);
         }
 
         @Override
