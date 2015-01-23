@@ -101,7 +101,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                if (tabChecker != 0) {
+                if (tabChecker == 1) {
                     mActionBar.setSelectedNavigationItem(position);
                 }
                 tabChecker = 1;
@@ -285,9 +285,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         //    makeToast("This is the same tab");
        // }
        // tabChecker = 1;
-        Log.w(TAG, "onTabReselected: "+tab.getPosition());
-
-        AlertDialogs.makeCloseChecklistDialog();
+        Log.w(TAG, "onTabReselected");
+        if(tab.getPosition()!=0){
+            AlertDialogs.makeCloseChecklistDialog();
+        }
 
     }
 
