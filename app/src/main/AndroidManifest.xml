@@ -27,12 +27,6 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name=".ActivityLoggedIn"
-            android:configChanges="orientation|keyboardHidden"
-            android:label="@string/title_chat_list"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".ContactsActivity"
             android:label="@string/title_activity_contacts" >
         </activity>

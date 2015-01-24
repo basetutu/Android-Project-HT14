@@ -421,11 +421,10 @@ public class FirebaseController {
             @Override
             public void onSuccess() {
                 Toast.makeText(currentActivity, R.string.registration_success, Toast.LENGTH_SHORT).show();
-                // todo Save credentials in shared library
                 SharedPreferencesController.simpleWritePersistentString(Globals.USERNAME, finalUser);
                 SharedPreferencesController.simpleWritePersistentString(Globals.PASSWORD, pass);
 
-                Intent startIntent = new Intent(currentActivity, ActivityLoggedIn.class);
+                Intent startIntent = new Intent(currentActivity, MainActivity.class);
                 currentActivity.startActivity(startIntent);
                 currentActivity.finish();
             }

@@ -261,7 +261,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Log.e(TAG, "Username: " + SharedPreferencesController.simpleDeletePersistentString(Globals.USERNAME));
         Log.e(TAG, "Password: " + SharedPreferencesController.simpleDeletePersistentString(Globals.PASSWORD));
         new Firebase(Globals.FIREBASE_DB_ROOT_URL).unauth();
-        // Start ActivityAuthenticate and close ActivityLoggedIn
+        // Start ActivityAuthenticate and close MailActivity
         Intent startIntent = new Intent(this, ActivityAuthenticate.class);
         startActivity(startIntent);
         finish();
