@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.entities;
 
 import com.malmo_university.mylists.entities.Item;
 

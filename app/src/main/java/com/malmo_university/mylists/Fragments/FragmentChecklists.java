@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Fragments;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -20,6 +20,12 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.malmo_university.mylists.entities.Checklist;
+import com.malmo_university.mylists.Controllers.FirebaseController;
+import com.malmo_university.mylists.MainActivity;
+import com.malmo_university.mylists.Packaged_functions.AlertDialogs;
+import com.malmo_university.mylists.R;
+import com.malmo_university.mylists.entities.Link;
 
 import java.util.ArrayList;
 import java.util.HashMap;

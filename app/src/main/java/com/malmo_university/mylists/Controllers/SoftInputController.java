@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Controllers;
 
 import android.app.Activity;
 import android.content.Context;
@@ -10,7 +10,7 @@ import android.view.inputmethod.InputMethodManager;
  */
 public class SoftInputController {
 
-    protected static void hideSoftInputKeyboard(Activity activity, View v) {
+    public static void hideSoftInputKeyboard(Activity activity, View v) {
         InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
     }

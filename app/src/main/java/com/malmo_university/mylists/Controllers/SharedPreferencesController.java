@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Controllers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -41,17 +41,17 @@ public class SharedPreferencesController {
 
     // String
 
-    protected static String simpleDeletePersistentString(String key){
+    public static String simpleDeletePersistentString(String key){
         String temp = mPrefs.getString(key, null);
         mPrefs.edit().remove(key).commit();
         return temp;
     }
 
-    protected static void simpleWritePersistentString(String key, String data){
+    public static void simpleWritePersistentString(String key, String data){
         mPrefs.edit().putString(key, data).commit();
     }
 
-    protected static String simpleReadPersistentString(String key){
+    public static String simpleReadPersistentString(String key){
         return mPrefs.getString(key, null);
     }
 

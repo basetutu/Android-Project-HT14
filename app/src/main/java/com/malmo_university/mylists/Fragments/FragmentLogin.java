@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Fragments;
 
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
@@ -18,11 +18,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.malmo_university.mylists.ActivityAuthenticate;
+import com.malmo_university.mylists.Controllers.FirebaseController;
+import com.malmo_university.mylists.Controllers.SharedPreferencesController;
+import com.malmo_university.mylists.Controllers.SoftInputController;
+import com.malmo_university.mylists.MainActivity;
+import com.malmo_university.mylists.Packaged_functions.Algorithms;
+import com.malmo_university.mylists.R;
 
 public class FragmentLogin extends Fragment {
     public static final String TAG = "FragmentLogin";
     //Variables for the broadcast receiver of this class
-    protected static final String RECEIVER_ACTION = "com.malmo_university.mylists.FragmentLogin";
+    protected static final String RECEIVER_ACTION = "com.malmo_university.mylists.Fragments.FragmentLogin";
 
     private EditText etUsernameField;
     private EditText etPasswordField;
@@ -163,7 +170,7 @@ public class FragmentLogin extends Fragment {
         Log.w(TAG, "Pass: " + pass);
         if (user != null && pass != null){
             btnLogin.setEnabled(false);
-            FirebaseController.login(mParentActivity,mFirebase, user, pass, RECEIVER_ACTION,
+            FirebaseController.login(mParentActivity, mFirebase, user, pass, RECEIVER_ACTION,
                     Globals.MESSAGE_AUTHENTICATED, Globals.MESSAGE_NOT_AUTHENTICATED);
         }
 

@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.entities;
 
 import java.util.ArrayList;
 import java.util.HashMap;

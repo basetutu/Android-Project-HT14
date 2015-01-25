@@ -18,7 +18,16 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.malmo_university.mylists.Controllers.FirebaseController;
+import com.malmo_university.mylists.Controllers.MyBroadcastController;
+import com.malmo_university.mylists.Controllers.SharedPreferencesController;
+import com.malmo_university.mylists.Fragments.FragmentChecklists;
+import com.malmo_university.mylists.Fragments.FragmentItems;
+import com.malmo_university.mylists.Fragments.Globals;
+import com.malmo_university.mylists.Packaged_functions.AlertDialogs;
+import com.malmo_university.mylists.entities.Checklist;
 import com.malmo_university.mylists.entities.Contact;
+import com.malmo_university.mylists.entities.Link;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,9 +71,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     // User Contacts                                        //
     ArrayList<Contact> mUserContactsArray;                  //
     //////////////////////////////////////////////////////////
-
-
-
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -140,10 +146,10 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    protected ArrayList<Link> getUserChecklistsArray(){
+    public ArrayList<Link> getUserChecklistsArray(){
         return mUserChecklistsArray;
     }
-    protected HashMap<String, Link> getUserChecklistsMap(){
+    public HashMap<String, Link> getUserChecklistsMap(){
         return mUserChecklistsMap;
     }
     protected ArrayList<Link> getUserAwaitingArray(){
@@ -256,7 +262,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    protected void logoutCleanUp(){
+    public void logoutCleanUp(){
         // remove credentials from sharedPreferences
         Log.e(TAG, "Username: " + SharedPreferencesController.simpleDeletePersistentString(Globals.USERNAME));
         Log.e(TAG, "Password: " + SharedPreferencesController.simpleDeletePersistentString(Globals.PASSWORD));
@@ -281,7 +287,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             Log.w(TAG, " - onBackPressed");
     }
 
-    protected void onChecklistClicked(int mPosition) {
+    public void onChecklistClicked(int mPosition) {
         Log.w(TAG,"onChecklistClicked");
         // get the checklist from mChecklistsArray
         Checklist checklist = mChecklistsArray.get(mPosition);

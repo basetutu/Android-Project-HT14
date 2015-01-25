@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Controllers;
 
 /**
  * Created by Martin on 12-01-2015.

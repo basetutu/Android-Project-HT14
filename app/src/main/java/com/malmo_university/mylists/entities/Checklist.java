@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.entities;
 
 import com.malmo_university.mylists.entities.Item;
 
@@ -9,9 +9,9 @@ import java.util.HashMap;
  * Created by Saeed on 18-01-15.
  */
 public class Checklist {
-    protected static final String REF_ID = "REF_ID";
-    protected static final String NAME = "NAME";
-    protected static final String CREATION_DATE = "CREATION_DATE";
+    public static final String REF_ID = "REF_ID";
+    public static final String NAME = "NAME";
+    public static final String CREATION_DATE = "CREATION_DATE";
 
     String ref_id;
     String creation_date;

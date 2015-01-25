@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Controllers;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -10,7 +10,13 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
+import com.malmo_university.mylists.Packaged_functions.Algorithms;
+import com.malmo_university.mylists.Fragments.Globals;
+import com.malmo_university.mylists.MainActivity;
+import com.malmo_university.mylists.entities.Profile;
+import com.malmo_university.mylists.R;
 import com.malmo_university.mylists.entities.Item;
+import com.malmo_university.mylists.entities.Link;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -43,7 +49,7 @@ public class FirebaseController {
     private static final String VALUES = "VALUES";
 
     // Standard child names of a user
-    protected static final String CHECKLISTS_REF = "CHECKLISTS_REF";
+    public static final String CHECKLISTS_REF = "CHECKLISTS_REF";
     private static final String CONTACTS_REF = "CONTACTS_REF";
     private static final String PROFILE = "PROFILE";
     private static final String AWAITING_ACCEPTANCE_REF = "AWAITING_ACCEPTANCE_REF";
@@ -88,7 +94,7 @@ public class FirebaseController {
 
     // init /////////////////////////////////////////////////////////////////////////////////
 
-    protected static void init(MainActivity context, String currentUserEmail){
+    public static void init(MainActivity context, String currentUserEmail){
         mFirebase = new Firebase(Globals.FIREBASE_DB_ROOT_URL);
         mFirebaseUSERS = mFirebase.child(DB_USERS);
         mFirebaseCHECKLISTS = mFirebase.child(DB_CHECKLISTS);
@@ -99,19 +105,19 @@ public class FirebaseController {
 
     // Help functions
 
-    protected static String makeChecklistPath(String checklist_ref_id){
+    public static String makeChecklistPath(String checklist_ref_id){
         return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklist_ref_id;
     }
-    protected static String makeUserPath(String userEmail){
+    public static String makeUserPath(String userEmail){
         return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_USERS + "/" + Algorithms.transformEmailToKey(userEmail);
     }
-    protected static String makeItemsPath(String checklist_ref_id){
+    public static String makeItemsPath(String checklist_ref_id){
         return Globals.FIREBASE_DB_ROOT_URL + "/" + DB_CHECKLISTS + "/" + checklist_ref_id + "/" + ITEMS;
     }
 
     // Project functions ///////////////////////////////////////////////////////////////////
 
-    protected static void createUser(String userEmail, String full_name, String tlf){
+    public static void createUser(String userEmail, String full_name, String tlf){
         HashMap<String,String> values = new HashMap<String, String>();
 
         userEmail = userEmail.toLowerCase();
@@ -144,7 +150,7 @@ public class FirebaseController {
      *
      * @param userEmail
      */
-    protected static void addContactToUserList(String userEmail){
+    public static void addContactToUserList(String userEmail){
         userEmail = userEmail.toLowerCase();
         Link link = new Link(Algorithms.transformEmailToKey(userEmail), getCurrentUser(),
                 getTimestamp(), LINK_TYPE_CONTACT,
@@ -162,7 +168,7 @@ public class FirebaseController {
 
     ///////////////////////////////////////////////////////////////////////////////
 
-    protected static void createChecklist(String checklistName){
+    public static void createChecklist(String checklistName){
         // Create a checklist in firebase
         String checklist_ref_id = mFirebaseCHECKLISTS.push().getKey();
         // Create and initialize checklist
@@ -181,11 +187,11 @@ public class FirebaseController {
         mFirebaseCHECKLISTS.child(checklist_ref_id).child(USERS_REF).child(getCurrentUserKey()).setValue(getCurrentUser());
     }
 
-    protected static void renameChecklist(String checklist_ref_id, String newName){
+    public static void renameChecklist(String checklist_ref_id, String newName){
         mFirebaseCHECKLISTS.child(checklist_ref_id).child(VALUES).child(NAME).setValue(newName);
     }
 
-    protected static void shareChecklist(String toUserEmail, String checklistName, String checklist_ref_id){
+    public static void shareChecklist(String toUserEmail, String checklistName, String checklist_ref_id){
         toUserEmail = toUserEmail.toLowerCase();
         String ref_id = mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).push().getKey();
         Link link = new Link(ref_id, getCurrentUser(), getTimestamp(), LINK_TYPE_CHECKLIST,
@@ -214,7 +220,7 @@ public class FirebaseController {
 
     /////////////////////////////////////////////////////////////////////////////////////////
 
-    protected static void addItemToChecklist(String checklist_id, String title, String note){
+    public static void addItemToChecklist(String checklist_id, String title, String note){
         String ref_id = mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).push().getKey();
         Item item = new Item(ref_id, checklist_id, getCurrentUser(), getTimestamp(), 0, title, note, false);
         mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).child(ref_id).setValue(item);
@@ -228,7 +234,7 @@ public class FirebaseController {
         mFirebaseCHECKLISTS.child(item.getChecklist_ref_id()).child(item.getRef_id()).setValue(item);
     }
 
-    protected static void checkItemOnChecklist(String checklist_ref_id, String item_ref_id, boolean state){
+    public static void checkItemOnChecklist(String checklist_ref_id, String item_ref_id, boolean state){
         mFirebaseCHECKLISTS.child(checklist_ref_id).child(ITEMS).child(item_ref_id).child("checked").setValue(state);
     }
 
@@ -253,7 +259,7 @@ public class FirebaseController {
      * @param parentChild The location the child must be created in
      * @return Firebase instance for the newly created child
      */
-    protected static String createNewChild(Firebase parentChild) {
+    protected static String createNewChildEntry(Firebase parentChild) {
         String childId = parentChild.push().getKey();
         return childId;
     }
@@ -261,13 +267,13 @@ public class FirebaseController {
     /**
      * This function writes data to a given location indicated by location. The values must be
      * stored in a Map object with key-value-pairs. This will overwrite any existing value at the
-     * given location.
+     * given location. The Map object
      *
      * @param location  The location at which the values must be added
      * @param dataSet A Map-object containing the key-value-paired data to be stored at the location
      * @return Returns true if there was any data to write
      */
-    protected static boolean writeValues(Firebase location, HashMap<String, String> dataSet) {
+    protected static boolean writeValues(Firebase location, HashMap<String, Object> dataSet) {
         if (dataSet.size() == 0) {
             return false;
         }
@@ -301,7 +307,7 @@ public class FirebaseController {
         currentUser = userEmail;
     }
 
-    protected static String getCurrentUser(){
+    public static String getCurrentUser(){
         return currentUser;
     }
 
@@ -329,7 +335,7 @@ public class FirebaseController {
             @Override
             public void onAuthenticated(AuthData authData) {
                 Toast.makeText(context, context.getResources().getString(R.string.login_success) + " " + finalUser, Toast.LENGTH_SHORT).show();
-                MyBroadcastController.sendBroadcast(receiverAction, responseOK);
+                MyBroadcastController.sendBroadcastInt(receiverAction, responseOK);
             }
 
             @Override
@@ -366,7 +372,7 @@ public class FirebaseController {
                     Toast.makeText(context, "Unknown Authentication Error",
                             Toast.LENGTH_LONG).show();
                 }
-                MyBroadcastController.sendBroadcast(receiverAction, responseFail);
+                MyBroadcastController.sendBroadcastInt(receiverAction, responseFail);
             }
         });
         if (Globals.DEBUG_invocation)
@@ -411,7 +417,7 @@ public class FirebaseController {
             Log.w(TAG," - handleAuthError");
     }
 
-    protected static void createNewUser(final Activity currentActivity, Firebase location, String user, final String pass){
+    public static void createNewUser(final Activity currentActivity, Firebase location, String user, final String pass){
         if (Globals.DEBUG_invocation)
             Log.w(TAG,"createNewUser");
         // Removes all accidental spaces from the user-string.
@@ -443,7 +449,7 @@ public class FirebaseController {
 
     // Listener registrations (for reading data) ////////////////////////////////////////////
 
-    protected static void registerChildListener(Firebase location, ChildEventListener listener) {
+    public static void registerChildListener(Firebase location, ChildEventListener listener) {
         location.addChildEventListener(listener);
     }
 
@@ -460,6 +466,4 @@ public class FirebaseController {
     }
 
     /////////////////////////////////////////////////////////////////////////////////////////
-
-
 }

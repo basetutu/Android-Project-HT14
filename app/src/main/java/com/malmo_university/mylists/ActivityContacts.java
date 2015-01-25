@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.os.Build;
 
 
-public class ContactsActivity extends Activity {
+public class ActivityContacts extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

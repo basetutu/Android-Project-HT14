@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Fragments;
 
 import android.app.Fragment;
 import android.content.Context;
@@ -21,7 +21,13 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.malmo_university.mylists.Controllers.FirebaseController;
+import com.malmo_university.mylists.MainActivity;
+import com.malmo_university.mylists.Packaged_functions.AlertDialogs;
+import com.malmo_university.mylists.R;
+import com.malmo_university.mylists.entities.Checklist;
 import com.malmo_university.mylists.entities.Item;
+import com.malmo_university.mylists.entities.Link;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -116,6 +122,17 @@ public class FragmentItems extends Fragment{
     }
 
     @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, "onActivityCreated");
+        setHasOptionsMenu(true);
+        setRetainInstance(false);
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, " - onActivityCreated");
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.w(TAG, "onCreateView");
@@ -177,6 +194,45 @@ public class FragmentItems extends Fragment{
         super.onDestroy();
         Log.w(TAG,"onDestroy");
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, "onCreateOptionsMenu");
+
+        inflater.inflate(R.menu.menu_fragment_items, menu);
+
+        if (Globals.DEBUG_invocation)
+            Log.i(TAG, " - onCreateOptionsMenu");
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, "onOptionsItemSelected");
+        if (Globals.DEBUG_invocation)
+            Log.w(TAG, " - onOptionsItemSelected");
+        // handle item selection
+        switch (item.getItemId()) {
+            case R.id.menu_item_add_item_fragmentItem:
+                AlertDialogs.makeNewItemDialog(mChecklist_ref_id);
+                return true;
+            case R.id.menu_item_logout_fragmentItem:
+                mParentActivity.logoutCleanUp();
+                return true;
+            case R.id.menu_item_close_fragmentItem:
+                return true;
+            case R.id.menu_item_exit_fragmentItem:
+                getActivity().finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////////////
+
 
     private class ItemsAdapter extends BaseAdapter {
         private final String TAG = "ItemsAdapter";
@@ -321,52 +377,6 @@ public class FragmentItems extends Fragment{
         mLastItemVisible = state;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG, "onActivityCreated");
-        setHasOptionsMenu(true);
-        setRetainInstance(false);
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG, " - onActivityCreated");
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG, "onCreateOptionsMenu");
-
-        inflater.inflate(R.menu.menu_fragment_items, menu);
-
-        if (Globals.DEBUG_invocation)
-            Log.i(TAG, " - onCreateOptionsMenu");
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG, "onOptionsItemSelected");
-        if (Globals.DEBUG_invocation)
-            Log.w(TAG, " - onOptionsItemSelected");
-        // handle item selection
-        switch (item.getItemId()) {
-            case R.id.menu_item_add_item_fragmentItem:
-                AlertDialogs.makeNewItemDialog(mChecklist_ref_id);
-                return true;
-            case R.id.menu_item_logout_fragmentItem:
-                mParentActivity.logoutCleanUp();
-                return true;
-            case R.id.menu_item_close_fragmentItem:
-                return true;
-            case R.id.menu_item_exit_fragmentItem:
-                getActivity().finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
 
 
     // LISTENERS /////////////////////////////////////////////////////////////////////////////
