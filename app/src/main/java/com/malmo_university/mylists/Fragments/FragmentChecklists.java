@@ -2,7 +2,6 @@ package com.malmo_university.mylists.Fragments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,11 +19,11 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
-import com.malmo_university.mylists.entities.Checklist;
 import com.malmo_university.mylists.Controllers.FirebaseController;
 import com.malmo_university.mylists.MainActivity;
 import com.malmo_university.mylists.Packaged_functions.AlertDialogs;
 import com.malmo_university.mylists.R;
+import com.malmo_university.mylists.entities.Checklist;
 import com.malmo_university.mylists.entities.Link;
 
 import java.util.ArrayList;
@@ -36,33 +35,37 @@ import java.util.Map;
  */
 public class FragmentChecklists extends Fragment {
     private static final String TAG = "FragmentChecklists";
+    private static final String FRAGMENT_REF_ID = "firebaseChecklistRef";
+    private static final String CHECKLIST_NAME = "checklistName";
+
     protected MainActivity mParentActivity;
 
     //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-    private ArrayList<Checklist> mChecklistsArray;
-    private HashMap<String, Checklist> mChecklistsMap;
-    //DEFINING A STRING ADAPTER WHICH WILL HANDLE THE DATA OF THE LISTVIEW
-    private ChecklistsAdapter mListViewAdapter;
+//    private ArrayList<Checklist> mChecklistsArray;
+//    private HashMap<String, Checklist> mChecklistsMap;
 
+    private ChecklistsAdapter mListViewAdapter;
     private ListView mListView;
 
     private boolean childListenerRegistered = false;
 
-    // As default the list must scroll down lot the lowest item on the list
-    private boolean mLastItemVisible = true;
+    // Data collection for this fragment
     private ArrayList<Link> mUserChecklistArray;
     private HashMap<String, Link> mUserChecklistMap;
+
+    private String mFragmentName;
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
     // Not needed (the information is hardcoded since there is only one of its kind)
-    public static FragmentChecklists newInstance() {
+    public static FragmentChecklists newInstance(String checklistName) {
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "newInstance");
 
         FragmentChecklists newFragmentChat = new FragmentChecklists();
 
         Bundle args = new Bundle();
+        args.putString(CHECKLIST_NAME, checklistName);
         newFragmentChat.setArguments(args);
 
         if (Globals.DEBUG_invocation)
@@ -78,15 +81,17 @@ public class FragmentChecklists extends Fragment {
 
         mParentActivity = (MainActivity)getActivity();
 
+        Bundle args = getArguments();
+        mFragmentName = args.getString(CHECKLIST_NAME);
+
+
         // fetch the cached data from the activity
-        mChecklistsArray = mParentActivity.getChecklistsArray();
-        mChecklistsMap = mParentActivity.getChecklistsMap();
+//        mChecklistsArray = mParentActivity.getChecklistsArray();
+//        mChecklistsMap = mParentActivity.getChecklistsMap();
         mUserChecklistArray = mParentActivity.getUserChecklistsArray();
         mUserChecklistMap = mParentActivity.getUserChecklistsMap();
 
-        mListViewAdapter = new ChecklistsAdapter(mParentActivity,
-                mChecklistsArray,
-                getResources());
+        mListViewAdapter = new ChecklistsAdapter();
         mListViewAdapter.notifyDataSetChanged();
 
         if (!childListenerRegistered) {
@@ -168,35 +173,32 @@ public class FragmentChecklists extends Fragment {
         Log.w(TAG,"onDestroy");
     }
 
+    public CharSequence getName() {
+        return mFragmentName;
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////////////////
 
     private class ChecklistsAdapter extends BaseAdapter {
         private final String TAG = "ChecklistsAdapter";
 
-        private final ArrayList<Checklist> listItems;
-        private final Resources resources;
         //private final FragmentChecklists mFragmentChatRef;
         private final LayoutInflater inflater;
 
         /*************  CustomAdapter Constructor *****************/
-        public ChecklistsAdapter(MainActivity context, ArrayList listItems, Resources resLocal) {
-            /********** Take passed values **********/
-            mParentActivity = context;
-            this.listItems = listItems;
-            resources = resLocal;
-            //mFragmentChatRef = ref;
+        public ChecklistsAdapter() {
             /***********  Layout inflater to call external xml layout () ***********/
             inflater = ( LayoutInflater ) mParentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
 
         /******** What is the size of Passed Arraylist Size ************/
         public int getCount() {
-            return listItems.size();
+            return mUserChecklistArray.size();
         }
 
         public Object getItem(int position) {
-            return listItems.get(position);
+            return mUserChecklistArray.get(position);
         }
 
         public long getItemId(int position) {
@@ -206,16 +208,15 @@ public class FragmentChecklists extends Fragment {
 
         @Override
         public View getView(int position, View vi, ViewGroup parent) {
-            //mListView.smoothScrollToPosition(0);
             if (Globals.DEBUG_results) {
                 Log.w(TAG, "getView");
             }
             ViewHolder viewHolder;
-            Checklist tempValues;
+            Link tempValues;
 
             // Our listview uses two views for its rows depending on who the sender is
-            if(listItems.size() > 0) {
-                tempValues = listItems.get(position);
+            if(mUserChecklistArray.size() > 0) {
+                tempValues = mUserChecklistArray.get(position);
             }else{
                 tempValues = null;
             }
@@ -295,13 +296,13 @@ public class FragmentChecklists extends Fragment {
 
             // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
 
-            if (!mChecklistsMap.containsKey(reference)) {
+            if (!mUserChecklistMap.containsKey(reference)) {
                 Log.w(TAG, "Adding a checklist to UserChecklistsMap and UserChecklistsArray");
 
-                HashMap<String,String> values = new HashMap<String, String>();
-                values.put(Checklist.REF_ID,ref_id);
-                values.put(Checklist.CREATION_DATE,creation_date);
-                values.put(Checklist.NAME,checklistName);
+//                HashMap<String,String> values = new HashMap<String, String>();
+//                values.put(Checklist.REF_ID,ref_id);
+//                values.put(Checklist.CREATION_DATE,creation_date);
+//                values.put(Checklist.NAME,checklistName);
 
                 Link link = new Link(ref_id, owner, creation_date, type, reference, checklistName);
 
@@ -310,14 +311,15 @@ public class FragmentChecklists extends Fragment {
                 mUserChecklistMap.put(reference,link);
 
                 // ?
-                Checklist checklist = new Checklist(ref_id, creation_date, checklistName, values);
-                mChecklistsArray.add(mChecklistsArray.size(), checklist);
-                mChecklistsMap.put(reference, checklist);
+//                Checklist checklist = new Checklist(ref_id, creation_date, checklistName, values);
+//                mChecklistsArray.add(mChecklistsArray.size(), checklist);
+//                mChecklistsMap.put(reference, checklist);
 
                 mListViewAdapter.notifyDataSetChanged();
             }else{
                 Log.w(TAG, "Checklist_REF link already existed");
             }
+            mListViewAdapter.notifyDataSetChanged();
 
 //            ThreadController.delay(10000);
 
@@ -355,13 +357,14 @@ public class FragmentChecklists extends Fragment {
             values.put(Checklist.NAME,checklistName);
 
             // Create a new Checklist based on the changed data received
-            Checklist newChecklist = new Checklist(ref_id, creation_date, checklistName, values);
+//            Checklist newChecklist = new Checklist(ref_id, creation_date, checklistName, values);
+            Link checklistLink = new Link(ref_id, owner, creation_date, type, reference, checklistName);
             // place the old checklist in array
-            Checklist oldChecklist = mChecklistsArray.set(findWithinListArray(newChecklist), newChecklist);
+            Link oldChecklist = mUserChecklistArray.set(findWithinListArray(checklistLink), checklistLink);
             // use the old chaklist to find it in map and remove it
-            mChecklistsMap.remove(oldChecklist.getRef_id());
+            mUserChecklistMap.remove(oldChecklist.getRef_id());
             // Put the updated checklist into the map
-            mChecklistsMap.put(newChecklist.getRef_id(), newChecklist);
+            mUserChecklistMap.put(checklistLink.getReference(), checklistLink);
 
             mListViewAdapter.notifyDataSetChanged();
 
@@ -401,11 +404,12 @@ public class FragmentChecklists extends Fragment {
             values.put(Checklist.NAME,checklistName);
 
             // Create Checklist based on the changed data received
-            Checklist newChecklist = new Checklist(ref_id, creation_date, checklistName, values);
+//            Checklist newChecklist = new Checklist(ref_id, creation_date, checklistName, values);
+            Link checklistLink = new Link(ref_id, owner, creation_date, type, reference, checklistName);
             // place the old checklist in array
-            mChecklistsArray.remove(findWithinListArray(newChecklist));
+            mUserChecklistArray.remove(findWithinListArray(checklistLink));
             // use the old checklist to find it in map and remove it
-            mChecklistsMap.remove(newChecklist.getRef_id());
+            mUserChecklistMap.remove(checklistLink.getReference());
 
             mListViewAdapter.notifyDataSetChanged();
 
@@ -484,9 +488,9 @@ public class FragmentChecklists extends Fragment {
     //////////////////////////////// Menu end ///////////////////////////////////////////
 
     // returns -1 if it was not found in the array
-    protected int findWithinListArray(Checklist checklist){
-        for (int i = 0 ; i < mChecklistsArray.size() ; i++) {
-            if (mChecklistsArray.get(i).getRef_id().equals(checklist.getRef_id())){
+    protected int findWithinListArray(Link checklistLink){
+        for (int i = 0 ; i < mUserChecklistArray.size() ; i++) {
+            if (mUserChecklistArray.get(i).getReference().equals(checklistLink.getReference())){
                 return i;
             }
         }

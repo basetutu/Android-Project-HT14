@@ -15,15 +15,14 @@ public class Item {
 
     public Item(String ref_id, String checklist_ref_id, String lastModifiedBy, String creation_date, int order,
                 String title, String note, boolean checked) {
-
         this.ref_id = ref_id;
+        this.checklist_ref_id = checklist_ref_id;
         this.lastModifiedBy = lastModifiedBy;
         this.creation_date = creation_date;
         this.order = order;
         this.title = title;
         this.note = note;
         this.checked = checked;
-        this.checklist_ref_id = checklist_ref_id;
     }
 
     public void toggleChecked(){

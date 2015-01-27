@@ -25,7 +25,6 @@ import com.malmo_university.mylists.Controllers.FirebaseController;
 import com.malmo_university.mylists.MainActivity;
 import com.malmo_university.mylists.Packaged_functions.AlertDialogs;
 import com.malmo_university.mylists.R;
-import com.malmo_university.mylists.entities.Checklist;
 import com.malmo_university.mylists.entities.Item;
 import com.malmo_university.mylists.entities.Link;
 
@@ -97,10 +96,9 @@ public class FragmentItems extends Fragment{
         Bundle args = getArguments();
         mChecklistName = args.getString(CHECKLIST_NAME);
         mChecklist_ref_id = args.getString(FRAGMENT_REF_ID);
-        mFirebaseChecklist = new Firebase(FirebaseController.makeChecklistPath(args.getString(FRAGMENT_REF_ID)));
+        mFirebaseChecklist = new Firebase(FirebaseController.makeChecklistPath(mChecklist_ref_id));
 
-        Checklist checklist = mParentActivity.getChecklistsMap().get(mChecklist_ref_id);
-        mItemsArray = checklist.getItems();
+        mItemsArray = new ArrayList<Item>();
 
         // Create the Arraylist that will store our group-names from the list
         //mItemsArray = new ArrayList<Item>(50);
@@ -231,6 +229,10 @@ public class FragmentItems extends Fragment{
         }
     }
 
+    public String getName() {
+        return mChecklistName;
+    }
+
     /////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -352,18 +354,19 @@ public class FragmentItems extends Fragment{
 
     private void onChecklistItemClicked(int positionForView) {
         Log.w(TAG,"onChecklistItemClicked");
-        mItemsArray.get(positionForView).toggleChecked();
+        // Get the item and modify it
+        Item item = mItemsArray.get(positionForView);
+        item.toggleChecked();
+        // update listview
         mListViewAdapter.notifyDataSetChanged();
-        Item item = mParentActivity.getChecklistsMap().get(mChecklist_ref_id).getItems().get(positionForView);
-        boolean checked = item.getChecked();
-        Log.e(TAG,""+checked);
+
+        // Get required data to access and modify firebase
         String checklist_ref_id = item.getChecklist_ref_id();
-        Log.e(TAG,checklist_ref_id);
         String item_ref_id = item.getRef_id();
-        Log.e(TAG,item_ref_id);
+        boolean checked = item.getChecked();
 
         // Needs items
-        FirebaseController.checkItemOnChecklist(checklist_ref_id, item_ref_id, checked);
+        FirebaseController.checkItemOnChecklist(mChecklist_ref_id, item.getRef_id(), item.getChecked());
     }
 
     private void onChecklistItemLongClicked(int mPosition) {

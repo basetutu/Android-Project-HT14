@@ -21,6 +21,7 @@ import com.firebase.client.FirebaseError;
 import com.malmo_university.mylists.Controllers.FirebaseController;
 import com.malmo_university.mylists.Controllers.MyBroadcastController;
 import com.malmo_university.mylists.Controllers.SharedPreferencesController;
+import com.malmo_university.mylists.Controllers.ThreadController;
 import com.malmo_university.mylists.Fragments.FragmentChecklists;
 import com.malmo_university.mylists.Fragments.FragmentItems;
 import com.malmo_university.mylists.Fragments.Globals;
@@ -37,11 +38,10 @@ import java.util.Map;
 
 public class MainActivity extends Activity implements ActionBar.TabListener {
     private static final String TAG = "MainActivity";
-    private static final CharSequence CHECKLISTS_FRAGMENT_TAB_NAME = "My Checklists";
+    private static final String CHECKLISTS_FRAGMENT_TAB_NAME = "My Checklists";
 
     private ActionBar mActionBar;
     private FragmentManager fm;
-    private int tabChecker;
 
     // The ViewPager that will host the section contents.
     private ViewPager mViewPager;
@@ -50,7 +50,6 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     // This is the fragment that will show the list of checklists
     private FragmentChecklists mFragmentChecklists;
-
     // This holds the fragment of all the open checklists (they hold their own data)
     private HashMap<String,FragmentItems> mFragmentItems;
 
@@ -91,12 +90,34 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         mActionBar.setIcon(R.drawable.android);
 
+        // Prepare SectionPageAdapter
         fm = getFragmentManager();
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(fm);
-        mSectionsPagerAdapter.setPageCount(1);
+//        mSectionsPagerAdapter.setPageCount(1);
         mSectionsPagerAdapter.notifyDataSetChanged();
+
+        // Prepare data collections for use
+        if (mUserChecklistsArray == null) {
+            mUserChecklistsArray = new ArrayList<Link>();
+            mUserChecklistsMap = new HashMap<String, Link>();
+            mUserAwaitingArray = new ArrayList<Link>();
+            mUserContactsArray = new ArrayList<Contact>();
+        }
+        if (mFragmentChecklists == null){
+            mFragmentChecklists = FragmentChecklists.newInstance(CHECKLISTS_FRAGMENT_TAB_NAME);
+//            mSectionsPagerAdapter.setPageCount(1);
+            mSectionsPagerAdapter.notifyDataSetChanged();
+        }
+        if (mFragmentItems == null) {
+            mFragmentItems = new HashMap<String, FragmentItems>();
+            mSectionsPagerAdapter.notifyDataSetChanged();
+        }
+        //        if (mChecklistsArray == null) {
+//            mChecklistsArray = new ArrayList<Checklist>();
+//            mChecklistsMap = new HashMap<String, Checklist>();
+//        }
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container_pager);
@@ -116,34 +137,15 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         purgeBackStack();
 
-        if (mFragmentChecklists == null){
-            mFragmentChecklists = FragmentChecklists.newInstance();
-            mSectionsPagerAdapter.setPageCount(1);
-            mSectionsPagerAdapter.notifyDataSetChanged();
-        }
-        if (mFragmentItems == null) {
-            mFragmentItems = new HashMap<String, FragmentItems>();
-        }
-        if (mChecklistsArray == null) {
-            mChecklistsArray = new ArrayList<Checklist>();
-            mChecklistsMap = new HashMap<String, Checklist>();
-        }
 
-        if (mUserChecklistsArray == null) {
-            // USER-RELATED DATA
-            // User Checklists
-            mUserChecklistsArray = new ArrayList<Link>();
-            mUserChecklistsMap = new HashMap<String, Link>();
-            // User Awaiting acceptance
-            mUserAwaitingArray = new ArrayList<Link>();
-            // User Contacts
-            mUserContactsArray = new ArrayList<Contact>();
-        }
+
+
+
     }
 
-    protected void notifyPagerAdapter(){
-        mSectionsPagerAdapter.notifyDataSetChanged();
-    }
+//    protected void notifyPagerAdapter(){
+//        mSectionsPagerAdapter.notifyDataSetChanged();
+//    }
 
     ///////////////////////////////////////////////////////////////////////////
     public ArrayList<Link> getUserChecklistsArray(){
@@ -181,7 +183,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
     @Override
     protected void onPause() {
-        super.onDestroy();
+        super.onPause();
         Log.w(TAG, "onPause");
 
         Log.w(TAG, " - onPause");
@@ -277,7 +279,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onBackPressed() {
         if (Globals.DEBUG_invocation)
             Log.w(TAG, "onBackPressed");
-        if (!mActionBar.getSelectedTab().getText().equals(CHECKLISTS_FRAGMENT_TAB_NAME)){
+//        if (!mActionBar.getSelectedTab().getText().equals(CHECKLISTS_FRAGMENT_TAB_NAME)){
+        if (!(mActionBar.getSelectedTab().getPosition() == 0)){
             mActionBar.setSelectedNavigationItem(0);
         }else{
             purgeBackStack();
@@ -290,21 +293,23 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void onChecklistClicked(int mPosition) {
         Log.w(TAG,"onChecklistClicked");
         // get the checklist from mChecklistsArray
-        Checklist checklist = mChecklistsArray.get(mPosition);
-        Log.e(TAG, "ref_id" + checklist.getRef_id());
+//        Checklist checklist = mChecklistsArray.get(mPosition);
+        Link checklistLink = mUserChecklistsArray.get(mPosition);
+        Log.e(TAG, "ref_id" + checklistLink.getRef_id());
+        Log.e(TAG, "Reference" + checklistLink.getReference());
         // see if there is a corresponding FragmentItems for this in mFragmentItems
-        if (mFragmentItems.get(checklist.getRef_id()) != null){
+        if (mFragmentItems.get(checklistLink.getReference()) != null){
             Log.w(TAG,"fragment exists - not null");
             // if it is there must be a page for it too, select the page
             mViewPager.setCurrentItem(mPosition + 1);
         }else{
             Log.w(TAG,"fragment did not exist - null");
             // if NOT, initialize a new FragmentItems with checklist
-            FragmentItems fragmentItems = FragmentItems.newInstance(checklist.getName(), checklist.getRef_id());
+            FragmentItems fragmentItems = FragmentItems.newInstance(checklistLink.getName(), checklistLink.getReference());
             // add it to mFragmentItems
-            mFragmentItems.put(checklist.getRef_id(), fragmentItems);
+            mFragmentItems.put(checklistLink.getReference(), fragmentItems);
             // Inform ViewPager that there is a new page added by invoking mSectionPageAdapter.notifyFragmentAdded()
-            mSectionsPagerAdapter.notifyFragmentAdded();
+            mSectionsPagerAdapter.notifyFragmentSetChanged();
             // select the new tab/page
             mViewPager.setCurrentItem(mPosition + 1);
         }
@@ -315,15 +320,14 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
     public void closeChecklist(int index) {
 //        Checklist checklist = mChecklistsArray.get(index);
         Link link = mUserChecklistsArray.get(index);
-  //      Log.e(TAG, "Checklist object gave: " + checklist.getRef_id());
+
         Log.e(TAG, "Link object gave: " + link.getReference());
 
-        Log.e(TAG,mChecklistsArray.remove(index).getRef_id());//todo has bug, won't remove (i know why now: the key must be reference not ref_id)
-        Log.e(TAG,mUserChecklistsArray.remove(index).getReference());//todo has bug, won't remove (the key here is reference)
-
-    //    mFragmentItems.remove(checklist.getRef_id());
+        //    mFragmentItems.remove(checklist.getRef_id());
         mFragmentItems.remove(link.getReference());
-        mSectionsPagerAdapter.notifyFragmentRemoved();
+        ThreadController.delay(2000);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+        mSectionsPagerAdapter.notifyFragmentSetChanged();
         Log.w(TAG, "fragments remaining in array: " + mFragmentItems.size());
     }
 
@@ -350,22 +354,22 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
      * one of the sections/tabs/pages.
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
-        private int pageCount;
+        private final String TAG = "SectionPagerAdapter";
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
-        public void notifyFragmentAdded(){
-            addPage();
+        public void notifyFragmentSetChanged(){
+//            addPage();
             notifyDataSetChanged();
             recreateTabs();
         }
-        public void notifyFragmentRemoved(){
-            subtractPage();
-            notifyDataSetChanged();
-            recreateTabs();
-        }
+//        public void notifyFragmentRemoved(){
+//            subtractPage();
+//            notifyDataSetChanged();
+        //           recreateTabs();
+//        }
 
         @Override
         public Fragment getItem(int position) {
@@ -373,8 +377,8 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             if (position != 0) {
                 position--;
                 //todo
-                Checklist checklist = mChecklistsArray.get(position);
-                String checklist_ref_id = checklist.getRef_id();
+//                Checklist checklist = mChecklistsArray.get(position);
+//                String checklist_ref_id = checklist.getRef_id();
 
                 Link link = mUserChecklistsArray.get(position);
                 String checklist_ref_id_2 = link.getReference();
@@ -382,9 +386,11 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
                 //see if fragment already exists in mFragmentItems
                 FragmentItems fragmentItems = mFragmentItems.get(checklist_ref_id_2);
                 if(fragmentItems == null){
-                    String checklistName = checklist.getName();
-                    fragmentItems = FragmentItems.newInstance(checklistName, checklist_ref_id_2);
-                    mFragmentItems.put(checklist_ref_id_2, fragmentItems);
+                    Log.w(TAG, "Fragment not exist in array == null");
+////                    String checklistName = checklist.getName();
+//                    String checklistName = link.getName();
+//                    fragmentItems = FragmentItems.newInstance(checklistName, checklist_ref_id_2);
+//                    mFragmentItems.put(checklist_ref_id_2, fragmentItems);
                 }
                 return fragmentItems;
             }else{
@@ -394,28 +400,29 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return pageCount;
-//            return mChecklistsArray.size(); todo - a better solution
+            Log.w(TAG, "getCount");
+//            return pageCount;
+            return mFragmentItems.size() +1;
         }
-        public void setPageCount(int pageCount) {
-            this.pageCount = pageCount;
-        }
-        public void addPage() {
-            this.pageCount++;
-        }
-        public void subtractPage() {
-            this.pageCount--;
-        }
+//        public void setPageCount(int pageCount) {
+//            this.pageCount = pageCount;
+//        }
+//        public void addPage() {
+//            this.pageCount++;
+//        }
+//        public void subtractPage() {
+//            this.pageCount--;
+//        }
 
         @Override
         public CharSequence getPageTitle(int position) {
             Log.w(TAG, "getPageTitle: " + position);
             if (position != 0) {
                 position--;
-                return mChecklistsArray.get(position).getName();
+                return mUserChecklistsArray.get(position).getName();
             }else{
-                return CHECKLISTS_FRAGMENT_TAB_NAME;
+//                return CHECKLISTS_FRAGMENT_TAB_NAME;
+                return mFragmentChecklists.getName();
             }
         }
     }
@@ -466,7 +473,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
             if (!getUserChecklistsMap().containsKey(reference)) {
                 getUserChecklistsMap().put(reference, link);
                 getUserChecklistsArray().add(link);
-                notifyPagerAdapter();
+                mSectionsPagerAdapter.notifyDataSetChanged();
             }
         }
 

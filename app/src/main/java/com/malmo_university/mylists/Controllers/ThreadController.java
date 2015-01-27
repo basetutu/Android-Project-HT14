@@ -5,7 +5,7 @@ package com.malmo_university.mylists.Controllers;
  */
 public class ThreadController {
 
-    protected static void delay(long millisecond){
+    public static void delay(long millisecond){
         try {
             Thread.sleep(millisecond);
         } catch (InterruptedException e) {
