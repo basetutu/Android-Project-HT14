@@ -10,13 +10,13 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
 import com.firebase.client.ValueEventListener;
-import com.malmo_university.mylists.Packaged_functions.Algorithms;
 import com.malmo_university.mylists.Fragments.Globals;
 import com.malmo_university.mylists.MainActivity;
-import com.malmo_university.mylists.entities.Profile;
+import com.malmo_university.mylists.Packaged_functions.Algorithms;
 import com.malmo_university.mylists.R;
 import com.malmo_university.mylists.entities.Item;
 import com.malmo_university.mylists.entities.Link;
+import com.malmo_university.mylists.entities.Profile;
 
 import java.sql.Timestamp;
 import java.util.HashMap;

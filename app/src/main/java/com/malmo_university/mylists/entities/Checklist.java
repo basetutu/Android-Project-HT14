@@ -1,7 +1,5 @@
 package com.malmo_university.mylists.entities;
 
-import com.malmo_university.mylists.entities.Item;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
