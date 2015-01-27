@@ -21,7 +21,6 @@ import com.firebase.client.FirebaseError;
 import com.malmo_university.mylists.Controllers.FirebaseController;
 import com.malmo_university.mylists.Controllers.MyBroadcastController;
 import com.malmo_university.mylists.Controllers.SharedPreferencesController;
-import com.malmo_university.mylists.Controllers.ThreadController;
 import com.malmo_university.mylists.Fragments.FragmentChecklists;
 import com.malmo_university.mylists.Fragments.FragmentItems;
 import com.malmo_university.mylists.Fragments.Globals;
@@ -325,7 +324,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 
         //    mFragmentItems.remove(checklist.getRef_id());
         mFragmentItems.remove(link.getReference());
-        ThreadController.delay(2000);
+
         mViewPager.setAdapter(mSectionsPagerAdapter);
         mSectionsPagerAdapter.notifyFragmentSetChanged();
         Log.w(TAG, "fragments remaining in array: " + mFragmentItems.size());
@@ -368,7 +367,7 @@ public class MainActivity extends Activity implements ActionBar.TabListener {
 //        public void notifyFragmentRemoved(){
 //            subtractPage();
 //            notifyDataSetChanged();
-        //           recreateTabs();
+//            recreateTabs();
 //        }
 
         @Override

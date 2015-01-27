@@ -2,7 +2,6 @@ package com.malmo_university.mylists.Fragments;
 
 import android.app.Fragment;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,6 +28,7 @@ import com.malmo_university.mylists.entities.Item;
 import com.malmo_university.mylists.entities.Link;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -43,10 +43,8 @@ public class FragmentItems extends Fragment{
 
     // This holds all the items of this checklists
     private ArrayList<Item> mItemsArray;
-    // Holds the various links stored in firebase
-    private ArrayList<Link> mChecklists;
-    private ArrayList<Link> mContacts;
-    private ArrayList<Link> mAwaiting_acceptance_links;
+    private HashMap<String,Item> mItemsMap;
+
     // The adapter of the listview
     private ItemsAdapter mListViewAdapter;
 
@@ -99,15 +97,13 @@ public class FragmentItems extends Fragment{
         mFirebaseChecklist = new Firebase(FirebaseController.makeChecklistPath(mChecklist_ref_id));
 
         mItemsArray = new ArrayList<Item>();
+        mItemsMap = new HashMap<String, Item>();
 
         // Create the Arraylist that will store our group-names from the list
         //mItemsArray = new ArrayList<Item>(50);
         //mItemsMap = new HashMap<String, Item>(100);
 
-        mListViewAdapter = new ItemsAdapter(mParentActivity,
-                mItemsArray,
-                getResources(),
-                this);
+        mListViewAdapter = new ItemsAdapter(mItemsArray);
         mListViewAdapter.notifyDataSetChanged();
 
         if (!childListenerRegistered) {
@@ -240,17 +236,12 @@ public class FragmentItems extends Fragment{
         private final String TAG = "ItemsAdapter";
 
         private final ArrayList<Item> listItems;
-        private final Resources resources;
-        private final FragmentItems mFragmentItemRef;
         private final LayoutInflater inflater;
 
         /*************  CustomAdapter Constructor *****************/
-        public ItemsAdapter(MainActivity context, ArrayList listItems, Resources resLocal, FragmentItems ref) {
+        public ItemsAdapter(ArrayList listItems) {
             /********** Take passed values **********/
-            mParentActivity = context;
             this.listItems = listItems;
-            resources = resLocal;
-            mFragmentItemRef = ref;
             /***********  Layout inflater to call external xml layout () ***********/
             inflater = ( LayoutInflater ) mParentActivity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         }
@@ -353,7 +344,7 @@ public class FragmentItems extends Fragment{
     }
 
     private void onChecklistItemClicked(int positionForView) {
-        Log.w(TAG,"onChecklistItemClicked");
+        Log.w(TAG, "onChecklistItemClicked");
         // Get the item and modify it
         Item item = mItemsArray.get(positionForView);
         item.toggleChecked();
@@ -476,14 +467,13 @@ public class FragmentItems extends Fragment{
 
             Item item = new Item(ref_id, checklist_ref_id, lastModifiedBy, creation_date, 0, title, note, checked.equals("true"));
 
-            // todo psudo
-
-            //Checklist checklist = mParentActivity.getChecklistsMap().get(checklist_ref_id);
-            //checklist.getItems().add(checklist.getItems().size(), item);
-            mItemsArray.add(mItemsArray.size(), item);
-
+            if (mItemsMap.get(ref_id) == null) {
+                mItemsArray.add(mItemsArray.size(), item);
+                mItemsMap.put(ref_id, item);
+            }else{
+                Log.w(TAG, "Item existed !");
+            }
             mListViewAdapter.notifyDataSetChanged();
-
         }
 
         @Override

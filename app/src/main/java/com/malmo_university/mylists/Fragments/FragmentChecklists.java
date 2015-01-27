@@ -23,7 +23,6 @@ import com.malmo_university.mylists.Controllers.FirebaseController;
 import com.malmo_university.mylists.MainActivity;
 import com.malmo_university.mylists.Packaged_functions.AlertDialogs;
 import com.malmo_university.mylists.R;
-import com.malmo_university.mylists.entities.Checklist;
 import com.malmo_university.mylists.entities.Link;
 
 import java.util.ArrayList;
@@ -294,35 +293,18 @@ public class FragmentChecklists extends Fragment {
                 Log.i(TAG, "Child name: " + checklistName);
             }
 
-            // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
-
             if (!mUserChecklistMap.containsKey(reference)) {
                 Log.w(TAG, "Adding a checklist to UserChecklistsMap and UserChecklistsArray");
 
-//                HashMap<String,String> values = new HashMap<String, String>();
-//                values.put(Checklist.REF_ID,ref_id);
-//                values.put(Checklist.CREATION_DATE,creation_date);
-//                values.put(Checklist.NAME,checklistName);
-
                 Link link = new Link(ref_id, owner, creation_date, type, reference, checklistName);
 
-                // better
                 mUserChecklistArray.add(link);
                 mUserChecklistMap.put(reference,link);
-
-                // ?
-//                Checklist checklist = new Checklist(ref_id, creation_date, checklistName, values);
-//                mChecklistsArray.add(mChecklistsArray.size(), checklist);
-//                mChecklistsMap.put(reference, checklist);
 
                 mListViewAdapter.notifyDataSetChanged();
             }else{
                 Log.w(TAG, "Checklist_REF link already existed");
             }
-            mListViewAdapter.notifyDataSetChanged();
-
-//            ThreadController.delay(10000);
-
         }
 
         @Override
@@ -349,27 +331,16 @@ public class FragmentChecklists extends Fragment {
                 Log.i(TAG, "Child type: " + type);
                 Log.i(TAG, "Child name: " + checklistName);
             }
-            // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
 
-            HashMap<String,String> values = new HashMap<String, String>();
-            values.put(Checklist.REF_ID,ref_id);
-            values.put(Checklist.CREATION_DATE,creation_date);
-            values.put(Checklist.NAME,checklistName);
-
-            // Create a new Checklist based on the changed data received
-//            Checklist newChecklist = new Checklist(ref_id, creation_date, checklistName, values);
             Link checklistLink = new Link(ref_id, owner, creation_date, type, reference, checklistName);
             // place the old checklist in array
             Link oldChecklist = mUserChecklistArray.set(findWithinListArray(checklistLink), checklistLink);
-            // use the old chaklist to find it in map and remove it
-            mUserChecklistMap.remove(oldChecklist.getRef_id());
+            // use the old checklist to find it in map and remove it
+            mUserChecklistMap.remove(oldChecklist.getReference());
             // Put the updated checklist into the map
             mUserChecklistMap.put(checklistLink.getReference(), checklistLink);
 
             mListViewAdapter.notifyDataSetChanged();
-
-//            ThreadController.delay(10000);
-
         }
 
         @Override
@@ -396,15 +367,7 @@ public class FragmentChecklists extends Fragment {
                 Log.i(TAG, "Child type: " + type);
                 Log.i(TAG, "Child name: " + checklistName);
             }
-            // Receiving a LINK but creating a CHECKLIST to save and list !!!!!!!!
 
-            HashMap<String,String> values = new HashMap<String, String>();
-            values.put(Checklist.REF_ID,ref_id);
-            values.put(Checklist.CREATION_DATE,creation_date);
-            values.put(Checklist.NAME,checklistName);
-
-            // Create Checklist based on the changed data received
-//            Checklist newChecklist = new Checklist(ref_id, creation_date, checklistName, values);
             Link checklistLink = new Link(ref_id, owner, creation_date, type, reference, checklistName);
             // place the old checklist in array
             mUserChecklistArray.remove(findWithinListArray(checklistLink));
@@ -426,7 +389,7 @@ public class FragmentChecklists extends Fragment {
         @Override
         public void onCancelled(FirebaseError firebaseError) {
             if (Globals.DEBUG_invocation)
-                Log.e(TAG, "onCancelled");
+                Log.e(TAG, "onCancelled - ERROR");
             mParentActivity.makeToast("onCancelled - ERROR");
             // ValueEventListener defines a onCancelled method (lines 12 - 15) that will be
             // called if the read is ever cancelled. A read would be cancelled if the client
