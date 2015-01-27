@@ -4,7 +4,16 @@ package com.malmo_university.mylists.entities;
  * Created by Saeed on 18-01-15.
  */
 public class Item {
-    String ref_id;
+    public static final String CHECKED = "checked";
+    public static final String CHECKLIST_REF_ID = "checklist_ref_id";
+    public static final String CREATION_DATE = "creation_date";
+    public static final String LAST_MODIFIED_BY = "lastModifiedBy";
+    public static final String NOTE = "note";
+    public static final String ORDER = "order";
+    public static final String ITEM_REF_ID = "item_ref_id";
+    public static final String TITLE = "title";
+
+    String item_ref_id;
     String checklist_ref_id;
     String lastModifiedBy;
     String creation_date;
@@ -13,9 +22,9 @@ public class Item {
     String note;
     boolean checked;
 
-    public Item(String ref_id, String checklist_ref_id, String lastModifiedBy, String creation_date, int order,
+    public Item(String item_ref_id, String checklist_ref_id, String lastModifiedBy, String creation_date, int order,
                 String title, String note, boolean checked) {
-        this.ref_id = ref_id;
+        this.item_ref_id = item_ref_id;
         this.checklist_ref_id = checklist_ref_id;
         this.lastModifiedBy = lastModifiedBy;
         this.creation_date = creation_date;
@@ -25,8 +34,9 @@ public class Item {
         this.checked = checked;
     }
 
-    public void toggleChecked(){
+    public boolean toggleChecked(){
         this.checked = !this.checked;
+        return this.checked;
     }
 
     public String getChecklist_ref_id() {
@@ -37,12 +47,12 @@ public class Item {
         this.checklist_ref_id = checklist_ref_id;
     }
 
-    public String getRef_id() {
-        return ref_id;
+    public String getItem_ref_id() {
+        return item_ref_id;
     }
 
-    public void setRef_id(String ref_id) {
-        this.ref_id = ref_id;
+    public void setItem_ref_id(String item_ref_id) {
+        this.item_ref_id = item_ref_id;
     }
 
     public String getLastModifiedBy() {

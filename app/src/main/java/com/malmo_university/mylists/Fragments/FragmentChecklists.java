@@ -39,10 +39,6 @@ public class FragmentChecklists extends Fragment {
 
     protected MainActivity mParentActivity;
 
-    //LIST OF ARRAY STRINGS WHICH WILL SERVE AS LIST ITEMS
-//    private ArrayList<Checklist> mChecklistsArray;
-//    private HashMap<String, Checklist> mChecklistsMap;
-
     private ChecklistsAdapter mListViewAdapter;
     private ListView mListView;
 
@@ -370,12 +366,13 @@ public class FragmentChecklists extends Fragment {
 
             Link checklistLink = new Link(ref_id, owner, creation_date, type, reference, checklistName);
             // place the old checklist in array
-            mUserChecklistArray.remove(findWithinListArray(checklistLink));
-            // use the old checklist to find it in map and remove it
-            mUserChecklistMap.remove(checklistLink.getReference());
+            if (findWithinListArray(checklistLink) > -1) {
+                mUserChecklistArray.remove(findWithinListArray(checklistLink));
+                // use the old checklist to find it in map and remove it
+                mUserChecklistMap.remove(checklistLink.getReference());
 
-            mListViewAdapter.notifyDataSetChanged();
-
+                mListViewAdapter.notifyDataSetChanged();
+            }
         }
 
         @Override

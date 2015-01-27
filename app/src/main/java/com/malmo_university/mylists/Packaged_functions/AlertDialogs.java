@@ -9,8 +9,13 @@ import android.view.WindowManager;
 import android.widget.EditText;
 
 import com.malmo_university.mylists.Controllers.FirebaseController;
+import com.malmo_university.mylists.Fragments.FragmentItems;
 import com.malmo_university.mylists.MainActivity;
 import com.malmo_university.mylists.R;
+import com.malmo_university.mylists.entities.Item;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by jonat_000 on 21/01/2015.
@@ -107,7 +112,6 @@ public class AlertDialogs {
         }
     }
 
-
     protected static void makeLongPressChecklistDialog(final String checklist_ref_id) {
         if (checkForNull()) {
             final AlertDialog.Builder newDialogBuilder = new AlertDialog.Builder(mParentActivity);
@@ -166,8 +170,42 @@ public class AlertDialogs {
         }
     }
 
+    public static void makeEditItemDialog(final Item item) {
+        Log.w(TAG, "makeNewItemDialog - checklist_ref_id: " + item.getChecklist_ref_id());
+        if (checkForNull()) {
+            final AlertDialog.Builder newDialogBuilder = new AlertDialog.Builder(mParentActivity);
+            newDialogBuilder.setTitle("Create a new item");
+            newDialogBuilder.setCancelable(true);
+            // Create VIEW
+            // Set two EditText views to get user input
+            View alertDialogView = mLayoutInflater.inflate(R.layout.dialog_two_edit_texts, null);
+            final EditText title = (EditText) alertDialogView.findViewById(R.id.alertDialog_2_upper_editText);
+            final EditText note = (EditText) alertDialogView.findViewById(R.id.alertDialog_2_lower_editText);
+            // set the old data to be edited
+            title.setText(item.getTitle());
+            note.setText(item.getNote());
 
-    public static void makeLongPressItemDialog() {
+            newDialogBuilder.setView(alertDialogView);
+
+            // Set button listeners
+            newDialogBuilder.setPositiveButton("Submit", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    mParentActivity.editItem(item, title.getText().toString(), note.getText().toString());
+                }
+            });
+
+            newDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                }
+            });
+
+            AlertDialog newDialog = newDialogBuilder.create();
+            newDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+            newDialog.show();
+        }
+    }
+
+    public static void makeLongPressItemDialog(final FragmentItems fragment, final int position, final Item item, final HashMap<String, Item> mItemsMap, final ArrayList<Item> mItemsArray) {
         if (checkForNull()) {
             final AlertDialog.Builder newDialogBuilder = new AlertDialog.Builder(mParentActivity);
             newDialogBuilder.setTitle("What do you wish to do with this item?");
@@ -180,13 +218,13 @@ public class AlertDialogs {
 
             newDialogBuilder.setNeutralButton("Delete", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    //todo
+                    fragment.deleteItem(position, item, mItemsArray, mItemsMap);
                 }
             });
 
             newDialogBuilder.setPositiveButton("Edit", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
-                    //todo
+                    makeEditItemDialog(item);
                 }
             });
 

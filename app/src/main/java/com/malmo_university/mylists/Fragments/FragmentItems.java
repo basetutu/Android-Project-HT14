@@ -159,22 +159,6 @@ public class FragmentItems extends Fragment{
         Firebase firebase = new Firebase(FirebaseController.makeItemsPath(mChecklist_ref_id));
         FirebaseController.registerChildListener(firebase, mITEMS_Listener);
 
-
-//        HashMap<String,String> values = new HashMap<String, String>();
-//        values.put("NAME","hallo");
-//        values.put("Creating Date", FirebaseController.getTimestamp());
-//        int order = 0;
-//        boolean state = false;
-//        Item a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-//        "ItemTitle", "ItemNote", state);
-//        mItemsArray.add(mItemsArray.size(),a);
-//        mItemsArray.add(mItemsArray.size(),a);
-//        state = true;
-//        a = new Item("ref id", "checklistId", "lastModifiedBy", "date added", order,
-//                "Itesdf sdmTitlef fs fsdf sdf sdf sdfsdf sdf", "Itef sdff mNotes fsf sdf sfd sdfsdf sf", state);
-//        mItemsArray.add(mItemsArray.size(),a);
-//        mItemsArray.add(mItemsArray.size(),a);
-//        mListViewAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -340,37 +324,44 @@ public class FragmentItems extends Fragment{
             public TextView note;
             public ImageView check;
         }
-
     }
 
     private void onChecklistItemClicked(int positionForView) {
         Log.w(TAG, "onChecklistItemClicked");
         // Get the item and modify it
         Item item = mItemsArray.get(positionForView);
-        item.toggleChecked();
+
+        Log.w(TAG, "item.getItem_ref_id(): " + item.getItem_ref_id());
+        Log.w(TAG, "item.getChecklist_ref_id(): " + item.getChecklist_ref_id());
+        Log.w(TAG, "item.getTitle(): " + item.getTitle());
+        Log.w(TAG, "item.getNote(): " + item.getNote());
+        Log.w(TAG, "item.getChecked(): " + item.getChecked());
+
+        FirebaseController.checkItemOnChecklist(mChecklist_ref_id, item.getItem_ref_id(), item.toggleChecked());
         // update listview
         mListViewAdapter.notifyDataSetChanged();
-
-        // Get required data to access and modify firebase
-        String checklist_ref_id = item.getChecklist_ref_id();
-        String item_ref_id = item.getRef_id();
-        boolean checked = item.getChecked();
-
-        // Needs items
-        FirebaseController.checkItemOnChecklist(mChecklist_ref_id, item.getRef_id(), item.getChecked());
     }
 
     private void onChecklistItemLongClicked(int mPosition) {
         Log.w(TAG,"onChecklistItemLongClicked");
         // start dialog for long clicking an item in a checklist
-        AlertDialogs.makeLongPressItemDialog();
+        Item item = mItemsArray.get(mPosition);
+        AlertDialogs.makeLongPressItemDialog(this, mPosition, item, mItemsMap, mItemsArray);
     }
 
+    public void deleteItem(int position, Item item, ArrayList<Item> mItemsArray, HashMap<String, Item> mItemsMap) {
+        String checklist_ref_id = mItemsArray.remove(position).getChecklist_ref_id();
+        mItemsMap.remove(checklist_ref_id);
+        if (mItemsMap.get(checklist_ref_id) == null) {
+            Log.w(TAG, "Item delete success from array and map");
+        }
+        FirebaseController.removeItemFromChecklist(item);
+        mListViewAdapter.notifyDataSetChanged();
+    }
 
     protected void setLastItemVisible(boolean state){
         mLastItemVisible = state;
     }
-
 
 
     // LISTENERS /////////////////////////////////////////////////////////////////////////////
@@ -445,14 +436,14 @@ public class FragmentItems extends Fragment{
             // like "id" and "from".
             Map<String, Link> dataMap = (Map<String, Link>) dataSnapshot.getValue();
             // Extract data
-            String checked = String.valueOf(dataMap.get("checked"));
-            String checklist_ref_id = String.valueOf(dataMap.get("checklist_ref_id"));
-            String creation_date = String.valueOf(dataMap.get("creation_date"));
-            String lastModifiedBy = String.valueOf(dataMap.get("lastModifiedBy"));
-            String note = String.valueOf(dataMap.get("note"));
-            String order = String.valueOf(dataMap.get("order"));
-            String ref_id = String.valueOf(dataMap.get("ref_id"));
-            String title = String.valueOf(dataMap.get("title"));
+            String checked = String.valueOf(dataMap.get(Item.CHECKED));
+            String checklist_ref_id = String.valueOf(dataMap.get(Item.CHECKLIST_REF_ID));
+            String creation_date = String.valueOf(dataMap.get(Item.CREATION_DATE));
+            String lastModifiedBy = String.valueOf(dataMap.get(Item.LAST_MODIFIED_BY));
+            String note = String.valueOf(dataMap.get(Item.NOTE));
+            String order = String.valueOf(dataMap.get(Item.ORDER));
+            String item_ref_id = String.valueOf(dataMap.get(Item.ITEM_REF_ID));
+            String title = String.valueOf(dataMap.get(Item.TITLE));
             // DEBUG
             if (Globals.DEBUG_results) {
                 Log.i(TAG, "Child checked: " + checked);
@@ -461,15 +452,15 @@ public class FragmentItems extends Fragment{
                 Log.i(TAG, "Child lastModifiedBy: " + lastModifiedBy);
                 Log.i(TAG, "Child note: " + note);
                 Log.i(TAG, "Child order: " + order);
-                Log.i(TAG, "Child ref_id: " + ref_id);
+                Log.i(TAG, "Child ref_id: " + item_ref_id);
                 Log.i(TAG, "Child title: " + title);
             }
 
-            Item item = new Item(ref_id, checklist_ref_id, lastModifiedBy, creation_date, 0, title, note, checked.equals("true"));
+            Item item = new Item(item_ref_id, checklist_ref_id, lastModifiedBy, creation_date, 0, title, note, checked.equals("true"));
 
-            if (mItemsMap.get(ref_id) == null) {
+            if (mItemsMap.get(item_ref_id) == null) {
                 mItemsArray.add(mItemsArray.size(), item);
-                mItemsMap.put(ref_id, item);
+                mItemsMap.put(item_ref_id, item);
             }else{
                 Log.w(TAG, "Item existed !");
             }

@@ -136,7 +136,7 @@ public class FirebaseController {
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(userEmail)).child(PROFILE).setValue(values);
     }
 
-    protected static void updateProfile(Profile profile){
+    public static void updateProfile(Profile profile){
         // todo (need current data)
         // get current data
         // check for null in the profile object
@@ -162,7 +162,7 @@ public class FirebaseController {
      * This function removes a contact from a user
      * @param userEmail
      */
-    protected static void removeContactFromUserList(String userEmail){
+    public static void removeContactFromUserList(String userEmail){
         mFirebaseCURRENTUSER.child(CONTACTS_REF).child(Algorithms.transformEmailToKey(userEmail)).removeValue();
     }
 
@@ -199,7 +199,7 @@ public class FirebaseController {
         mFirebaseUSERS.child(Algorithms.transformEmailToKey(toUserEmail)).child(AWAITING_ACCEPTANCE_REF).child(ref_id).setValue(link);
     }
 
-    protected static void acceptSharedChecklist(){
+    public static void acceptSharedChecklist(){
         // check to see if the checklist still exists
         // then crete a link
         // place the link in this users references of checklists
@@ -207,7 +207,7 @@ public class FirebaseController {
         //mFirebaseCURRENTUSER.child(AWAITING_ACCEPTANCE_REF).child()
     }
 
-    protected static void removeChecklist(String checklist_id){
+    public static void removeChecklist(String checklist_id){
         //todo (needs a variable to check how many are listening of that checklist)
         // if the current user count of list of users with reference is equal to 1
         // then delete the checklist, otherwise remove this user from list
@@ -224,14 +224,12 @@ public class FirebaseController {
         String ref_id = mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).push().getKey();
         Item item = new Item(ref_id, checklist_id, getCurrentUser(), getTimestamp(), 0, title, note, false);
         mFirebaseCHECKLISTS.child(checklist_id).child(ITEMS).child(ref_id).setValue(item);
-        //todo test removing
-        //mFirebaseCHECKLISTS.child(item.checklist_ref_id).child(item.ref_id).removeValue();
     }
 
-    protected static void editItemOnChecklist(String title, String note, Item item){
-        item.setTitle(title);
-        item.setNote(note);
-        mFirebaseCHECKLISTS.child(item.getChecklist_ref_id()).child(item.getRef_id()).setValue(item);
+    public static void editItemOnChecklist(Item item){
+        // todo
+        Log.w(TAG,item.getItem_ref_id());
+        mFirebaseCHECKLISTS.child(item.getChecklist_ref_id()).child(ITEMS).child(item.getItem_ref_id()).setValue(item);
     }
 
     public static void checkItemOnChecklist(String checklist_ref_id, String item_ref_id, boolean state){
@@ -239,14 +237,14 @@ public class FirebaseController {
     }
 
     // todo not tested
-    protected static void removeItemFromChecklist(Item item){
-        mFirebaseCHECKLISTS.child(item.getChecklist_ref_id()).child(item.getRef_id()).removeValue();
+    public static void removeItemFromChecklist(Item item){
+        mFirebaseCHECKLISTS.child(item.getChecklist_ref_id()).child(ITEMS).child(item.getItem_ref_id()).removeValue();
     }
 
 
     // Atomic functions ////////////////////////////////////////////////////////////////////
 
-    protected static String getTimestamp() {
+    public static String getTimestamp() {
         long time = System.currentTimeMillis();
         Timestamp tsTemp = new Timestamp(time);
         return tsTemp.toString();
@@ -259,7 +257,7 @@ public class FirebaseController {
      * @param parentChild The location the child must be created in
      * @return Firebase instance for the newly created child
      */
-    protected static String createNewChildEntry(Firebase parentChild) {
+    public static String createNewChildEntry(Firebase parentChild) {
         String childId = parentChild.push().getKey();
         return childId;
     }
@@ -273,7 +271,7 @@ public class FirebaseController {
      * @param dataSet A Map-object containing the key-value-paired data to be stored at the location
      * @return Returns true if there was any data to write
      */
-    protected static boolean writeValues(Firebase location, HashMap<String, Object> dataSet) {
+    public static boolean writeValues(Firebase location, HashMap<String, Object> dataSet) {
         if (dataSet.size() == 0) {
             return false;
         }
@@ -287,7 +285,7 @@ public class FirebaseController {
      *
      * @param URL the URL address to the location to be deleted
      */
-    protected static void deleteChild(String URL) {
+    public static void deleteChild(String URL) {
         new Firebase(URL).removeValue();
     }
 
@@ -297,13 +295,13 @@ public class FirebaseController {
      *
      * @param childRef A firebase instance for the location to be deleted
      */
-    protected static void deleteChild(Firebase childRef) {
+    public static void deleteChild(Firebase childRef) {
         childRef.removeValue();
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////
 
-    protected static void setCurrentUser(String userEmail){
+    public static void setCurrentUser(String userEmail){
         currentUser = userEmail;
     }
 
@@ -311,7 +309,7 @@ public class FirebaseController {
         return currentUser;
     }
 
-    protected static String getCurrentUserKey(){
+    public static String getCurrentUserKey(){
         return Algorithms.transformEmailToKey(currentUser);
     }
 
@@ -453,15 +451,15 @@ public class FirebaseController {
         location.addChildEventListener(listener);
     }
 
-    protected static void unregisterChildListener(Firebase location, ChildEventListener listener) {
+    public static void unregisterChildListener(Firebase location, ChildEventListener listener) {
         location.removeEventListener(listener);
     }
 
-    protected static void registerValueListener(Firebase location, ValueEventListener listener) {
+    public static void registerValueListener(Firebase location, ValueEventListener listener) {
         location.addValueEventListener(listener);
     }
 
-    protected static void unregisterValueListener(Firebase location, ValueEventListener listener) {
+    public static void unregisterValueListener(Firebase location, ValueEventListener listener) {
         location.removeEventListener(listener);
     }
 
