@@ -1,25 +1,18 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.entities;
 
 /**
  * Created by Saeed on 18-01-15.
  */
-public class Contact {
-    String email;
+public class Profile {
     String name;
+    String email;
     String tlf;
 
-    public Contact(String email, String name, String tlf) {
-        this.email = email;
+    public Profile(String name, String email, String tlf){
         this.name = name;
-        this.tlf = tlf;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
         this.email = email;
+        this.tlf = tlf;
+        Item item;
     }
 
     public String getName() {
@@ -28,6 +21,14 @@ public class Contact {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getTlf() {

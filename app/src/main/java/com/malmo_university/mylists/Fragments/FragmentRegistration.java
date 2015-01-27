@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Fragments;
 
 import android.app.Fragment;
 import android.os.Bundle;
@@ -14,6 +14,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
+import com.malmo_university.mylists.ActivityAuthenticate;
+import com.malmo_university.mylists.Controllers.FirebaseController;
+import com.malmo_university.mylists.R;
 
 /**
  * Created by Martin on 02-12-2014.

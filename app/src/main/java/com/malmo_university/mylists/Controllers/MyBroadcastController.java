@@ -1,4 +1,4 @@
-package com.malmo_university.mylists;
+package com.malmo_university.mylists.Controllers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -40,7 +40,7 @@ public class MyBroadcastController extends BroadcastReceiver {
      *
      * @param context Any context will do
      */
-    protected static void init(Context context) {
+    public static void init(Context context) {
         mAppContext = context.getApplicationContext();
     }
 
@@ -49,12 +49,27 @@ public class MyBroadcastController extends BroadcastReceiver {
      * If more data needs to be transmitted to the receiver, then use the optional
      * broadcastIntent on the overloaded function.
      *
-     * @param action  The action to identify the receivers
+     * @param receiverAction  The action to identify the receivers
      * @param message The message to be given the receivers
      */
-    public static void sendBroadcast(String action, String message) {
+    public static void sendBroadcastString(String receiverAction, String message) {
         Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(action);
+        broadcastIntent.setAction(receiverAction);
+        broadcastIntent.putExtra("message", message);
+        mAppContext.sendBroadcast(broadcastIntent);
+    }
+
+    /**
+     * Use this function to make a simple broadcast with a message and receiverAction.
+     * If more data needs to be transmitted to the receiver, then use the optional
+     * broadcastIntent on the overloaded function.
+     *
+     * @param receiverAction  The action to identify the receivers
+     * @param message The message to be given the receivers
+     */
+    public static void sendBroadcastInt(String receiverAction, int message) {
+        Intent broadcastIntent = new Intent();
+        broadcastIntent.setAction(receiverAction);
         broadcastIntent.putExtra("message", message);
         mAppContext.sendBroadcast(broadcastIntent);
     }
@@ -64,33 +79,21 @@ public class MyBroadcastController extends BroadcastReceiver {
      * If more data needs to be transmitted to the receiver, then use the optional
      * broadcastIntent on the overloaded function.
      *
-     * @param action  The action to identify the receivers
-     * @param message The message to be given the receivers
-     */
-    public static void sendBroadcast(String action, int message) {
-        Intent broadcastIntent = new Intent();
-        broadcastIntent.setAction(action);
-        broadcastIntent.putExtra("message", message);
-        mAppContext.sendBroadcast(broadcastIntent);
-    }
-
-    /**
-     * Use this function to make a simple broadcast with a message and action.
-     * If more data needs to be transmitted to the receiver, then use the optional
-     * broadcastIntent on the overloaded function.
+     * dataExtras may not contain the key "message". It will be overwritten.
      *
      * @param action          The action to identify the receivers
      * @param message         The message to be given the receivers
-     * @param broadcastIntent Extra data can be pu here. (Cannot be null but may be an empty intent)
+     * @param dataExtras Extra data can be pu here. (Cannot be null but may be an empty intent)
      */
-    public static void sendBroadcast(String action, String message, Intent broadcastIntent) {
-        broadcastIntent.setAction(action);
-        broadcastIntent.putExtra("message", message);
-        mAppContext.sendBroadcast(broadcastIntent);
+    public static void sendBroadcast(String action, String message, Intent dataExtras) {
+        dataExtras.setAction(action);
+        dataExtras.putExtra("message", message);
+        mAppContext.sendBroadcast(dataExtras);
     }
 
     /**
-     * The actual handling of the intent is done here. This function can be modified as needed.
+     * The actual handling of the intent is done here. This function can be modified as needed, but
+     * can also be implemented elsewhere.
      *
      * @param context The context making the broadcast
      * @param intent  The broadcast intent

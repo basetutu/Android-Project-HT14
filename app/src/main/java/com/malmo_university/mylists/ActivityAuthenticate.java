@@ -8,6 +8,12 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 
 import com.firebase.client.Firebase;
+import com.malmo_university.mylists.Controllers.MyBroadcastController;
+import com.malmo_university.mylists.Controllers.SharedPreferencesController;
+import com.malmo_university.mylists.Fragments.FragmentAbout;
+import com.malmo_university.mylists.Fragments.FragmentLogin;
+import com.malmo_university.mylists.Fragments.FragmentRegistration;
+import com.malmo_university.mylists.Fragments.Globals;
 
 
 public class ActivityAuthenticate extends Activity {
@@ -62,7 +68,7 @@ public class ActivityAuthenticate extends Activity {
     ///////// NAVIGATION ///////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////////
 
-    protected void changeFragment(int fragNbr) {
+    public void changeFragment(int fragNbr) {
         Fragment fragment;
         switch (fragNbr) {
             case Globals.FRAGMENT_ABOUT:
